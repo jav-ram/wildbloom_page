@@ -1,0 +1,16 @@
+---
+import Base from '../../layouts/Base.astro';
+import ClassList from '../../components/ClassList.svelte';
+import { classes } from '../../data/classes';
+---
+<Base title="Classes — Wildbloom Studio" current="classes" description="Free D&D 5e (2024) homebrew classes built to feel official.">
+  <main class="wrap">
+    <header style="padding: 80px 0 32px">
+      <p class="ws-kicker label">D&amp;D Homebrew Classes · Building now</p>
+      <h1 class="page-title ws-h">Classes</h1>
+      <p class="body lede">Free D&amp;D 5e (2024 rules) classes built to feel official, designed for the Crater but usable in any world. Drop them into your campaign as they are, or build on them.</p>
+      <div class="ws-divider ws-divider--vine" role="separator" style="margin: 24px 0 0"><span class="ws-divider__mark"></span></div>
+    </header>
+    <ClassList client:load classes={classes} base={import.meta.env.BASE_URL.replace(/\/$/, '')} />
+  </main>
+</Base>

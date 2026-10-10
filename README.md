@@ -1,9 +1,15 @@
-# Wildbloom page
+# Wildbloom Studio site
 
-Hosted on GitHub Pages at https://jav-ram.github.io/wildbloom_page/
+Astro + Svelte islands, deployed to GitHub Pages at https://jav-ram.github.io/wildbloom_page/
 
-Deploys automatically on push to `main` via `.github/workflows/deploy.yml`.
+```bash
+npm install
+npm run dev      # http://localhost:4321/wildbloom_page/
+npm run build    # static output in dist/
+```
 
-## Notes for the Svelte/React migration
-- Site is served under `/wildbloom_page/`, so set the base path (Vite `base`, SvelteKit `paths.base`) unless a custom domain is used.
-- Swap the "Build" step in the workflow for `npm ci && npm run build` and update the artifact `path`.
+- Design tokens/components: `src/styles/` (from the Wildbloom design system).
+- Pages: `src/pages/`. Interactive parts (class filter, Crater era/layer explorer) are Svelte islands in `src/components/`.
+- Content: `src/data/` (`classes.ts`, `crater.ts`, `warcaller.json`). `[BRACKETED]` text is copy still to be written.
+- Deploys on push to `main` via `.github/workflows/deploy.yml` (set Settings → Pages → Source to "GitHub Actions").
+- Base path is `/wildbloom_page` (see `astro.config.mjs`); remove it if a custom domain is added.

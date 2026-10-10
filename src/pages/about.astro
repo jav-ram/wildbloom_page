@@ -1,0 +1,84 @@
+---
+import Base from '../layouts/Base.astro';
+import { url, PATREON } from '../lib/url';
+---
+<Base title="About — Wildbloom Studio" current="about">
+<main>
+<div class="wrap">
+<section class="hero" aria-labelledby="about-title">
+<div>
+<p class="ws-kicker label">About the studio</p>
+<h1 id="about-title" class="page-title">Who We Are</h1>
+<p class="body lede">Wildbloom Studio is an independent tabletop RPG studio. We are a small, independent tabletop studio making things for players and GMs. We publish free D&amp;D 5e (2024) homebrew classes built to feel official, the Crater, a bottomless, unexplored world you can drop into any campaign, and we’re developing Hellebore, our own TTRPG.</p>
+<p class="body lede">Everything is made to be played, shared, and built on.</p>
+</div>
+<div class="frame-art ws-corners" role="img" aria-label="Placeholder for studio photo or artwork">
+<img src={url('seal-dark.svg')} alt="">
+<p class="frame-art__cap caption">[STUDIO PHOTO OR ARTWORK]</p>
+</div>
+</section>
+</div>
+
+<section class="section section--sunken" aria-labelledby="makes-title">
+<div class="wrap">
+<div class="sec-head"><div><p class="ws-kicker label">What we make</p><h2 id="makes-title" class="chapter-heading ws-h">Three Roots, One Garden</h2></div></div>
+<div class="makes">
+<article class="make">
+<span class="ws-badge ws-badge--building label" style="align-self: flex-start">Building now</span>
+<h3 class="section-heading">The Crater</h3>
+<p class="rules-text">A bottomless, unexplored D&amp;D 5e setting: thirteen layers, three eras. Drop it into any campaign.</p>
+<a class="ws-link ws-link--arrow rules-text" href={url('crater/')}>Read the Crater</a>
+</article>
+<article class="make">
+<span class="ws-badge ws-badge--building label" style="align-self: flex-start">Building now</span>
+<h3 class="section-heading">Homebrew Classes</h3>
+<p class="rules-text">New classes for D&amp;D 5e (2024 rules), made for the Crater and usable anywhere. [ONE SENTENCE.]</p>
+<a class="ws-link ws-link--arrow rules-text" href={url('classes/')}>Browse the classes</a>
+</article>
+<article class="make" style="background: var(--surface-sunken); border-style: dashed; border-color: var(--ink-muted)">
+<span class="ws-badge ws-badge--dev label" style="align-self: flex-start">In development</span>
+<h3 class="section-heading" style="color: var(--ink)">Hellebore</h3>
+<p class="rules-text">The studio’s own TTRPG. [ONE SENTENCE TEASER.]</p>
+<span class="ws-badge ws-badge--soon label" style="align-self: flex-start">Coming soon</span>
+</article>
+</div>
+</div>
+</section>
+
+<section class="section" aria-labelledby="team-title">
+<div class="wrap">
+<div class="sec-head"><div><p class="ws-kicker label">The gardeners</p><h2 id="team-title" class="chapter-heading ws-h">The Team</h2></div></div>
+<ul class="team">
+<li class="person"><div class="person__ph caption" aria-hidden="true">[PHOTO]</div><div><h3 class="sub-heading">[NAME]</h3><p class="caption muted">[ROLE]</p><p class="rules-text">[ONE-LINE BIO.]</p></div></li>
+<li class="person"><div class="person__ph caption" aria-hidden="true">[PHOTO]</div><div><h3 class="sub-heading">[NAME]</h3><p class="caption muted">[ROLE]</p><p class="rules-text">[ONE-LINE BIO.]</p></div></li>
+</ul>
+</div>
+</section>
+
+<section class="section section--sunken" aria-labelledby="credit-title">
+<div class="wrap two-col">
+<div>
+<p class="ws-kicker label">Credit where it grows from</p>
+<h2 id="credit-title" class="chapter-heading ws-h">Inspiration</h2>
+<p class="body ws-prose">The Crater is inspired by <i>Made in Abyss</i> by Akihito Tsukushi. [A SENTENCE OR TWO ON WHAT THE STUDIO DRAWS FROM IT AND WHAT IS YOUR OWN.]</p>
+</div>
+<aside class="ws-callout ws-callout--rules" style="margin: 0; align-self: start">
+<p class="ws-callout__label label">Unofficial homebrew</p>
+<p class="rules-text">Wildbloom Studio’s 5e material is unofficial homebrew, not affiliated with or endorsed by Wizards of the Coast. Dungeons &amp; Dragons is a trademark of Wizards of the Coast LLC. [ADD YOUR LICENSE NOTE, e.g. SRD / Creative Commons attribution, once decided.]</p>
+</aside>
+</div>
+</section>
+
+<section class="section" aria-labelledby="contact-title">
+<div class="wrap">
+<h2 id="contact-title" class="section-heading ws-h">Say Hello</h2>
+<p class="body ws-prose">[HOW TO REACH THE STUDIO: email or preferred channel.] You can also find us here:</p>
+<div class="ws-btn-row">
+<a class="ws-btn ws-btn--secondary control" href="https://www.instagram.com/" target="_blank" rel="noopener">Instagram</a>
+<a class="ws-btn ws-btn--secondary control" href="https://www.reddit.com/" target="_blank" rel="noopener">Reddit</a>
+<a class="ws-btn control" href={PATREON} target="_blank" rel="noopener">Become a patron</a>
+</div>
+</div>
+</section>
+</main>
+</Base>

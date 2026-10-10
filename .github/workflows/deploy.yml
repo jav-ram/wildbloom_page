@@ -20,24 +20,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # --- BUILD STEP ---------------------------------------------------
-      # Static site: copy the repo contents into ./_site.
-      # When migrating to Svelte/React, replace this step with e.g.:
-      #   - uses: actions/setup-node@v4
-      #     with: { node-version: 22, cache: npm }
-      #   - run: npm ci && npm run build
-      # and point OUTPUT_DIR at the build output (dist/ for Vite, build/ for SvelteKit static).
-      - name: Build
-        run: |
-          mkdir _site
-          rsync -a --exclude='.git' --exclude='.github' --exclude='_site' --exclude='README.md' ./ _site/
-          touch _site/.nojekyll
-      # -------------------------------------------------------------------
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: _site
+          path: dist
 
   deploy:
     needs: build

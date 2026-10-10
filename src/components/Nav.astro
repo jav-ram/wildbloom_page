@@ -1,0 +1,32 @@
+---
+import { url, PATREON } from '../lib/url';
+interface Props { current?: string }
+const { current } = Astro.props;
+const mark = (k: string) => (current === k ? 'page' : undefined);
+---
+<div class="ws-cq" style="font-family: var(--font-body); color: var(--ink)">
+  <nav class="ws-nav" aria-label="Main" data-open="false">
+    <a class="ws-nav__brand" href={url()}>
+      <img class="ws-logo ws-logo--light" src={url('seal-light.svg')} alt="" />
+      <img class="ws-logo ws-logo--dark" src={url('seal-dark.svg')} alt="" />
+      Wildbloom Studio
+    </a>
+    <ul class="ws-nav__links" id="main-links">
+      <li><a class="control" href={url('#projects')} aria-current={mark('projects')}>Projects</a></li>
+      <li><a class="control" href={url('crater/')} aria-current={mark('crater')}>The Crater</a></li>
+      <li><a class="control" href={url('classes/')} aria-current={mark('classes')}>Classes</a></li>
+      <li><a class="control" href={url('about/')} aria-current={mark('about')}>About</a></li>
+    </ul>
+    <a class="ws-btn ws-btn--sm control" href={PATREON} target="_blank" rel="noopener">Support us</a>
+    <button class="ws-nav__burger" type="button" aria-expanded="false" aria-controls="main-links">Menu</button>
+  </nav>
+</div>
+<script>
+  const nav = document.querySelector<HTMLElement>('.ws-nav');
+  const burger = nav?.querySelector<HTMLButtonElement>('.ws-nav__burger');
+  burger?.addEventListener('click', () => {
+    const open = nav!.dataset.open !== 'true';
+    nav!.dataset.open = String(open);
+    burger.setAttribute('aria-expanded', String(open));
+  });
+</script>

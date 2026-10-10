@@ -1,0 +1,678 @@
+{
+ "flavor": [
+  "Where a Warcaller plants their standard, the line holds. Armored and loud, they stand in the front rank and make everyone around them harder to kill. Their power isn't magic. It's discipline, a trained voice, and the stubborn refusal to let the people beside them break.",
+  "Most Warcallers learned their trade in uniform: a colonel who led companies, a sergeant who drilled recruits until their arms shook, a militia captain who turned farmers into a shield wall in a single season. They believe in order, ranks and clear commands. They also know that a plan that survives first contact is rare, and that sometimes the rules have to bend so everyone comes home.",
+  "In a fight, a Warcaller rarely deals the killing blow. Instead, they keep a steady presence around them that turns blades aside, and when the moment comes they shout. A single battle cry can steady shaking hands, send a squad forward as one, or make an enemy think twice.",
+  "Adventurers follow a Warcaller for the same reason soldiers do. When the way back is uncertain and the dark is deep, it helps to have someone who knows exactly where to stand."
+ ],
+ "tagline": "Battle cries and a raised banner that push allies to fight harder.",
+ "creating": [
+  "As you create your Warcaller, think about where you learned to lead. Did you hold a commission in a real army, train a village militia, or rise through the ranks of a mercenary company? What does the sign on your standard mean, and who else still carries it?",
+  "Then decide how you feel about orders. Most Warcallers trust the chain of command. Ask yourself when your character would break it, and who they'd break it for."
+ ],
+ "quick": "You can make a Warcaller quickly by following these suggestions. Make Constitution your highest ability score, followed by Charisma. Choose the Soldier background. Learn the Hold Fast! and Strike as One! Battle Cries.",
+ "traits": [
+  [
+   "Primary Ability",
+   "Constitution and Charisma"
+  ],
+  [
+   "Hit Point Die",
+   "D10 per Warcaller level"
+  ],
+  [
+   "Saving Throw Proficiencies",
+   "Constitution and Charisma"
+  ],
+  [
+   "Skill Proficiencies",
+   "Choose 2: Athletics, History, Insight, Intimidation, Medicine, Perception, Persuasion, or Survival"
+  ],
+  [
+   "Weapon Proficiencies",
+   "Simple and Martial weapons"
+  ],
+  [
+   "Tool Proficiencies",
+   "Choose one: Drum, Horn, or one kind of Gaming Set"
+  ],
+  [
+   "Armor Training",
+   "Medium and Heavy armor and Shields"
+  ],
+  [
+   "Starting Equipment",
+   "Choose A or B: (A) Chain Mail, Shield, Longsword, 4 Javelins, Horn, Explorer's Pack, War Standard, and 35 GP; or (B) 155 GP"
+  ]
+ ],
+ "becoming": [
+  {
+   "label": "As a Level 1 Character",
+   "items": [
+    "Gain all the traits in the Core Warcaller Traits table.",
+    "Gain the Warcaller's level 1 features, which are listed in the Warcaller Features table."
+   ]
+  },
+  {
+   "label": "As a Multiclass Character",
+   "items": [
+    "Gain the following traits from the Core Warcaller Traits table: Hit Point Die, proficiency in Martial weapons, and training with Medium armor and Shields.",
+    "Gain the Warcaller's level 1 features, which are listed in the Warcaller Features table.",
+    "To multiclass into or out of Warcaller, you need a score of at least 13 in both Constitution and Charisma."
+   ]
+  }
+ ],
+ "featuresIntro": "As a Warcaller, you gain the following class features when you reach the specified Warcaller levels. These features are listed in the Warcaller Features table.",
+ "tableHead": [
+  "Level",
+  "Proficiency Bonus",
+  "Class Features",
+  "Battle Cries",
+  "Cries Known",
+  "Rally Die",
+  "Aura"
+ ],
+ "table": [
+  [
+   "1",
+   "+2",
+   "War Standard, Rallying Aura, Battle Cries, Weapon Mastery",
+   "2",
+   "2",
+   "D6",
+   "15 ft."
+  ],
+  [
+   "2",
+   "+2",
+   "Shield the Line, Marching Orders",
+   "2",
+   "2",
+   "D6",
+   "15 ft."
+  ],
+  [
+   "3",
+   "+2",
+   "Warcaller Subclass",
+   "2",
+   "3",
+   "D6",
+   "15 ft."
+  ],
+  [
+   "4",
+   "+2",
+   "Ability Score Improvement",
+   "2",
+   "3",
+   "D6",
+   "15 ft."
+  ],
+  [
+   "5",
+   "+3",
+   "Extra Attack",
+   "3",
+   "3",
+   "D8",
+   "15 ft."
+  ],
+  [
+   "6",
+   "+3",
+   "Subclass feature",
+   "3",
+   "3",
+   "D8",
+   "15 ft."
+  ],
+  [
+   "7",
+   "+3",
+   "Banner Unbowed",
+   "3",
+   "4",
+   "D8",
+   "15 ft."
+  ],
+  [
+   "8",
+   "+3",
+   "Ability Score Improvement",
+   "3",
+   "4",
+   "D8",
+   "15 ft."
+  ],
+  [
+   "9",
+   "+4",
+   "Iron Will",
+   "3",
+   "4",
+   "D8",
+   "15 ft."
+  ],
+  [
+   "10",
+   "+4",
+   "Subclass feature",
+   "3",
+   "4",
+   "D8",
+   "15 ft."
+  ],
+  [
+   "11",
+   "+4",
+   "Commanding Cry",
+   "4",
+   "5",
+   "D10",
+   "15 ft."
+  ],
+  [
+   "12",
+   "+4",
+   "Ability Score Improvement",
+   "4",
+   "5",
+   "D10",
+   "15 ft."
+  ],
+  [
+   "13",
+   "+5",
+   "Broad Front",
+   "4",
+   "5",
+   "D10",
+   "20 ft."
+  ],
+  [
+   "14",
+   "+5",
+   "Subclass feature",
+   "4",
+   "5",
+   "D10",
+   "20 ft."
+  ],
+  [
+   "15",
+   "+5",
+   "Unbroken",
+   "4",
+   "6",
+   "D10",
+   "20 ft."
+  ],
+  [
+   "16",
+   "+5",
+   "Ability Score Improvement",
+   "4",
+   "6",
+   "D10",
+   "20 ft."
+  ],
+  [
+   "17",
+   "+6",
+   "Shield Wall Perfected",
+   "5",
+   "6",
+   "D12",
+   "20 ft."
+  ],
+  [
+   "18",
+   "+6",
+   "Wide Command",
+   "5",
+   "6",
+   "D12",
+   "30 ft."
+  ],
+  [
+   "19",
+   "+6",
+   "Epic Boon",
+   "5",
+   "6",
+   "D12",
+   "30 ft."
+  ],
+  [
+   "20",
+   "+6",
+   "Banner Eternal",
+   "5",
+   "6",
+   "D12",
+   "30 ft."
+  ]
+ ],
+ "feats": [
+  {
+   "h": "Level 1: War Standard",
+   "p": [
+    {
+     "t": "You carry a war standard: a banner on a pole, bearing a sign your allies know. While you carry it, it's strapped to your armor or back and leaves your hands free."
+    },
+    {
+     "l": "Plant the Standard.",
+     "t": "As a Bonus Action, or as part of the Bonus Action you take to use a Battle Cry, you can plant the standard in an unoccupied space within 5 feet of you. It can be set in earth, wedged in rock, or tied to a rope or ledge. While it's planted, your Rallying Aura originates from the standard instead of from you, as long as you're within 60 feet of it."
+    },
+    {
+     "l": "Retrieve the Standard.",
+     "t": "You can take the standard back as a Bonus Action while within 5 feet of it. Any other creature within 5 feet of it can pull it up with the Utilize action; if that creature isn't your ally, your aura returns to you."
+    },
+    {
+     "l": "The Standard as an Object.",
+     "t": "A planted standard has AC 15, Hit Points equal to five times your Warcaller level, and Immunity to Poison and Psychic damage. If it's reduced to 0 Hit Points, it isn't destroyed. Instead, it falls and is Broken: your Rallying Aura returns to you with a size of 5 feet. To restore it, you must retrieve the standard and then finish a Short or Long Rest to repair it, after which it regains all its Hit Points and your aura returns to its normal size."
+    },
+    {
+     "l": "Losing the Standard.",
+     "t": "If your standard is lost or taken from you, your Rallying Aura's size becomes 5 feet until you have a standard again. You can make a new one during a Long Rest with 1 GP of materials. A War Standard costs 5 GP and weighs 5 lb."
+    }
+   ]
+  },
+  {
+   "h": "Level 1: Rallying Aura",
+   "p": [
+    {
+     "t": "You project a steadying presence in an Emanation that originates from you (or your planted standard). Its size is shown in the Aura column of the Warcaller Features table. The aura is inactive while you have the Incapacitated condition."
+    },
+    {
+     "l": "Shield Wall.",
+     "t": "You and creatures of your choice in your aura gain a +1 bonus to Armor Class."
+    }
+   ]
+  },
+  {
+   "h": "Level 1: Battle Cries",
+   "p": [
+    {
+     "t": "You can shout commands that push your allies past their limits. As a Bonus Action, you can expend one use of this feature to use a Battle Cry you know. Its effects apply to you and to each ally in your Rallying Aura who can hear you. Unless a Cry says otherwise, its effects last until the start of your next turn."
+    },
+    {
+     "l": "Uses.",
+     "t": "The number of uses you have is shown in the Battle Cries column of the Warcaller Features table. You regain one expended use when you finish a Short Rest, and you regain all expended uses when you finish a Long Rest."
+    },
+    {
+     "l": "Cries Known.",
+     "t": "You know two Battle Cries of your choice from the list later in this class's description. You learn more as shown in the Cries Known column. Whenever you gain a Warcaller level, you can replace one Cry you know with another you qualify for."
+    },
+    {
+     "l": "Rally Die.",
+     "t": "Some Cries use your Rally Die, shown in the Rally Die column."
+    },
+    {
+     "l": "Saving Throws.",
+     "t": "If a Cry forces a saving throw, the DC equals 8 plus your Charisma modifier and Proficiency Bonus."
+    }
+   ]
+  },
+  {
+   "h": "Level 1: Weapon Mastery",
+   "p": [
+    {
+     "t": "Your training with weapons allows you to use the mastery properties of two kinds of Simple or Martial weapons of your choice with which you have proficiency. Whenever you finish a Long Rest, you can change the kinds of weapons you chose."
+    }
+   ]
+  },
+  {
+   "h": "Level 2: Shield the Line",
+   "p": [
+    {
+     "t": "When a creature you can see hits an ally within 5 feet of you with an attack roll, you can take a Reaction to reduce the damage that ally takes by an amount equal to one roll of your Rally Die."
+    }
+   ]
+  },
+  {
+   "h": "Level 2: Marching Orders",
+   "p": [
+    {
+     "t": "You keep a group moving together. While you travel with your allies, the group ignores the penalties of a Fast travel pace. You also have Advantage on ability checks to lead a group through a hard climb, a rope descent, a forced march, or a retreat."
+    }
+   ]
+  },
+  {
+   "h": "Level 3: Warcaller Subclass",
+   "p": [
+    {
+     "t": "You gain a Warcaller subclass of your choice. The Drillmaster and Line Captain subclasses are detailed after this class's description. A subclass is a specialization that grants you features at certain Warcaller levels. For the rest of your career, you gain each of your subclass's features that are of your Warcaller level or lower."
+    }
+   ]
+  },
+  {
+   "h": "Level 4: Ability Score Improvement",
+   "p": [
+    {
+     "t": "You gain the Ability Score Improvement feat or another feat of your choice for which you qualify. You gain this feature again at Warcaller levels 8, 12, and 16."
+    }
+   ]
+  },
+  {
+   "h": "Level 5: Extra Attack",
+   "p": [
+    {
+     "t": "You can attack twice instead of once whenever you take the Attack action on your turn."
+    }
+   ]
+  },
+  {
+   "h": "Level 6: Subclass Feature",
+   "p": [
+    {
+     "t": "You gain a feature from your Warcaller subclass."
+    }
+   ]
+  },
+  {
+   "h": "Level 7: Banner Unbowed",
+   "p": [
+    {
+     "t": "Your planted standard's AC becomes 18, and it can't be moved by any effect against your will. In addition, while you and your allies are in your Rallying Aura, you have Advantage on Death Saving Throws and on saving throws to avoid or end the Frightened condition."
+    }
+   ]
+  },
+  {
+   "h": "Level 9: Iron Will",
+   "p": [
+    {
+     "t": "You gain proficiency in Wisdom saving throws."
+    }
+   ]
+  },
+  {
+   "h": "Level 11: Commanding Cry",
+   "p": [
+    {
+     "t": "When you use a Battle Cry, you can use two different Cries you know instead of one, expending only one use. Once you use this feature, you can't do so again until you finish a Short or Long Rest."
+    }
+   ]
+  },
+  {
+   "h": "Level 13: Broad Front",
+   "p": [
+    {
+     "t": "Your Rallying Aura's size increases to 20 feet."
+    }
+   ]
+  },
+  {
+   "h": "Level 15: Unbroken",
+   "p": [
+    {
+     "t": "When you're reduced to 0 Hit Points and not killed outright, you can drop to 1 Hit Point instead and immediately use a Battle Cry without taking an action. Once you use this feature, you can't do so again until you finish a Long Rest."
+    }
+   ]
+  },
+  {
+   "h": "Level 17: Shield Wall Perfected",
+   "p": [
+    {
+     "t": "The Armor Class bonus from your Shield Wall increases to +2."
+    }
+   ]
+  },
+  {
+   "h": "Level 18: Wide Command",
+   "p": [
+    {
+     "t": "Your Rallying Aura's size increases to 30 feet."
+    }
+   ]
+  },
+  {
+   "h": "Level 19: Epic Boon",
+   "p": [
+    {
+     "t": "You gain an Epic Boon feat or another feat of your choice for which you qualify. Boon of Irresistible Offense is recommended."
+    }
+   ]
+  },
+  {
+   "h": "Level 20: Banner Eternal",
+   "p": [
+    {
+     "t": "As a Bonus Action, you raise your standard high and become a legend on the field for 1 minute. For the duration, your Rallying Aura's size is 60 feet, you and allies in it add your Rally Die to attack rolls and saving throws, and each of them regains Hit Points equal to your Constitution modifier at the start of each of its turns if it has at least 1 Hit Point. Once you use this feature, you can't do so again until you finish a Long Rest, unless you expend five uses of Battle Cries to use it again."
+    }
+   ]
+  }
+ ],
+ "criesIntro": "The Cries are presented in alphabetical order. A Cry with a level prerequisite can be learned only once your Warcaller level meets it. \"Affected creatures\" means you and each ally in your Rallying Aura who can hear you.",
+ "cryTable": [
+  [
+   "Advance!",
+   "1",
+   "Allies reposition without Opportunity Attacks"
+  ],
+  [
+   "Hold Fast!",
+   "1",
+   "Temporary Hit Points"
+  ],
+  [
+   "Mark That One!",
+   "1",
+   "Advantage against one enemy"
+  ],
+  [
+   "Steel Your Nerves!",
+   "1",
+   "End Charmed and Frightened, Advantage on a save"
+  ],
+  [
+   "Strike as One!",
+   "1",
+   "Extra damage on a hit"
+  ],
+  [
+   "Brace!",
+   "7",
+   "Resistance to the next hit"
+  ],
+  [
+   "Scatter Them!",
+   "7",
+   "Frighten enemies in the aura"
+  ],
+  [
+   "No One Falls!",
+   "11",
+   "Drop to 1 Hit Point instead of 0"
+  ],
+  [
+   "Rise and Fight!",
+   "15",
+   "Healing and getting back up"
+  ]
+ ],
+ "cries": [
+  {
+   "n": "Advance!",
+   "t": "Each affected creature can take a Reaction to move up to half its Speed. This movement doesn't provoke Opportunity Attacks."
+  },
+  {
+   "n": "Brace!",
+   "v": "(Level 7+)",
+   "t": "Each affected creature has Resistance to the next instance of damage it takes before the start of your next turn."
+  },
+  {
+   "n": "Hold Fast!",
+   "t": "Roll your Rally Die once. Each affected creature gains Temporary Hit Points equal to the roll, and you gain Temporary Hit Points equal to the roll plus your Charisma modifier instead."
+  },
+  {
+   "n": "Mark That One!",
+   "t": "Choose a creature you can see within 60 feet of you. Until the start of your next turn, the first attack roll each affected creature makes against that creature has Advantage."
+  },
+  {
+   "n": "No One Falls!",
+   "v": "(Level 11+)",
+   "t": "Until the start of your next turn, when an affected creature would be reduced to 0 Hit Points and isn't killed outright, it drops to 1 Hit Point instead. This benefit then ends for that creature."
+  },
+  {
+   "n": "Rise and Fight!",
+   "v": "(Level 15+)",
+   "t": "Each affected creature can spend one of its Hit Point Dice to regain Hit Points without taking an action. An affected creature with 0 Hit Points regains 1 Hit Point first."
+  },
+  {
+   "n": "Scatter Them!",
+   "v": "(Level 7+)",
+   "t": "This Cry affects enemies instead of allies. Each enemy in your Rallying Aura who can hear you must succeed on a Wisdom saving throw or have the Frightened condition until the end of its next turn."
+  },
+  {
+   "n": "Steel Your Nerves!",
+   "t": "Each affected creature ends the Charmed and Frightened conditions on itself, and it has Advantage on the next saving throw it makes before the start of your next turn."
+  },
+  {
+   "n": "Strike as One!",
+   "t": "Until the start of your next turn, once per turn when an affected creature hits a target with an attack roll, it can roll your Rally Die and add the number rolled to the attack's damage."
+  }
+ ],
+ "subs": [
+  {
+   "id": "drillmaster",
+   "name": "Drillmaster",
+   "tagline": "Turn any rabble into a unit.",
+   "intro": "Drillmasters are the trainers: recruiters, sergeants, and militia instructors who have seen a hundred fresh faces and made soldiers of most of them. They make their allies better at the basics, and they react to mistakes faster than anyone.",
+   "feats": [
+    {
+     "h": "Level 3: Field Drills",
+     "p": [
+      {
+       "t": "When you finish a Long Rest, choose a number of willing creatures equal to your Charisma modifier (minimum of one) that trained with you during the rest. Once before your next Long Rest, each of them can give itself Advantage on one attack roll of its choice. It must decide to do so before rolling."
+      }
+     ]
+    },
+    {
+     "h": "Level 3: Drilled Response",
+     "p": [
+      {
+       "t": "You and allies in your Rallying Aura add your Charisma modifier (minimum of +1) to Initiative rolls."
+      }
+     ]
+    },
+    {
+     "h": "Level 6: Correct Your Form",
+     "p": [
+      {
+       "t": "When an ally in your Rallying Aura misses with an attack roll or fails an ability check, you can take a Reaction to roll your Rally Die and add the number rolled to the ally's d20 roll, possibly changing the outcome. You can use this feature a number of times equal to your Charisma modifier (minimum of once), and you regain all expended uses when you finish a Long Rest."
+      }
+     ]
+    },
+    {
+     "h": "Level 10: Practiced Opening",
+     "p": [
+      {
+       "t": "When you roll Initiative, you can use one Battle Cry you know without expending a use or taking an action."
+      }
+     ]
+    },
+    {
+     "h": "Level 14: Veterans All",
+     "p": [
+      {
+       "t": "Allies in your Rallying Aura can use the mastery properties of the kinds of weapons you chose for your Weapon Mastery feature, as long as they're proficient with the weapon."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "captain",
+   "name": "Line Captain",
+   "tagline": "Hold the line, and let them break against you.",
+   "intro": "Line Captains are the officers who lead from the front rank: colonels who never learned to stay behind, and veterans who know that the enemy hits whoever looks most dangerous. They draw attacks onto themselves and make sure every blow aimed at their allies has to get past them first.",
+   "feats": [
+    {
+     "h": "Level 3: Draw Their Eye",
+     "p": [
+      {
+       "t": "When you use a Battle Cry, you can also challenge one enemy you can see in your Rallying Aura. It must succeed on a Wisdom saving throw against your Battle Cry DC or have Disadvantage on attack rolls against creatures other than you until the start of your next turn."
+      }
+     ]
+    },
+    {
+     "h": "Level 3: Hold Position",
+     "p": [
+      {
+       "t": "You and allies in your Rallying Aura have Advantage on saving throws and ability checks made to avoid being moved against their will or given the Prone condition."
+      }
+     ]
+    },
+    {
+     "h": "Level 6: Answer the Blow",
+     "p": [
+      {
+       "t": "When you use Shield the Line, you can also make one melee attack with a weapon against the attacker, as part of the same Reaction, if it's within your reach."
+      }
+     ]
+    },
+    {
+     "h": "Level 10: Bulwark",
+     "p": [
+      {
+       "t": "Shield the Line now works for any ally in your Rallying Aura, not only allies within 5 feet of you. When you use it on an ally who isn't within 5 feet of you, you can first move up to half your Speed toward that ally without provoking Opportunity Attacks."
+      }
+     ]
+    },
+    {
+     "h": "Level 14: The Line Holds",
+     "p": [
+      {
+       "t": "While your standard is planted and you're within 10 feet of it, you have Resistance to the first Bludgeoning, Piercing, or Slashing damage you take each round, and enemies treat the area of your Rallying Aura as Difficult Terrain."
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "lore": {
+  "h": "Lore: Warcallers in the Crater",
+  "note": "DMs running another world can skip this section.",
+  "p": [
+   {
+    "t": "On the rim, Warcallers are everywhere and belong to everyone. The Collective hires them to keep order at the descent gates. Guilds pay them to lead expeditions. Rescue crews follow them down when a team stops sending signals."
+   },
+   {
+    "t": "Delvers have a saying: \"a planted banner is a way back.\" A Warcaller's standard tied to a ledge marks a camp that held, and a route that someone climbed out alive. Some of the oldest standards still hang far below the rim, faded and unclaimed, and finding one is both a good omen and a warning."
+   },
+   {
+    "l": "Story hook.",
+    "t": "A recruit you trained went down with a crew that never came back. Last week, someone on the rim saw your old company's sign on a banner rising from the Crater's light."
+   }
+  ]
+ },
+ "legal": [
+  "Warcaller © 2026 Wildbloom Studio. Compatible with fifth edition. Wildbloom Studio's original content in this class is licensed under the Creative Commons Attribution 4.0 International License (CC-BY-4.0).",
+  "This work includes material from the System Reference Document 5.2.1 (\"SRD 5.2.1\") by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode."
+ ],
+ "playtest": {
+  "text": "This class is a playtest version and may change. Send feedback to Wildbloom Studio at [contact link].",
+  "version": "Version 0.2"
+ },
+ "changelog": [
+  {
+   "v": "v0.2",
+   "items": [
+    "Hold Fast!: allies gain Temporary Hit Points equal to the Rally Die roll; only you add your Charisma modifier.",
+    "Shield the Line: reduces damage by one roll of the Rally Die (no longer adds your Constitution modifier).",
+    "Commanding Cry: once per Short or Long Rest.",
+    "Unbroken: once per Long Rest; it can no longer be renewed by expending Battle Cries.",
+    "The Line Holds (Line Captain): Resistance applies only to the first Bludgeoning, Piercing, or Slashing damage you take each round.",
+    "Reason: simulated adventuring days showed Warcaller parties surviving far more often than Paladin or Fighter parties against hard encounters."
+   ]
+  },
+  {
+   "v": "v0.1",
+   "items": [
+    "First playtest release: core class, nine Battle Cries, Drillmaster and Line Captain subclasses."
+   ]
+  }
+ ]
+}

@@ -1,0 +1,16 @@
+---
+import { splitHeading, type Feat } from '../lib/classPage';
+interface Props { feat: Feat; level?: 3 | 4 }
+const { feat, level = 3 } = Astro.props;
+const { level: lvl, name } = splitHeading(feat.h);
+const H = `h${level}` as 'h3' | 'h4';
+---
+<section class="ws-feature">
+  <header class="ws-feature__head">
+    <H class="sub-heading ws-feature__name">{name}</H>
+    {lvl && <span class="ws-badge ws-badge--level label">{lvl}</span>}
+  </header>
+  {feat.p.map((p) => (
+    <p class="rules-text">{p.l && <b>{p.l} </b>}{p.t}</p>
+  ))}
+</section>

@@ -1,0 +1,124 @@
+---
+import Base from '../layouts/Base.astro';
+import { url, PATREON } from '../lib/url';
+---
+<Base title="Wildbloom Studio" current="home">
+<main>
+<div class="wrap">
+<section class="hero" aria-labelledby="home-title">
+<div>
+<p class="ws-kicker label">Independent tabletop RPG studio</p>
+<h1 id="home-title" class="page-title">Wildbloom Studio</h1>
+<p class="body lede">Free D&amp;D 5e homebrew, a bottomless world to drop into any campaign, and a game of our own, all made for players and GMs.</p>
+<div class="ws-btn-row">
+<a class="ws-btn control" href={url("#projects")}>See our projects</a>
+<a class="ws-btn ws-btn--secondary control" href={PATREON} target="_blank" rel="noopener">Support the studio</a>
+</div>
+</div>
+<div class="frame-art ws-corners" role="img" aria-label="Placeholder for hero artwork">
+<img src={url('seal-dark.svg')} alt="">
+<p class="frame-art__cap caption">[HERO ARTWORK]</p>
+</div>
+</section>
+</div>
+
+<section id="projects" class="section section--sunken" aria-labelledby="projects-title">
+<div class="wrap">
+<div class="sec-head">
+<div>
+<p class="ws-kicker label">What we are growing</p>
+<h2 id="projects-title" class="chapter-heading ws-h">Projects</h2>
+</div>
+<p class="rules-text muted">Two projects are building now. One is still underground.</p>
+</div>
+<div class="ws-cards">
+<article class="ws-card">
+<div class="ws-card__art" aria-hidden="true"><img class="ws-logo ws-logo--fixed" src={url('seal-dark.svg')} alt=""></div>
+<div class="ws-card__body">
+<div><span class="ws-badge ws-badge--building label">Building now</span></div>
+<h3 class="ws-card__title section-heading">The Crater</h3>
+<p class="ws-card__desc rules-text">A D&amp;D 5e setting. A bottomless, unexplored world you can drop into any campaign.</p>
+<ul class="ws-tags"><li class="ws-tag label">5e setting</li><li class="ws-tag label">13 layers</li></ul>
+<div class="ws-card__foot"><a class="ws-btn ws-btn--sm control" href={url('crater/')}>Read the Crater</a></div>
+</div>
+</article>
+<article class="ws-card">
+<div class="ws-card__art" aria-hidden="true"><span class="ws-orn ws-orn--bloom ws-orn--lg" style="color: var(--band-gold)"></span></div>
+<div class="ws-card__body">
+<div><span class="ws-badge ws-badge--building label">Building now</span></div>
+<h3 class="ws-card__title section-heading">D&amp;D Homebrew Classes</h3>
+<p class="ws-card__desc rules-text">New classes for D&amp;D 5e (2024). Free classes built to feel official.</p>
+<ul class="ws-tags"><li class="ws-tag label">5e classes</li><li class="ws-tag label">2024 rules</li></ul>
+<div class="ws-card__foot"><a class="ws-btn ws-btn--sm control" href={url('classes/')}>Browse the classes</a></div>
+</div>
+</article>
+<article class="ws-card ws-card--soon" aria-disabled="true">
+<div class="ws-card__art" aria-hidden="true"><img class="ws-logo ws-logo--light" src={url('seal-light.svg')} alt="" style="opacity: 0.55"><img class="ws-logo ws-logo--dark" src={url('seal-dark.svg')} alt="" style="opacity: 0.55"></div>
+<div class="ws-card__body">
+<div style="display: flex; flex-wrap: wrap; gap: 8px"><span class="ws-badge ws-badge--dev label">In development</span><span class="ws-badge ws-badge--soon label">Coming soon</span></div>
+<h3 class="ws-card__title section-heading">Hellebore</h3>
+<p class="ws-card__desc rules-text ws-muted">The studio’s own TTRPG. [ONE-LINE TEASER.]</p>
+<ul class="ws-tags"><li class="ws-tag label">Original system</li></ul>
+<div class="ws-card__foot"><button class="ws-btn ws-btn--sm control" type="button" disabled="">Coming soon</button></div>
+</div>
+</article>
+</div>
+</div>
+</section>
+
+<section id="releases" class="section" aria-labelledby="releases-title">
+<div class="wrap">
+<div class="sec-head">
+<div>
+<p class="ws-kicker label">Freshly bloomed</p>
+<h2 id="releases-title" class="chapter-heading ws-h">Latest Releases</h2>
+</div>
+<a class="ws-link ws-link--arrow rules-text" href={PATREON} target="_blank" rel="noopener">Follow progress on Patreon</a>
+</div>
+<ul class="releases">
+<li>
+<p class="meta label" style="margin: 0"><span class="ws-orn ws-orn--leaf ws-orn--gold"></span>New class</p>
+<h3 class="sub-heading">Warcaller</h3>
+<p class="rules-text" style="margin: 0">Battle cries and a raised banner that push allies to fight harder.</p>
+<p class="caption muted" style="margin: 0">Oct 9, 2026 · <span class="ws-badge ws-badge--dev ws-badge--plain label">Playtest</span></p>
+<a class="ws-link ws-link--arrow rules-text" href={url('classes/warcaller/')}>Read the class</a>
+</li>
+<li>
+<p class="meta label" style="margin: 0"><span class="ws-orn ws-orn--leaf ws-orn--gold"></span>New layer</p>
+<h3 class="sub-heading">Layer [N]: [LAYER NAME]</h3>
+<p class="rules-text" style="margin: 0">[ONE-LINE SUMMARY OF THE RELEASE.]</p>
+<p class="caption muted" style="margin: 0">[DATE] · The Crater</p>
+<a class="ws-link ws-link--arrow rules-text" href={url('crater/')}>Descend to the layer</a>
+</li>
+<li>
+<p class="meta label" style="margin: 0"><span class="ws-orn ws-orn--leaf ws-orn--gold"></span>Lore update</p>
+<h3 class="sub-heading">[LORE UPDATE TITLE]</h3>
+<p class="rules-text" style="margin: 0">[ONE-LINE SUMMARY OF THE RELEASE.]</p>
+<p class="caption muted" style="margin: 0">[DATE] · The Crater</p>
+<a class="ws-link ws-link--arrow rules-text" href={url('crater/')}>Read the update</a>
+</li>
+</ul>
+</div>
+</section>
+
+<div class="ws-cq">
+<section class="ws-band" aria-labelledby="support-title">
+<img class="ws-band__logo" src={url('seal-dark.svg')} alt="">
+<div class="ws-band__inner">
+<p class="ws-band__kicker label">Support the studio</p>
+<h2 id="support-title" class="ws-band__title chapter-heading">Tend the Garden With Us</h2>
+<p class="ws-band__copy body">Wildbloom is independent. Patrons fund every layer, class and page of Hellebore. Here is what you get:</p>
+<ul class="ws-bullets perks body">
+<li>[PERK 1: e.g. early access to new classes and layers]</li>
+<li>[PERK 2: e.g. playtest drafts and a say in what comes next]</li>
+<li>[PERK 3: e.g. your name in the credits]</li>
+</ul>
+<div class="ws-btn-row">
+<a class="ws-btn control" href={PATREON} target="_blank" rel="noopener">Become a patron</a>
+<a class="ws-btn ws-btn--secondary control" href={url('about/')}>Meet the studio</a>
+</div>
+</div>
+</section>
+</div>
+</main>
+</Base>

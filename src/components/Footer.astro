@@ -1,0 +1,46 @@
+---
+import { url, PATREON } from '../lib/url';
+---
+<div class="ws-cq" style="font-family: var(--font-body); color: var(--ink)">
+  <footer class="ws-footer">
+    <div class="ws-divider ws-divider--vine" role="separator"><span class="ws-divider__mark"></span></div>
+    <div class="ws-footer__grid">
+      <div>
+        <p class="ws-footer__brand">
+          <img class="ws-logo ws-logo--light" src={url('seal-light.svg')} alt="" />
+          <img class="ws-logo ws-logo--dark" src={url('seal-dark.svg')} alt="" />
+          Wildbloom Studio
+        </p>
+        <p class="rules-text ws-prose" style="margin: 0 0 8px">
+          An independent tabletop RPG studio making D&amp;D 5e homebrew and its own game, Hellebore. Everything is made to be played, shared, and built on.
+        </p>
+        <p class="caption ws-muted" style="margin: 0">The Crater is inspired by Made in Abyss by Akihito Tsukushi.</p>
+      </div>
+      <nav aria-label="Projects">
+        <h3 class="label">Projects</h3>
+        <ul class="rules-text">
+          <li><a class="ws-link ws-link--quiet" href={url('crater/')}>The Crater</a></li>
+          <li><a class="ws-link ws-link--quiet" href={url('classes/')}>Classes</a></li>
+          <li><span class="ws-muted">Hellebore</span> <span class="ws-badge ws-badge--soon label">Coming soon</span></li>
+        </ul>
+      </nav>
+      <nav aria-label="Studio">
+        <h3 class="label">Studio</h3>
+        <ul class="rules-text">
+          <li><a class="ws-link ws-link--quiet" href={url('about/')}>About</a></li>
+          <li><a class="ws-link ws-link--quiet" href={url('#releases')}>Latest releases</a></li>
+          <li><a class="ws-link ws-link--quiet" href={PATREON} target="_blank" rel="noopener">Support us</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Follow the studio">
+        <h3 class="label">Follow</h3>
+        <ul class="rules-text">
+          <li><a class="ws-link ws-link--quiet" href="https://www.instagram.com/" target="_blank" rel="noopener">Instagram</a></li>
+          <li><a class="ws-link ws-link--quiet" href="https://www.reddit.com/" target="_blank" rel="noopener">Reddit</a></li>
+          <li><a class="ws-link ws-link--quiet" href={PATREON} target="_blank" rel="noopener">Patreon</a></li>
+        </ul>
+      </nav>
+    </div>
+    <p class="caption ws-footer__legal">© 2026 Wildbloom Studio. Unofficial homebrew; not affiliated with or endorsed by Wizards of the Coast. Dungeons &amp; Dragons is a trademark of Wizards of the Coast LLC.</p>
+  </footer>
+</div>

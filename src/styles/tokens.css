@@ -1,0 +1,53 @@
+/* Wildbloom Studio tokens as CSS variables and type styles.
+   Values copied from the design system's tokens.json (ds/wildbloom-studio/tokens.json). Load before components/bundle.css. */
+:root,[data-theme="light"]{
+  --surface:#f5ecd8;--surface-raised:#fbf6e9;--surface-sunken:#ebdfc4;--surface-stat:#f8edd0;
+  --ink:#2a1c16;--ink-muted:#5a483c;
+  --accent:#6b2a4d;--accent-strong:#4c1b36;--on-accent:#fbf3e4;
+  --action:#6b2a4d;--action-hover:#4c1b36;--on-action:#fbf3e4;
+  --gold:#8f6d22;--gold-soft:#cdb078;
+  --sage:#566f52;--sage-text:#3b5538;--rose-wash:#efdce0;--sage-wash:#e3e8d1;
+  --focus:#3a1a8a;
+  --band:#3a1530;--on-band:#f7ecd8;--band-gold:#e0b655;--on-band-gold:#241803;
+  --status-building:#dcb55a;--on-status-building:#2a1c06;
+  --status-dev:#6f4562;--on-status-dev:#fbf3e4;
+  --status-released:#4f6b4b;--on-status-released:#fbf3e4;
+  --shadow-card:0 1px 2px rgba(42,28,22,0.2), 0 8px 16px -10px rgba(42,28,22,0.35);
+}
+[data-theme="dark"]{
+  --surface:#0e1612;--surface-raised:#16231b;--surface-sunken:#0a100d;--surface-stat:#1b2b21;
+  --ink:#f2e9d2;--ink-muted:#c3bba2;
+  --accent:#e3a6c1;--accent-strong:#f3c8da;--on-accent:#1a0d15;
+  --action:#e0b655;--action-hover:#f0cb74;--on-action:#1a1305;
+  --gold:#e0b655;--gold-soft:#6e5a2a;
+  --sage:#9cbd95;--sage-text:#a9c8a2;--rose-wash:#2a1823;--sage-wash:#16281d;
+  --focus:#f6d98a;
+  --band:#1a0f18;--on-band:#f2e9d2;--band-gold:#e0b655;--on-band-gold:#1a1305;
+  --status-building:#e0b655;--on-status-building:#1a1305;
+  --status-dev:#c99bb6;--on-status-dev:#1d0f19;
+  --status-released:#9cbd95;--on-status-released:#0f1d0e;
+  --shadow-card:0 0 0 1px rgba(224,182,85,0.28), 0 0 24px rgba(224,182,85,0.14);
+}
+:root{
+  --font-display:"Cormorant SC","Cormorant Garamond",Georgia,serif;
+  --font-body:"Crimson Pro",Georgia,"Times New Roman",serif;
+  --font-ui:"Alegreya Sans","Gill Sans","Trebuchet MS",sans-serif;
+  --font-uisc:"Alegreya Sans SC","Alegreya Sans","Gill Sans",sans-serif;
+  --space-half:4px;--space-1:8px;--space-2:16px;--space-3:24px;--space-4:32px;--space-5:40px;
+  --space-6:48px;--space-8:64px;--space-10:80px;--space-12:96px;
+  --radius-none:0;--radius-sm:2px;--radius-md:4px;--radius-lg:8px;
+  --border-hairline:1px;--border-rule:2px;--border-heavy:4px;
+  --measure-text:68ch;--page-max:1120px;--column-gap:40px;
+}
+.page-title{font-family:var(--font-display);font-size:48px;line-height:52px;font-weight:700;letter-spacing:.02em}
+.chapter-heading{font-family:var(--font-display);font-size:36px;line-height:42px;font-weight:700;letter-spacing:.02em}
+.section-heading{font-family:var(--font-display);font-size:26px;line-height:32px;font-weight:600;letter-spacing:.03em}
+.sub-heading{font-family:var(--font-display);font-size:20px;line-height:26px;font-weight:700;letter-spacing:.03em}
+.body{font-family:var(--font-body);font-size:18px;line-height:28px;font-weight:400}
+.rules-text{font-family:var(--font-body);font-size:17px;line-height:26px;font-weight:400}
+.lore-text{font-family:var(--font-body);font-size:18px;line-height:28px;font-weight:400;font-style:italic}
+.table-text{font-family:var(--font-ui);font-size:15px;line-height:22px;font-weight:400}
+.caption{font-family:var(--font-ui);font-size:14px;line-height:20px;font-weight:400;font-style:italic}
+.table-head{font-family:var(--font-uisc);font-size:14px;line-height:18px;font-weight:700;letter-spacing:.06em}
+.label{font-family:var(--font-uisc);font-size:13px;line-height:16px;font-weight:700;letter-spacing:.08em}
+.control{font-family:var(--font-uisc);font-size:15px;line-height:16px;font-weight:700;letter-spacing:.06em}
