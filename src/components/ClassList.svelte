@@ -70,6 +70,7 @@
             <div class="ws-card__foot">
               {#if k.status !== 'Coming soon'}
                 <a class="ws-btn ws-btn--sm control" href={`${base}/classes/${k.slug}/`}>Read the class</a>
+                {#if k.simulator}<a class="ws-btn ws-btn--secondary ws-btn--sm control" href={`${base}/simulator/?class=${k.slug}`}>Simulate</a>{/if}
               {:else}
                 <button class="ws-btn ws-btn--sm control" type="button" disabled>Coming soon</button>
               {/if}

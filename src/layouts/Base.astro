@@ -8,7 +8,7 @@ import '../styles/site.css';
 interface Props {
   title: string;
   description?: string;
-  current?: 'home' | 'projects' | 'crater' | 'classes' | 'about';
+  current?: 'home' | 'projects' | 'crater' | 'classes' | 'simulator' | 'about';
   theme?: 'light' | 'dark';
 }
 const { title, description = 'Wildbloom Studio makes free D&D 5e homebrew, the Crater, and the TTRPG Hellebore.', current, theme = 'light' } = Astro.props;
@@ -28,6 +28,7 @@ import { url } from '../lib/url';
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC:wght@500;700&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Cormorant+SC:wght@500;600;700&family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap"
     />
+    <slot name="head" />
   </head>
   <body>
     <div class="site" data-theme={theme}>

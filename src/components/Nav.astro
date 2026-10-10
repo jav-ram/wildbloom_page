@@ -15,6 +15,7 @@ const mark = (k: string) => (current === k ? 'page' : undefined);
       <li><a class="control" href={url('#projects')} aria-current={mark('projects')}>Projects</a></li>
       <li><a class="control" href={url('crater/')} aria-current={mark('crater')}>The Crater</a></li>
       <li><a class="control" href={url('classes/')} aria-current={mark('classes')}>Classes</a></li>
+      <li><a class="control" href={url('simulator/')} aria-current={mark('simulator')}>Simulator</a></li>
       <li><a class="control" href={url('about/')} aria-current={mark('about')}>About</a></li>
     </ul>
     <a class="ws-btn ws-btn--sm control" href={PATREON} target="_blank" rel="noopener">Support us</a>

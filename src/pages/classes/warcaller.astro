@@ -32,7 +32,8 @@ const version = d.playtest.version.replace('Version ', '');
       </div>
       <div class="class-head__side">
         <span class="ws-badge ws-badge--dev label">Playtest</span>
-        <a class="ws-btn control" href="#changelog">Playtest notes</a>
+        <a class="ws-btn control" href={url('simulator/?class=warcaller')}>Compare in Simulator</a>
+        <a class="ws-btn ws-btn--secondary ws-btn--sm control" href="#changelog">Playtest notes</a>
         <p class="caption muted" style="margin: 0">Version {version}</p>
       </div>
     </header>

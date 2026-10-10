@@ -1,0 +1,53 @@
+{
+  "schema": "wildbloom-class/1",
+  "id": "newClass",
+  "name": "New Class",
+  "version": "0.1",
+  "role": "front",
+  "core": {
+    "hitDie": 10,
+    "saves": ["str", "con"],
+    "ac": { "1": 16, "5": 18 },
+    "acNote": "What armor this assumes",
+    "builds": {
+      "standard": {
+        "label": "Standard build",
+        "scores": { "str": 16, "dex": 12, "con": 14, "int": 10, "wis": 12, "cha": 10 },
+        "asi": { "4": { "str": 2 }, "8": { "con": 2 }, "12": { "con": 2 }, "16": { "wis": 2 }, "19": { "str": 2 } }
+      }
+    },
+    "weapon": { "name": "Longsword", "damage": "1d8", "ability": "str", "mastery": "sap" },
+    "attacks": { "1": 1, "5": 2 },
+    "saveDC": "8+pb+str",
+    "subclassLevel": 3
+  },
+  "scales": {
+    "powerDie": { "1": "d6", "5": "d8", "11": "d10", "17": "d12" },
+    "auraSize": { "1": 10, "18": 30 },
+    "techniquesKnown": { "1": 2, "7": 3, "15": 4 }
+  },
+  "resources": {
+    "focus": { "label": "Focus", "max": "pb", "shortRest": "all", "longRest": "all" }
+  },
+  "aura": { "size": "auraSize" },
+  "features": [
+    { "id": "techniques", "name": "Techniques", "level": 1, "when": "bonusAction", "cost": "focus",
+      "choose": { "from": "techniques", "known": "techniquesKnown", "count": 1 } },
+    { "id": "guard", "name": "Guard", "level": 2, "when": "reaction", "trigger": "allyHit", "range": "adjacent",
+      "effects": [{ "type": "reduceDamage", "amount": "powerDie+con", "min": 1 }] }
+  ],
+  "options": {
+    "techniques": [
+      { "id": "rally", "name": "Rally", "level": 1, "pick": 1,
+        "effects": [{ "type": "tempHp", "targets": "selfAndAura", "amount": "powerDie" }] },
+      { "id": "press", "name": "Press the Attack", "level": 1, "pick": 2,
+        "effects": [{ "type": "bonusDamage", "targets": "selfAndAura", "amount": "powerDie", "oncePerTurn": true }] }
+    ]
+  },
+  "subclasses": [
+    { "id": "pathOne", "name": "Path One", "features": [
+      { "id": "pathFeature", "name": "Path Feature", "level": 3, "when": "passive",
+        "effects": [{ "type": "acBonus", "targets": "self", "amount": 1 }] }
+    ] }
+  ]
+}

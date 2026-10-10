@@ -8,6 +8,8 @@ export interface ClassEntry {
   hitDie: string;
   roles: string[];
   status: ClassStatus;
+  /** True when src/data/class-json/<slug>.class.json exists, enabling the Simulator link. */
+  simulator?: boolean;
 }
 
 // Add a class here (and a page under src/pages/classes/) to list it on the index.
@@ -20,5 +22,6 @@ export const classes: ClassEntry[] = [
     hitDie: 'D10',
     roles: ['Support'],
     status: 'Playtest',
+    simulator: true,
   },
 ];

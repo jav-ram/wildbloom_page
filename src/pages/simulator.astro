@@ -1,0 +1,114 @@
+---
+import Base from '../layouts/Base.astro';
+import '../styles/proving-ground.css';
+---
+<Base title="Simulator — Wildbloom Studio" current="simulator" description="Compare a Wildbloom class against a Paladin and a Fighter over full simulated adventuring days.">
+  <link slot="head" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" />
+  <main class="pg">
+<div class="pgwrap">
+<header class="mast">
+  <div class="eyebrow">Wildbloom Studio · Class playtest</div>
+  <h1 class="pg-title"><span class="pennant" aria-hidden="true"></span>Proving Ground</h1>
+  <p class="classline" id="classLine"></p>
+  <p class="pglede">Load a class from its JSON skeleton, run it through full adventuring days with a Fighter, Rogue and Cleric, then put a Paladin and a Fighter in the same seat and compare all three. Every number is an average over hundreds of simulated days.</p>
+</header>
+<div class="layout">
+<aside class="orders" aria-label="Simulation settings">
+  <fieldset>
+    <legend>Under test</legend>
+    <label class="row"><span class="lab">Level <b id="lvlOut">5</b></span><input type="range" id="lvl" min="1" max="20" value="5"></label>
+    <div class="row"><span class="lab">Subclass <b id="subNote"></b></span>
+      <div class="seg" id="subSeg"></div></div>
+    <label class="row"><span class="lab">Ability build</span>
+      <select id="build"></select></label>
+    <div class="row" id="optRow"><span class="lab"><span id="optLab">Options known</span> <b id="cryCount"></b></span><div class="cries" id="cries"></div>
+      <p class="hint" id="cryHint">Picked automatically. Tick your own to override.</p></div>
+  </fieldset>
+  <fieldset>
+    <legend>Encounter</legend>
+    <div class="seg"><label><input type="radio" name="encMode" value="auto" checked>By budget</label><label><input type="radio" name="encMode" value="pick">Pick monster</label></div>
+    <label class="row" id="diffRow"><span class="lab">Difficulty (2024 XP budget)</span><select id="diff"><option value="low">Low</option><option value="moderate" selected>Moderate</option><option value="high">High</option></select></label>
+    <div class="row" id="pickRow" hidden><span class="lab">Monster and count</span>
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) 70px;gap:8px"><select id="mon"></select><input type="number" id="monCount" min="1" max="12" value="3" aria-label="Number of monsters"></div></div>
+    <div class="encline" id="encLine"></div>
+  </fieldset>
+  <fieldset>
+    <legend>Adventuring day</legend>
+    <div class="row"><span class="lab">Fights per long rest</span>
+      <div class="seg"><label><input type="radio" name="fights" value="1">1</label><label><input type="radio" name="fights" value="2">2</label><label><input type="radio" name="fights" value="3" checked>3</label><label><input type="radio" name="fights" value="4">4</label></div></div>
+    <label class="check"><input type="checkbox" id="sr" checked> Short rest halfway through the day</label>
+  </fieldset>
+  <fieldset>
+    <legend>Battlefield</legend>
+    <label class="row"><span class="lab">Allies inside a 15 ft aura <b id="tightOut"></b></span><input type="range" id="tight" min="30" max="100" value="80"></label>
+    <label class="row"><span class="lab">Allies within 5 ft of you <b id="adjOut"></b></span><input type="range" id="adj" min="0" max="70" value="40"></label>
+    <label class="row"><span class="lab"><span id="bannerLab">Enemy attacks aimed at the anchor</span> <b id="bannerOut"></b></span><input type="range" id="banner" min="0" max="30" value="0"></label>
+    <p class="hint">Bigger auras scale the first slider up. Reactions with "adjacent" range need the second.</p>
+  </fieldset>
+  <fieldset>
+    <legend>Run</legend>
+    <label class="row"><span class="lab">Days per side</span><select id="runs"><option value="400">400 · quick</option><option value="1200" selected>1,200</option><option value="3000">3,000 · steady</option></select></label>
+    <div class="btns"><button id="go">Run the day</button><button id="sweepBtn" class="ghost">Run level sweep 1–20</button></div>
+    <span class="status" id="status" role="status"></span>
+  </fieldset>
+</aside>
+<div class="report">
+  <section class="panel verdict" id="verdict" aria-live="polite"></section>
+  <section class="panel">
+    <h2>Party outcomes</h2>
+    <div class="tablewrap"><table id="metrics"></table></div>
+  </section>
+  <section class="panel">
+    <div class="headrow"><h2>What the seat contributes</h2><span class="status">per combat round</span></div>
+    <div class="bars" id="bars"></div>
+    <div class="legend"><span><i style="background:var(--dealt)"></i>Damage dealt, incl. buffs to allies' hits</span><span><i style="background:var(--prevent)"></i>Damage prevented</span><span><i style="background:var(--heal)"></i>Healing</span></div>
+    <div class="twocol" id="feats"></div>
+  </section>
+  <section class="panel">
+    <div class="headrow"><h2>Level sweep</h2><span class="status" id="sweepStatus"></span></div>
+    <p class="hint" id="sweepNote">Every level from 1 to 20 with the budget encounter, automatically picked options and your current subclass, build and battlefield settings.</p>
+    <div class="charts" id="sweep"></div>
+  </section>
+  <section class="panel">
+    <div class="headrow"><h2>One day in the field</h2><button class="ghost" id="reroll" style="padding:6px 10px;font-size:13px">Roll another day</button></div>
+    <p class="hint" id="logHint">A single day with these settings. Blue lines are the class under test; red lines are knockdowns.</p>
+    <div class="log" id="log"></div>
+  </section>
+  <section class="panel" id="classPanel">
+    <div class="headrow"><h2>Class JSON</h2><span class="status" id="jsonStatus"></span></div>
+    <p class="hint">Every class is one JSON file in the <code>wildbloom-class/1</code> skeleton. Edit it here and press Load class; the simulator re-runs with it. Your last loaded class is kept in this browser.</p>
+    <div class="jsonbar">
+      <label class="row" style="min-width:180px"><span class="lab">Start from</span><select id="preset"><option value="warcaller">Warcaller v0.2</option><option value="template">Blank template</option></select></label>
+      <button type="button" class="ghost" id="usePreset">Open in editor</button>
+      <button type="button" id="loadJson">Load class</button>
+      <button type="button" class="ghost" id="copyJson">Copy JSON</button>
+    </div>
+    <ul class="errs" id="jsonErrs" hidden></ul>
+    <textarea id="json" spellcheck="false" aria-label="Class JSON" rows="22"></textarea>
+    <details>
+      <summary>Skeleton reference</summary>
+      <div id="ref" class="ref"></div>
+    </details>
+  </section>
+  <section class="panel">
+    <details>
+      <summary>How the simulator works</summary>
+      <ul>
+        <li>The party is the seat under test plus a Fighter (greatsword, Graze, Action Surge), a Rogue (Sneak Attack, Steady Aim half the time) and a Cleric (Toll the Dead, Spirit Guardians from level 5, Healing Word on anyone at 0 HP). Ability scores and armor follow common 2024 builds.</li>
+        <li>Positions are abstract. Each round, every ally is inside the aura with the chance set under Battlefield, scaled by aura size (a broken anchor shrinks it). Effects of type gatherAura pull everyone in for a round.</li>
+        <li>The class under test plants its anchor (if it has one) on round 1, uses bonus-action options greedily on the best expected value, and saves a fair share of each resource for later fights. Options that stop a knockdown or revive an ally can dip into that reserve.</li>
+        <li>Damage prevented is counted only when a feature changes an outcome: a hit that missed because of the +1 AC, an attack that missed only because of disadvantage, temp HP actually soaked, and so on.</li>
+        <li>Monster numbers come from SRD 5.1 stat blocks. Budget encounters use the 2024 XP budget for four characters and skip breath-weapon monsters; pick one by hand to test those. Legendary actions, spells, and terrain aren't modeled.</li>
+        <li>The Fighter seat is a second copy of the party Fighter: greatsword, Graze, Action Surge and Second Wind.</li>
+        <li>The Paladin uses Divine Smite once per turn (budgeted across the day, always on a crit), Lay on Hands on downed allies, Defense style, Aura of Protection and Radiant Strikes.</li>
+      </ul>
+    </details>
+  </section>
+</div>
+</div>
+</div>
+  </main>
+  <script>
+    import '../scripts/proving-ground.js';
+  </script>
+</Base>
