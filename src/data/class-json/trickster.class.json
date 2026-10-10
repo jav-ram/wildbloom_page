@@ -1,0 +1,626 @@
+{
+  "schema": "wildbloom-class/1",
+  "id": "trickster",
+  "name": "Trickster",
+  "version": "0.1",
+  "role": "mid",
+  "compare": [
+    "rogue",
+    "fighter"
+  ],
+  "core": {
+    "hitDie": 8,
+    "saves": [
+      "dex",
+      "int"
+    ],
+    "ac": {
+      "1": "11+dex",
+      "5": "12+dex"
+    },
+    "acNote": "Leather Armor, then Studded Leather Armor from level 5",
+    "builds": {
+      "quick": {
+        "label": "Quick build · DEX then INT",
+        "scores": {
+          "str": 8,
+          "dex": 16,
+          "con": 14,
+          "int": 16,
+          "wis": 12,
+          "cha": 10
+        },
+        "asi": {
+          "4": {
+            "dex": 2
+          },
+          "8": {
+            "int": 2
+          },
+          "12": {
+            "dex": 2
+          },
+          "16": {
+            "int": 2
+          },
+          "19": {
+            "con": 2
+          }
+        }
+      },
+      "sturdy": {
+        "label": "Sturdy build · DEX, CON 16, INT 14",
+        "scores": {
+          "str": 8,
+          "dex": 16,
+          "con": 16,
+          "int": 14,
+          "wis": 12,
+          "cha": 8
+        },
+        "asi": {
+          "4": {
+            "dex": 2
+          },
+          "8": {
+            "int": 2
+          },
+          "12": {
+            "dex": 2
+          },
+          "16": {
+            "int": 2
+          },
+          "19": {
+            "con": 2
+          }
+        }
+      }
+    },
+    "weapon": {
+      "name": "Shortsword",
+      "damage": "1d6",
+      "ability": "dex",
+      "mastery": "vex"
+    },
+    "attacks": {
+      "1": 1,
+      "5": 2
+    },
+    "saveDC": "8+int+pb",
+    "subclassLevel": 3
+  },
+  "scales": {
+    "gadgetsKnown": {
+      "1": 3,
+      "3": 4,
+      "7": 5,
+      "11": 6,
+      "15": 7,
+      "19": 8
+    },
+    "kitCapacity": {
+      "1": 4,
+      "3": 5,
+      "5": 6,
+      "7": 7,
+      "9": 8,
+      "11": 9,
+      "15": 10,
+      "19": 11
+    }
+  },
+  "resources": {
+    "gadgets": {
+      "label": "Gadgets",
+      "max": "kitCapacity",
+      "shortRest": {
+        "1": 0,
+        "2": "int"
+      },
+      "shortRestMin": 0,
+      "longRest": "all"
+    }
+  },
+  "features": [
+    {
+      "id": "gadgetKit",
+      "name": "Gadget Kit",
+      "level": 1,
+      "when": "action",
+      "cost": "gadgets",
+      "costPer": "option",
+      "choose": {
+        "from": "gadgets",
+        "known": "gadgetsKnown",
+        "count": 1,
+        "filter": {
+          "use": "action"
+        },
+        "label": "Gadgets"
+      }
+    },
+    {
+      "id": "quickGadget",
+      "name": "Gadget Kit (Bonus Action gadgets)",
+      "level": 1,
+      "when": "bonusAction",
+      "cost": "gadgets",
+      "costPer": "option",
+      "choose": {
+        "from": "gadgets",
+        "known": "gadgetsKnown",
+        "count": 1,
+        "filter": {
+          "use": "bonusAction"
+        },
+        "label": "Gadgets"
+      }
+    },
+    {
+      "id": "feint",
+      "name": "Feint",
+      "level": 1,
+      "when": "bonusAction",
+      "uses": {
+        "max": {
+          "1": "int",
+          "15": 99
+        },
+        "min": 1,
+        "shortRest": "all",
+        "longRest": "all"
+      },
+      "effects": [
+        {
+          "type": "expose",
+          "targets": "focusEnemy",
+          "count": {
+            "1": 1,
+            "9": 2
+          },
+          "attacks": {
+            "1": 1,
+            "20": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "sidestep",
+      "name": "Sidestep",
+      "level": 2,
+      "when": "reaction",
+      "trigger": "targeted",
+      "range": "self",
+      "uses": {
+        "max": "pb",
+        "longRest": "all"
+      },
+      "effects": [
+        {
+          "type": "imposeDisadvantage"
+        }
+      ]
+    },
+    {
+      "id": "fieldRepairs",
+      "name": "Field Repairs",
+      "level": 2,
+      "when": "passive",
+      "effects": [],
+      "note": "Modeled by the gadgets resource's shortRest value"
+    },
+    {
+      "id": "quickToss",
+      "name": "Quick Toss",
+      "level": 5,
+      "when": "passive",
+      "effects": [
+        {
+          "type": "replaceAttack",
+          "feature": "gadgetKit"
+        }
+      ]
+    },
+    {
+      "id": "readTheField",
+      "name": "Read the Field",
+      "level": 7,
+      "when": "passive",
+      "effects": [
+        {
+          "type": "initiativeBonus",
+          "targets": "self",
+          "amount": "int"
+        }
+      ]
+    },
+    {
+      "id": "doubleFeint",
+      "name": "Double Feint",
+      "level": 9,
+      "when": "passive",
+      "effects": [],
+      "note": "Modeled by Feint's count table"
+    },
+    {
+      "id": "twinToss",
+      "name": "Twin Toss",
+      "level": 11,
+      "when": "passive",
+      "uses": {
+        "max": 1,
+        "longRest": "all"
+      },
+      "effects": [
+        {
+          "type": "extraChoice",
+          "feature": "gadgetKit",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "nothingUpMySleeve",
+      "name": "Nothing Up My Sleeve",
+      "level": 13,
+      "when": "initiative",
+      "effects": [
+        {
+          "type": "gainResource",
+          "resource": "gadgets",
+          "amount": 1,
+          "ifEmpty": true
+        }
+      ]
+    },
+    {
+      "id": "endlessFeints",
+      "name": "Endless Feints",
+      "level": 15,
+      "when": "passive",
+      "effects": [],
+      "note": "Modeled by Feint's uses table"
+    },
+    {
+      "id": "grandDesign",
+      "name": "Grand Design",
+      "level": 17,
+      "when": "passive",
+      "uses": {
+        "max": "int",
+        "min": 1,
+        "longRest": "all"
+      },
+      "effects": [
+        {
+          "type": "saveReroll"
+        }
+      ]
+    },
+    {
+      "id": "coverForThem",
+      "name": "Cover for Them",
+      "level": 18,
+      "when": "modify",
+      "feature": "sidestep",
+      "effects": [
+        {
+          "type": "range",
+          "range": "allies"
+        }
+      ]
+    },
+    {
+      "id": "masterTrickster",
+      "name": "Master Trickster",
+      "level": 20,
+      "when": "initiative",
+      "effects": [
+        {
+          "type": "gainResource",
+          "resource": "gadgets",
+          "amount": 2
+        }
+      ]
+    }
+  ],
+  "options": {
+    "gadgets": [
+      {
+        "id": "weightedNet",
+        "name": "Weighted Net",
+        "level": 1,
+        "use": "action",
+        "pick": 1,
+        "effects": [
+          {
+            "type": "snare",
+            "targets": "enemy",
+            "save": "str",
+            "attackCheck": true,
+            "saveEnds": true,
+            "aiWeight": 0.6
+          }
+        ]
+      },
+      {
+        "id": "smokeBomb",
+        "name": "Smoke Bomb",
+        "level": 1,
+        "use": "action",
+        "pick": 2,
+        "effects": [
+          {
+            "type": "daze",
+            "targets": "enemiesArea",
+            "count": 2,
+            "save": "wis"
+          }
+        ]
+      },
+      {
+        "id": "flashPowder",
+        "name": "Flash Powder",
+        "level": 1,
+        "use": "bonusAction",
+        "pick": 3,
+        "effects": [
+          {
+            "type": "hinder",
+            "targets": "enemiesArea",
+            "count": 2,
+            "save": "con"
+          }
+        ]
+      },
+      {
+        "id": "chokingCloud",
+        "name": "Choking Cloud",
+        "level": 9,
+        "use": "action",
+        "pick": 4,
+        "effects": [
+          {
+            "type": "stun",
+            "targets": "enemiesArea",
+            "count": 2,
+            "save": "con"
+          }
+        ],
+        "cost": 2
+      },
+      {
+        "id": "staggerCharge",
+        "name": "Stagger Charge",
+        "level": 13,
+        "use": "action",
+        "pick": 5,
+        "effects": [
+          {
+            "type": "stun",
+            "targets": "enemy",
+            "save": "con",
+            "exposed": true
+          }
+        ],
+        "cost": 2
+      },
+      {
+        "id": "bola",
+        "name": "Bola",
+        "level": 5,
+        "use": "action",
+        "pick": 6,
+        "effects": [
+          {
+            "type": "expose",
+            "targets": "focusEnemy",
+            "save": "str",
+            "attacks": 99,
+            "until": "targetTurn"
+          }
+        ]
+      },
+      {
+        "id": "smellingSalts",
+        "name": "Smelling Salts",
+        "level": 1,
+        "use": "bonusAction",
+        "pick": 7,
+        "effects": [
+          {
+            "type": "revive",
+            "targets": "downedAlly"
+          }
+        ]
+      },
+      {
+        "id": "glimmerShard",
+        "name": "Glimmer Shard",
+        "level": 9,
+        "use": "bonusAction",
+        "pick": 8,
+        "effects": [
+          {
+            "type": "veil",
+            "targets": "allyAtRisk",
+            "once": true
+          }
+        ]
+      },
+      {
+        "id": "tripwireLine",
+        "name": "Tripwire Line",
+        "level": 3,
+        "use": "bonusAction",
+        "pick": 9,
+        "effects": [],
+        "note": "Positional; not simulated"
+      },
+      {
+        "id": "caltropsPouch",
+        "name": "Caltrops Pouch",
+        "level": 1,
+        "use": "bonusAction",
+        "pick": 10,
+        "effects": [],
+        "note": "Positional; not simulated"
+      },
+      {
+        "id": "grapnelLine",
+        "name": "Grapnel Line",
+        "level": 1,
+        "use": "action",
+        "pick": 11,
+        "effects": [],
+        "note": "Exploration; not simulated"
+      }
+    ]
+  },
+  "subclasses": [
+    {
+      "id": "snaremaster",
+      "name": "Snaremaster",
+      "features": [
+        {
+          "id": "heavyWeave",
+          "name": "Heavy Weave",
+          "level": 3,
+          "when": "passive",
+          "effects": [
+            {
+              "type": "knowOption",
+              "option": "weightedNet"
+            },
+            {
+              "type": "snareUpgrade",
+              "exposed": true
+            }
+          ]
+        },
+        {
+          "id": "spareNets",
+          "name": "Spare Nets",
+          "level": 3,
+          "when": "longRest",
+          "effects": [
+            {
+              "type": "gainResource",
+              "resource": "gadgets",
+              "amount": 1
+            }
+          ]
+        },
+        {
+          "id": "weightedEdges",
+          "name": "Weighted Edges",
+          "level": 6,
+          "when": "passive",
+          "effects": [
+            {
+              "type": "snaredBonusDamage",
+              "amount": "1d6"
+            }
+          ]
+        },
+        {
+          "id": "tangledReactions",
+          "name": "Tangled Reactions",
+          "level": 10,
+          "when": "passive",
+          "effects": [
+            {
+              "type": "snareUpgrade",
+              "proneOnFail": true
+            }
+          ]
+        },
+        {
+          "id": "netVolley",
+          "name": "Net Volley",
+          "level": 14,
+          "when": "passive",
+          "effects": [
+            {
+              "type": "snareUpgrade",
+              "targets2": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "smokewright",
+      "name": "Smokewright",
+      "features": [
+        {
+          "id": "smokeskin",
+          "name": "Smokeskin",
+          "level": 3,
+          "when": "modify",
+          "option": "smokeBomb",
+          "effects": [
+            {
+              "type": "area",
+              "amount": 1
+            }
+          ]
+        },
+        {
+          "id": "vanish",
+          "name": "Vanish",
+          "level": 3,
+          "when": "modify",
+          "option": "smokeBomb",
+          "effects": [
+            {
+              "type": "veil",
+              "targets": "self"
+            }
+          ]
+        },
+        {
+          "id": "lingeringSmoke",
+          "name": "Lingering Smoke",
+          "level": 6,
+          "when": "modify",
+          "option": "smokeBomb",
+          "effects": [
+            {
+              "type": "linger",
+              "single": true
+            }
+          ]
+        },
+        {
+          "id": "shadowDouble",
+          "name": "Shadow Double",
+          "level": 10,
+          "when": "modify",
+          "feature": "sidestep",
+          "effects": [
+            {
+              "type": "negate"
+            }
+          ]
+        },
+        {
+          "id": "ghostLine",
+          "name": "Ghost Line",
+          "level": 14,
+          "when": "modify",
+          "option": "smokeBomb",
+          "effects": [
+            {
+              "type": "veil",
+              "targets": "allies",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

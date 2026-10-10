@@ -1,6 +1,15 @@
-/** Shapes of the structured class data (see src/data/warcaller.json). */
+/** Shapes of the structured class data (see src/data/warcaller.json and trickster.json). */
 export interface Para { t: string; l?: string }
 export interface Feat { h: string; p: Para[] }
+/** The class's pickable-options chapter (Battle Cries, Gadgets), built by each class page from its data. */
+export interface OptionsSection {
+  id: string;
+  title: string;
+  intro: string;
+  head: string[];
+  rows: string[][];
+  items: { n: string; v?: string; t: string; more?: string[] }[];
+}
 export interface ClassData {
   tagline: string;
   flavor: string[];
@@ -12,9 +21,6 @@ export interface ClassData {
   tableHead: string[];
   table: string[][];
   feats: Feat[];
-  criesIntro: string;
-  cryTable: string[][];
-  cries: { n: string; v?: string; t: string }[];
   subs: { id: string; name: string; tagline: string; intro: string; feats: Feat[] }[];
   lore: { h: string; note: string; p: Para[] };
   legal: string[];

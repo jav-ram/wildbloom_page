@@ -1,0 +1,16 @@
+---
+import ClassPage from '../../components/ClassPage.astro';
+import type { ClassData } from '../../lib/classPage';
+import raw from '../../data/trickster.json';
+
+const d = raw as unknown as ClassData & { gadgetsIntro: string; gadgetTable: string[][]; gadgets: { n: string; v?: string; t: string; more?: string[] }[] };
+const options = {
+  id: 'gadgets',
+  title: 'Gadgets',
+  intro: d.gadgetsIntro,
+  head: ['Gadget', 'Level', 'Use', 'Effect in short'],
+  rows: d.gadgetTable,
+  items: d.gadgets,
+};
+---
+<ClassPage d={d} name="Trickster" slug="trickster" simulator options={options} />

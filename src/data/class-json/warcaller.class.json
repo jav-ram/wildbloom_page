@@ -4,119 +4,552 @@
   "name": "Warcaller",
   "version": "0.2",
   "role": "front",
+  "compare": [
+    "paladin",
+    "fighter"
+  ],
   "core": {
     "hitDie": 10,
-    "saves": ["con", "cha"],
-    "ac": { "1": 18, "5": 20 },
+    "saves": [
+      "con",
+      "cha"
+    ],
+    "ac": {
+      "1": 18,
+      "5": 20
+    },
     "acNote": "Chain Mail and Shield, then Plate and Shield from level 5",
     "builds": {
       "quick": {
         "label": "Quick build · CON then CHA, STR 14",
-        "scores": { "str": 14, "dex": 10, "con": 16, "int": 10, "wis": 12, "cha": 16 },
-        "asi": { "4": { "cha": 2 }, "8": { "con": 2 }, "12": { "cha": 2 }, "16": { "con": 2 }, "19": { "str": 2 } }
+        "scores": {
+          "str": 14,
+          "dex": 10,
+          "con": 16,
+          "int": 10,
+          "wis": 12,
+          "cha": 16
+        },
+        "asi": {
+          "4": {
+            "cha": 2
+          },
+          "8": {
+            "con": 2
+          },
+          "12": {
+            "cha": 2
+          },
+          "16": {
+            "con": 2
+          },
+          "19": {
+            "str": 2
+          }
+        }
       },
       "striker": {
         "label": "Strength build · STR and CHA, CON 14",
-        "scores": { "str": 16, "dex": 10, "con": 14, "int": 10, "wis": 12, "cha": 16 },
-        "asi": { "4": { "str": 2 }, "8": { "cha": 2 }, "12": { "str": 2 }, "16": { "cha": 2 }, "19": { "con": 2 } }
+        "scores": {
+          "str": 16,
+          "dex": 10,
+          "con": 14,
+          "int": 10,
+          "wis": 12,
+          "cha": 16
+        },
+        "asi": {
+          "4": {
+            "str": 2
+          },
+          "8": {
+            "cha": 2
+          },
+          "12": {
+            "str": 2
+          },
+          "16": {
+            "cha": 2
+          },
+          "19": {
+            "con": 2
+          }
+        }
       }
     },
-    "weapon": { "name": "Longsword", "damage": "1d8", "ability": "str", "mastery": "sap" },
-    "attacks": { "1": 1, "5": 2 },
+    "weapon": {
+      "name": "Longsword",
+      "damage": "1d8",
+      "ability": "str",
+      "mastery": "sap"
+    },
+    "attacks": {
+      "1": 1,
+      "5": 2
+    },
     "saveDC": "8+cha+pb",
     "subclassLevel": 3
   },
   "scales": {
-    "rallyDie": { "1": "d6", "5": "d8", "11": "d10", "17": "d12" },
-    "auraSize": { "1": 15, "13": 20, "18": 30 },
-    "criesKnown": { "1": 2, "3": 3, "7": 4, "11": 5, "15": 6 }
+    "rallyDie": {
+      "1": "d6",
+      "5": "d8",
+      "11": "d10",
+      "17": "d12"
+    },
+    "auraSize": {
+      "1": 15,
+      "13": 20,
+      "18": 30
+    },
+    "criesKnown": {
+      "1": 2,
+      "3": 3,
+      "7": 4,
+      "11": 5,
+      "15": 6
+    }
   },
   "resources": {
-    "battleCries": { "label": "Battle Cries", "max": { "1": 2, "5": 3, "11": 4, "17": 5 }, "shortRest": 1, "longRest": "all" }
+    "battleCries": {
+      "label": "Battle Cries",
+      "max": {
+        "1": 2,
+        "5": 3,
+        "11": 4,
+        "17": 5
+      },
+      "shortRest": 1,
+      "longRest": "all"
+    }
   },
   "aura": {
     "size": "auraSize",
     "anchor": {
       "name": "War Standard",
       "plant": "withBonusAction",
-      "ac": { "1": 15, "7": 18 },
+      "ac": {
+        "1": 15,
+        "7": 18
+      },
       "hp": "5*level",
       "brokenSize": 5,
       "repair": "shortRest"
     }
   },
   "features": [
-    { "id": "shieldWall", "name": "Shield Wall", "level": 1, "when": "passive",
-      "effects": [{ "type": "acBonus", "targets": "selfAndAura", "amount": { "1": 1, "17": 2 } }] },
-    { "id": "battleCries", "name": "Battle Cries", "level": 1, "when": "bonusAction", "cost": "battleCries",
-      "choose": { "from": "cries", "known": "criesKnown", "count": 1 } },
-    { "id": "shieldTheLine", "name": "Shield the Line", "level": 2, "when": "reaction", "trigger": "allyHit", "range": "adjacent",
-      "effects": [{ "type": "reduceDamage", "amount": "rallyDie", "min": 1 }] },
-    { "id": "marchingOrders", "name": "Marching Orders", "level": 2, "when": "exploration", "effects": [] },
-    { "id": "bannerUnbowed", "name": "Banner Unbowed", "level": 7, "when": "passive",
-      "effects": [{ "type": "deathSaveAdvantage", "targets": "aura" }] },
-    { "id": "ironWill", "name": "Iron Will", "level": 9, "when": "passive",
-      "effects": [{ "type": "saveProficiency", "save": "wis" }] },
-    { "id": "commandingCry", "name": "Commanding Cry", "level": 11, "when": "passive",
-      "uses": { "max": 1, "shortRest": "all", "longRest": "all" },
-      "effects": [{ "type": "extraChoice", "feature": "battleCries", "count": 1 }] },
-    { "id": "unbroken", "name": "Unbroken", "level": 15, "when": "dropToZero",
-      "uses": { "max": 1, "longRest": "all" },
-      "effects": [{ "type": "dropTo1", "targets": "self" }, { "type": "freeChoice", "feature": "battleCries" }] },
-    { "id": "bannerEternal", "name": "Banner Eternal", "level": 20, "when": "bonusAction", "ai": "firstRound", "duration": 10,
-      "uses": { "max": 1, "longRest": "all" },
+    {
+      "id": "shieldWall",
+      "name": "Shield Wall",
+      "level": 1,
+      "when": "passive",
       "effects": [
-        { "type": "auraSize", "amount": 60 },
-        { "type": "rollBonus", "targets": "selfAndAura", "rolls": ["attack", "save"], "amount": "rallyDie" },
-        { "type": "regen", "targets": "selfAndAura", "amount": "con" }
-      ] }
+        {
+          "type": "acBonus",
+          "targets": "selfAndAura",
+          "amount": {
+            "1": 1,
+            "17": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "battleCries",
+      "name": "Battle Cries",
+      "level": 1,
+      "when": "bonusAction",
+      "cost": "battleCries",
+      "choose": {
+        "from": "cries",
+        "known": "criesKnown",
+        "count": 1,
+        "label": "Battle Cries"
+      }
+    },
+    {
+      "id": "shieldTheLine",
+      "name": "Shield the Line",
+      "level": 2,
+      "when": "reaction",
+      "trigger": "allyHit",
+      "range": "adjacent",
+      "effects": [
+        {
+          "type": "reduceDamage",
+          "amount": "rallyDie",
+          "min": 1
+        }
+      ]
+    },
+    {
+      "id": "marchingOrders",
+      "name": "Marching Orders",
+      "level": 2,
+      "when": "exploration",
+      "effects": []
+    },
+    {
+      "id": "bannerUnbowed",
+      "name": "Banner Unbowed",
+      "level": 7,
+      "when": "passive",
+      "effects": [
+        {
+          "type": "deathSaveAdvantage",
+          "targets": "aura"
+        }
+      ]
+    },
+    {
+      "id": "ironWill",
+      "name": "Iron Will",
+      "level": 9,
+      "when": "passive",
+      "effects": [
+        {
+          "type": "saveProficiency",
+          "save": "wis"
+        }
+      ]
+    },
+    {
+      "id": "commandingCry",
+      "name": "Commanding Cry",
+      "level": 11,
+      "when": "passive",
+      "uses": {
+        "max": 1,
+        "shortRest": "all",
+        "longRest": "all"
+      },
+      "effects": [
+        {
+          "type": "extraChoice",
+          "feature": "battleCries",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "unbroken",
+      "name": "Unbroken",
+      "level": 15,
+      "when": "dropToZero",
+      "uses": {
+        "max": 1,
+        "longRest": "all"
+      },
+      "effects": [
+        {
+          "type": "dropTo1",
+          "targets": "self"
+        },
+        {
+          "type": "freeChoice",
+          "feature": "battleCries"
+        }
+      ]
+    },
+    {
+      "id": "bannerEternal",
+      "name": "Banner Eternal",
+      "level": 20,
+      "when": "bonusAction",
+      "ai": "firstRound",
+      "duration": 10,
+      "uses": {
+        "max": 1,
+        "longRest": "all"
+      },
+      "effects": [
+        {
+          "type": "auraSize",
+          "amount": 60
+        },
+        {
+          "type": "rollBonus",
+          "targets": "selfAndAura",
+          "rolls": [
+            "attack",
+            "save"
+          ],
+          "amount": "rallyDie"
+        },
+        {
+          "type": "regen",
+          "targets": "selfAndAura",
+          "amount": "con"
+        }
+      ]
+    }
   ],
   "options": {
     "cries": [
-      { "id": "strikeAsOne", "name": "Strike as One!", "level": 1, "pick": 1,
-        "effects": [{ "type": "bonusDamage", "targets": "selfAndAura", "amount": "rallyDie", "oncePerTurn": true }] },
-      { "id": "holdFast", "name": "Hold Fast!", "level": 1, "pick": 2,
-        "effects": [{ "type": "tempHp", "targets": "selfAndAura", "amount": "rallyDie", "selfAmount": "rallyDie+cha", "rollOnce": true }] },
-      { "id": "markThatOne", "name": "Mark That One!", "level": 1, "pick": 3,
-        "effects": [{ "type": "advantageVsMark", "targets": "selfAndAura" }] },
-      { "id": "brace", "name": "Brace!", "level": 7, "pick": 4,
-        "effects": [{ "type": "resistNext", "targets": "selfAndAura" }] },
-      { "id": "noOneFalls", "name": "No One Falls!", "level": 11, "pick": 5,
-        "effects": [{ "type": "dropTo1", "targets": "selfAndAura" }] },
-      { "id": "riseAndFight", "name": "Rise and Fight!", "level": 15, "pick": 6,
-        "effects": [{ "type": "spendHitDie", "targets": "selfAndAura", "revive": true }] },
-      { "id": "scatterThem", "name": "Scatter Them!", "level": 7, "pick": 7,
-        "effects": [{ "type": "frighten", "targets": "enemiesInAura", "save": "wis" }] },
-      { "id": "steelYourNerves", "name": "Steel Your Nerves!", "level": 1, "pick": 8,
-        "effects": [{ "type": "saveAdvantage", "targets": "selfAndAura" }] },
-      { "id": "advance", "name": "Advance!", "level": 1, "pick": 9,
-        "effects": [{ "type": "gatherAura" }] }
+      {
+        "id": "strikeAsOne",
+        "name": "Strike as One!",
+        "level": 1,
+        "pick": 1,
+        "effects": [
+          {
+            "type": "bonusDamage",
+            "targets": "selfAndAura",
+            "amount": "rallyDie",
+            "oncePerTurn": true
+          }
+        ]
+      },
+      {
+        "id": "holdFast",
+        "name": "Hold Fast!",
+        "level": 1,
+        "pick": 2,
+        "effects": [
+          {
+            "type": "tempHp",
+            "targets": "selfAndAura",
+            "amount": "rallyDie",
+            "selfAmount": "rallyDie+cha",
+            "rollOnce": true
+          }
+        ]
+      },
+      {
+        "id": "markThatOne",
+        "name": "Mark That One!",
+        "level": 1,
+        "pick": 3,
+        "effects": [
+          {
+            "type": "advantageVsMark",
+            "targets": "selfAndAura"
+          }
+        ]
+      },
+      {
+        "id": "brace",
+        "name": "Brace!",
+        "level": 7,
+        "pick": 4,
+        "effects": [
+          {
+            "type": "resistNext",
+            "targets": "selfAndAura"
+          }
+        ]
+      },
+      {
+        "id": "noOneFalls",
+        "name": "No One Falls!",
+        "level": 11,
+        "pick": 5,
+        "effects": [
+          {
+            "type": "dropTo1",
+            "targets": "selfAndAura"
+          }
+        ]
+      },
+      {
+        "id": "riseAndFight",
+        "name": "Rise and Fight!",
+        "level": 15,
+        "pick": 6,
+        "effects": [
+          {
+            "type": "spendHitDie",
+            "targets": "selfAndAura",
+            "revive": true
+          }
+        ]
+      },
+      {
+        "id": "scatterThem",
+        "name": "Scatter Them!",
+        "level": 7,
+        "pick": 7,
+        "effects": [
+          {
+            "type": "frighten",
+            "targets": "enemiesInAura",
+            "save": "wis"
+          }
+        ]
+      },
+      {
+        "id": "steelYourNerves",
+        "name": "Steel Your Nerves!",
+        "level": 1,
+        "pick": 8,
+        "effects": [
+          {
+            "type": "saveAdvantage",
+            "targets": "selfAndAura"
+          }
+        ]
+      },
+      {
+        "id": "advance",
+        "name": "Advance!",
+        "level": 1,
+        "pick": 9,
+        "effects": [
+          {
+            "type": "gatherAura"
+          }
+        ]
+      }
     ]
   },
   "subclasses": [
-    { "id": "drillmaster", "name": "Drillmaster", "features": [
-      { "id": "fieldDrills", "name": "Field Drills", "level": 3, "when": "longRest",
-        "effects": [{ "type": "advantageTokens", "count": "cha", "min": 1 }] },
-      { "id": "drilledResponse", "name": "Drilled Response", "level": 3, "when": "passive",
-        "effects": [{ "type": "initiativeBonus", "targets": "selfAndAura", "amount": "cha", "min": 1 }] },
-      { "id": "correctYourForm", "name": "Correct Your Form", "level": 6, "when": "reaction", "trigger": "allyMiss", "range": "aura",
-        "uses": { "max": "cha", "min": 1, "longRest": "all" },
-        "effects": [{ "type": "addToRoll", "amount": "rallyDie" }] },
-      { "id": "practicedOpening", "name": "Practiced Opening", "level": 10, "when": "initiative",
-        "effects": [{ "type": "freeChoice", "feature": "battleCries" }] },
-      { "id": "veteransAll", "name": "Veterans All", "level": 14, "when": "passive",
-        "effects": [{ "type": "grantMastery", "targets": "aura", "mastery": "vex" }] }
-    ] },
-    { "id": "lineCaptain", "name": "Line Captain", "features": [
-      { "id": "drawTheirEye", "name": "Draw Their Eye", "level": 3, "when": "afterChoice", "feature": "battleCries",
-        "effects": [{ "type": "taunt", "targets": "enemyInAura", "save": "wis" }] },
-      { "id": "holdPosition", "name": "Hold Position", "level": 3, "when": "passive", "effects": [] },
-      { "id": "answerTheBlow", "name": "Answer the Blow", "level": 6, "when": "modify", "feature": "shieldTheLine",
-        "effects": [{ "type": "counterAttack" }] },
-      { "id": "bulwark", "name": "Bulwark", "level": 10, "when": "modify", "feature": "shieldTheLine",
-        "effects": [{ "type": "range", "range": "aura" }] },
-      { "id": "theLineHolds", "name": "The Line Holds", "level": 14, "when": "passive",
-        "effects": [{ "type": "resistance", "targets": "self", "damage": ["bludgeoning", "piercing", "slashing"], "limit": "firstPerRound", "requires": "nearAnchor" }] }
-    ] }
+    {
+      "id": "drillmaster",
+      "name": "Drillmaster",
+      "features": [
+        {
+          "id": "fieldDrills",
+          "name": "Field Drills",
+          "level": 3,
+          "when": "longRest",
+          "effects": [
+            {
+              "type": "advantageTokens",
+              "count": "cha",
+              "min": 1
+            }
+          ]
+        },
+        {
+          "id": "drilledResponse",
+          "name": "Drilled Response",
+          "level": 3,
+          "when": "passive",
+          "effects": [
+            {
+              "type": "initiativeBonus",
+              "targets": "selfAndAura",
+              "amount": "cha",
+              "min": 1
+            }
+          ]
+        },
+        {
+          "id": "correctYourForm",
+          "name": "Correct Your Form",
+          "level": 6,
+          "when": "reaction",
+          "trigger": "allyMiss",
+          "range": "aura",
+          "uses": {
+            "max": "cha",
+            "min": 1,
+            "longRest": "all"
+          },
+          "effects": [
+            {
+              "type": "addToRoll",
+              "amount": "rallyDie"
+            }
+          ]
+        },
+        {
+          "id": "practicedOpening",
+          "name": "Practiced Opening",
+          "level": 10,
+          "when": "initiative",
+          "effects": [
+            {
+              "type": "freeChoice",
+              "feature": "battleCries"
+            }
+          ]
+        },
+        {
+          "id": "veteransAll",
+          "name": "Veterans All",
+          "level": 14,
+          "when": "passive",
+          "effects": [
+            {
+              "type": "grantMastery",
+              "targets": "aura",
+              "mastery": "vex"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lineCaptain",
+      "name": "Line Captain",
+      "features": [
+        {
+          "id": "drawTheirEye",
+          "name": "Draw Their Eye",
+          "level": 3,
+          "when": "afterChoice",
+          "feature": "battleCries",
+          "effects": [
+            {
+              "type": "taunt",
+              "targets": "enemyInAura",
+              "save": "wis"
+            }
+          ]
+        },
+        {
+          "id": "holdPosition",
+          "name": "Hold Position",
+          "level": 3,
+          "when": "passive",
+          "effects": []
+        },
+        {
+          "id": "answerTheBlow",
+          "name": "Answer the Blow",
+          "level": 6,
+          "when": "modify",
+          "feature": "shieldTheLine",
+          "effects": [
+            {
+              "type": "counterAttack"
+            }
+          ]
+        },
+        {
+          "id": "bulwark",
+          "name": "Bulwark",
+          "level": 10,
+          "when": "modify",
+          "feature": "shieldTheLine",
+          "effects": [
+            {
+              "type": "range",
+              "range": "aura"
+            }
+          ]
+        },
+        {
+          "id": "theLineHolds",
+          "name": "The Line Holds",
+          "level": 14,
+          "when": "passive",
+          "effects": [
+            {
+              "type": "resistance",
+              "targets": "self",
+              "damage": [
+                "bludgeoning",
+                "piercing",
+                "slashing"
+              ],
+              "limit": "firstPerRound",
+              "requires": "nearAnchor"
+            }
+          ]
+        }
+      ]
+    }
   ]
 }

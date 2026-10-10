@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import '../styles/proving-ground.css';
 ---
-<Base title="Simulator — Wildbloom Studio" current="simulator" description="Compare a Wildbloom class against a Paladin and a Fighter over full simulated adventuring days.">
+<Base title="Simulator — Wildbloom Studio" current="simulator" description="Compare a Wildbloom class against a Paladin, Fighter or Rogue over full simulated adventuring days.">
   <link slot="head" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" />
   <main class="pg">
 <div class="pgwrap">
@@ -10,7 +10,7 @@ import '../styles/proving-ground.css';
   <div class="eyebrow">Wildbloom Studio · Class playtest</div>
   <h1 class="pg-title"><span class="pennant" aria-hidden="true"></span>Proving Ground</h1>
   <p class="classline" id="classLine"></p>
-  <p class="pglede">Load a class from its JSON skeleton, run it through full adventuring days with a Fighter, Rogue and Cleric, then put a Paladin and a Fighter in the same seat and compare all three. Every number is an average over hundreds of simulated days.</p>
+  <p class="pglede">Load a class from its JSON skeleton, run it through full adventuring days with a Fighter, Rogue and Cleric, then put other classes in the same seat (each class file says which) and compare. Every number is an average over hundreds of simulated days.</p>
 </header>
 <div class="layout">
 <aside class="orders" aria-label="Simulation settings">
@@ -23,6 +23,15 @@ import '../styles/proving-ground.css';
       <select id="build"></select></label>
     <div class="row" id="optRow"><span class="lab"><span id="optLab">Options known</span> <b id="cryCount"></b></span><div class="cries" id="cries"></div>
       <p class="hint" id="cryHint">Picked automatically. Tick your own to override.</p></div>
+  </fieldset>
+  <fieldset>
+    <legend>Compare against</legend>
+    <div class="cmpset">
+      <label class="check"><input type="checkbox" id="cmp-paladin"> <i class="sw" style="background:var(--cmp)"></i>Paladin</label>
+      <label class="check"><input type="checkbox" id="cmp-fighter"> <i class="sw" style="background:var(--ftr)"></i>Fighter</label>
+      <label class="check"><input type="checkbox" id="cmp-rogue"> <i class="sw" style="background:var(--rog)"></i>Rogue</label>
+    </div>
+    <p class="hint" id="cmpHint"></p>
   </fieldset>
   <fieldset>
     <legend>Encounter</legend>
@@ -99,7 +108,7 @@ import '../styles/proving-ground.css';
         <li>The class under test plants its anchor (if it has one) on round 1, uses bonus-action options greedily on the best expected value, and saves a fair share of each resource for later fights. Options that stop a knockdown or revive an ally can dip into that reserve.</li>
         <li>Damage prevented is counted only when a feature changes an outcome: a hit that missed because of the +1 AC, an attack that missed only because of disadvantage, temp HP actually soaked, and so on.</li>
         <li>Monster numbers come from SRD 5.1 stat blocks. Budget encounters use the 2024 XP budget for four characters and skip breath-weapon monsters; pick one by hand to test those. Legendary actions, spells, and terrain aren't modeled.</li>
-        <li>The Fighter seat is a second copy of the party Fighter: greatsword, Graze, Action Surge and Second Wind.</li>
+        <li>The Fighter and Rogue seats are second copies of the party Fighter (greatsword, Graze, Action Surge, Second Wind) and Rogue (Sneak Attack, Steady Aim half the time, Uncanny Dodge, Evasion). Cunning Action isn't modeled.</li>
         <li>The Paladin uses Divine Smite once per turn (budgeted across the day, always on a crit), Lay on Hands on downed allies, Defense style, Aura of Protection and Radiant Strikes.</li>
       </ul>
     </details>

@@ -1,13 +1,13 @@
 /* Proving Ground: scoped to .pg, colours mapped onto the site tokens so it follows light/dark. */
 .pg {
   --paper: var(--surface); --sheet: var(--surface-raised); --muted: var(--ink-muted); --rule: var(--gold-soft); --wash: var(--surface-sunken);
-  --wc: var(--accent); --cmp: var(--gold); --ftr: var(--sage-text);
+  --wc: var(--accent); --cmp: var(--gold); --ftr: var(--sage-text); --rog: #2f6e60;
   --dealt: var(--accent); --prevent: var(--gold); --heal: var(--sage);
   --good: #2f7a4d; --bad: #a3352f; --warn: var(--gold);
   --display: var(--font-display); --body: var(--font-body); --mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
   color: var(--ink); font: 16px/1.5 var(--body);
 }
-[data-theme="dark"] .pg { --good: #6cbf8f; --bad: #e88a80; }
+[data-theme="dark"] .pg { --good: #6cbf8f; --bad: #e88a80; --rog: #7fc6b4; }
 .pg [hidden] { display: none !important; }
 .pg .pgwrap { padding: 24px 24px 48px; }
 .pg * { box-sizing: border-box; }
@@ -74,7 +74,7 @@
 .pg td.down { color: var(--bad); }
 .pg .k-wc { color: var(--wc); }
 .pg .k-cmp { color: var(--cmp); }
-.pg .k-ftr { color: var(--ftr); }
+.pg .k-ftr { color: var(--ftr); } .pg .k-rog { color: var(--rog); }
 .pg .bars { display: grid; gap: 12px; }
 .pg .bar { display: grid; grid-template-columns: 96px minmax(0, 1fr) 64px; gap: 10px; align-items: center; font-size: 14px; }
 .pg .bar .track { display: flex; height: 22px; background: var(--wash); border-radius: 3px; overflow: hidden; }
@@ -91,6 +91,8 @@
 .pg .chart .grid { stroke: var(--rule); stroke-width: 1; }
 .pg .chart .l-wc { stroke: var(--wc); fill: none; stroke-width: 2.25; }
 .pg .chart .l-cmp { stroke: var(--cmp); fill: none; stroke-width: 2.25; stroke-dasharray: 5 4; }
+.pg .chart .l-rog { stroke: var(--rog); fill: none; stroke-width: 2.25; stroke-dasharray: 7 3 1.5 3; }
+.pg .chart .d-rog { fill: var(--rog); }
 .pg .chart .l-ftr { stroke: var(--ftr); fill: none; stroke-width: 2.25; stroke-dasharray: 1.5 4; stroke-linecap: round; }
 .pg .chart .d-wc { fill: var(--wc); }
 .pg .chart .d-cmp { fill: var(--cmp); }
@@ -130,6 +132,5 @@
 .pg .ref pre { font: 12.5px/1.5 var(--mono); background: var(--wash); padding: 10px; border-radius: 4px; overflow-x: auto; }
 .pg .ref table { font-size: 13.5px; }
 .pg .ref .tablewrap { margin: 6px 0 10px; }
-
-
-
+.pg .cmpset { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.pg .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; }

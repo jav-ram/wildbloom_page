@@ -1,0 +1,640 @@
+{
+ "tagline": "Nets, smoke and feints that take the fight away from your enemies.",
+ "flavor": [
+  "A Trickster wins fights without winning duels. A weighted net drops over a raised axe, smoke rolls across the front line, and a well-timed feint opens a giant to a friend's blade. Tricksters rarely land the final blow. They make sure the enemy never lands theirs.",
+  "Most Tricksters learned their craft as scouts, poachers, stage performers or trap-setters. They carry a kit of hand-built gadgets: nets, smoke pots, flash powder and stranger things, rebuilt each night by firelight. They think in angles and timing, and they treat every enemy action as something that can be taken away.",
+  "In a party, the Trickster decides how the fight goes. Enemies who face one spend their turns tangled, half-blind and swinging at shadows, while the Trickster's allies get the openings they need."
+ ],
+ "creating": [
+  "As you create your Trickster, think about who taught you to build your gadgets. Did you set snares for a poacher's crew, run a smoke-and-mirrors act at a traveling show, or scout ahead of an army that couldn't afford to lose a fight?",
+  "Then decide how your character feels about a fair fight. Most Tricksters avoid one whenever they can. Ask yourself what your character would refuse to trick someone into, and who taught them that line."
+ ],
+ "quick": "You can make a Trickster quickly by following these suggestions. Make Dexterity your highest ability score, followed by Intelligence. Choose the Criminal background. Learn the Weighted Net, Smoke Bomb and Flash Powder gadgets.",
+ "traits": [
+  [
+   "Primary Ability",
+   "Dexterity and Intelligence"
+  ],
+  [
+   "Hit Point Die",
+   "D8 per Trickster level"
+  ],
+  [
+   "Saving Throw Proficiencies",
+   "Dexterity and Intelligence"
+  ],
+  [
+   "Skill Proficiencies",
+   "Choose 3: Acrobatics, Deception, Insight, Investigation, Perception, Sleight of Hand, Stealth, or Survival"
+  ],
+  [
+   "Weapon Proficiencies",
+   "Simple weapons, Martial weapons that have the Finesse or Light property, and Nets"
+  ],
+  [
+   "Tool Proficiencies",
+   "Tinker's Tools"
+  ],
+  [
+   "Armor Training",
+   "Light armor"
+  ],
+  [
+   "Starting Equipment",
+   "Choose A or B: (A) Leather Armor, Shortsword, Shortbow, Quiver, 20 Arrows, Tinker's Tools, Explorer's Pack, and 11 GP; or (B) 120 GP"
+  ]
+ ],
+ "becoming": [
+  {
+   "label": "As a Level 1 Character",
+   "items": [
+    "Gain all the traits in the Core Trickster Traits table.",
+    "Gain the Trickster's level 1 features, which are listed in the Trickster Features table."
+   ]
+  },
+  {
+   "label": "As a Multiclass Character",
+   "items": [
+    "Gain the following traits from the Core Trickster Traits table: Hit Point Die, proficiency with Tinker's Tools, and training with Light armor.",
+    "Gain the Trickster's level 1 features, which are listed in the Trickster Features table.",
+    "To multiclass into or out of Trickster, you need a score of at least 13 in both Dexterity and Intelligence."
+   ]
+  }
+ ],
+ "featuresIntro": "As a Trickster, you gain the following class features when you reach the specified Trickster levels. These features are listed in the Trickster Features table.",
+ "tableHead": [
+  "Level",
+  "Proficiency Bonus",
+  "Class Features",
+  "Gadgets Known",
+  "Kit Capacity"
+ ],
+ "table": [
+  [
+   "1",
+   "+2",
+   "Gadget Kit, Feint, Weapon Mastery",
+   "3",
+   "4"
+  ],
+  [
+   "2",
+   "+2",
+   "Sidestep, Field Repairs",
+   "3",
+   "4"
+  ],
+  [
+   "3",
+   "+2",
+   "Trickster Subclass",
+   "4",
+   "5"
+  ],
+  [
+   "4",
+   "+2",
+   "Ability Score Improvement",
+   "4",
+   "5"
+  ],
+  [
+   "5",
+   "+3",
+   "Extra Attack, Quick Toss",
+   "4",
+   "6"
+  ],
+  [
+   "6",
+   "+3",
+   "Subclass feature",
+   "4",
+   "6"
+  ],
+  [
+   "7",
+   "+3",
+   "Read the Field",
+   "5",
+   "7"
+  ],
+  [
+   "8",
+   "+3",
+   "Ability Score Improvement",
+   "5",
+   "7"
+  ],
+  [
+   "9",
+   "+4",
+   "Double Feint",
+   "5",
+   "8"
+  ],
+  [
+   "10",
+   "+4",
+   "Subclass feature",
+   "5",
+   "8"
+  ],
+  [
+   "11",
+   "+4",
+   "Twin Toss",
+   "6",
+   "9"
+  ],
+  [
+   "12",
+   "+4",
+   "Ability Score Improvement",
+   "6",
+   "9"
+  ],
+  [
+   "13",
+   "+5",
+   "Nothing Up My Sleeve",
+   "6",
+   "9"
+  ],
+  [
+   "14",
+   "+5",
+   "Subclass feature",
+   "6",
+   "9"
+  ],
+  [
+   "15",
+   "+5",
+   "Endless Feints",
+   "7",
+   "10"
+  ],
+  [
+   "16",
+   "+5",
+   "Ability Score Improvement",
+   "7",
+   "10"
+  ],
+  [
+   "17",
+   "+6",
+   "Grand Design",
+   "7",
+   "10"
+  ],
+  [
+   "18",
+   "+6",
+   "Cover for Them",
+   "7",
+   "10"
+  ],
+  [
+   "19",
+   "+6",
+   "Epic Boon",
+   "8",
+   "11"
+  ],
+  [
+   "20",
+   "+6",
+   "Master Trickster",
+   "8",
+   "11"
+  ]
+ ],
+ "feats": [
+  {
+   "h": "Level 1: Gadget Kit",
+   "p": [
+    {
+     "t": "You build small devices from rope, powder, glass and clockwork, and you carry them in a kit you rebuild every day."
+    },
+    {
+     "l": "Gadgets Known.",
+     "t": "You know three gadgets of your choice from the Gadget list later in this class's description. You learn more as shown in the Gadgets Known column. Whenever you gain a Trickster level, you can replace one gadget you know with another you qualify for."
+    },
+    {
+     "l": "Assembling Your Kit.",
+     "t": "When you finish a Long Rest, you can spend 1 hour with Tinker's Tools assembling gadgets. Your kit then holds a number of gadgets equal to your Kit Capacity, in any mix of gadgets you know, and the same gadget can appear more than once. Your gadgets are tuned to your hands; other creatures can't use them."
+    },
+    {
+     "l": "Using a Gadget.",
+     "t": "Each gadget says which action it takes to use. Using a gadget removes it from your kit unless its description says otherwise. A gadget marked Heavy takes up two places in your kit."
+    },
+    {
+     "l": "Saving Throws.",
+     "t": "If a gadget forces a saving throw, the DC equals 8 plus your Intelligence modifier and Proficiency Bonus."
+    }
+   ]
+  },
+  {
+   "h": "Level 1: Feint",
+   "p": [
+    {
+     "t": "As a Bonus Action, you choose one creature you can see within 30 feet of you and fake an opening. Until the start of your next turn, the next attack roll against that creature has Advantage, whoever makes it."
+    },
+    {
+     "t": "You can use this feature a number of times equal to your Intelligence modifier (minimum of once), and you regain all expended uses when you finish a Short or Long Rest."
+    }
+   ]
+  },
+  {
+   "h": "Level 1: Weapon Mastery",
+   "p": [
+    {
+     "t": "Your training with weapons allows you to use the mastery properties of two kinds of Simple or Martial weapons of your choice with which you have proficiency. Whenever you finish a Long Rest, you can change the kinds of weapons you chose."
+    }
+   ]
+  },
+  {
+   "h": "Level 2: Sidestep",
+   "p": [
+    {
+     "t": "When a creature you can see targets you with an attack roll, you can take a Reaction to impose Disadvantage on that roll. You can use this feature a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest."
+    }
+   ]
+  },
+  {
+   "h": "Level 2: Field Repairs",
+   "p": [
+    {
+     "t": "When you finish a Short Rest, you can add a number of gadgets you know to your kit equal to your Intelligence modifier (minimum of one), as long as your kit doesn't exceed your Kit Capacity."
+    }
+   ]
+  },
+  {
+   "h": "Level 3: Trickster Subclass",
+   "p": [
+    {
+     "t": "You gain a Trickster subclass of your choice. The Snaremaster and Smokewright subclasses are detailed after this class's description. A subclass is a specialization that grants you features at certain Trickster levels. For the rest of your career, you gain each of your subclass's features that are of your Trickster level or lower."
+    }
+   ]
+  },
+  {
+   "h": "Level 4: Ability Score Improvement",
+   "p": [
+    {
+     "t": "You gain the Ability Score Improvement feat or another feat of your choice for which you qualify. You gain this feature again at Trickster levels 8, 12, and 16."
+    }
+   ]
+  },
+  {
+   "h": "Level 5: Extra Attack",
+   "p": [
+    {
+     "t": "You can attack twice instead of once whenever you take the Attack action on your turn."
+    }
+   ]
+  },
+  {
+   "h": "Level 5: Quick Toss",
+   "p": [
+    {
+     "t": "When you take the Attack action on your turn, you can replace one of the attacks with using a gadget that takes an Action."
+    }
+   ]
+  },
+  {
+   "h": "Level 6: Subclass Feature",
+   "p": [
+    {
+     "t": "You gain a feature from your Trickster subclass."
+    }
+   ]
+  },
+  {
+   "h": "Level 7: Read the Field",
+   "p": [
+    {
+     "t": "You add your Intelligence modifier to your Initiative rolls."
+    }
+   ]
+  },
+  {
+   "h": "Level 9: Double Feint",
+   "p": [
+    {
+     "t": "When you use Feint, you can choose two creatures instead of one."
+    }
+   ]
+  },
+  {
+   "h": "Level 11: Twin Toss",
+   "p": [
+    {
+     "t": "When you use a gadget that takes an Action, you can use a second gadget that takes an Action as part of the same action. Once you use this feature, you can't do so again until you finish a Long Rest."
+    }
+   ]
+  },
+  {
+   "h": "Level 13: Nothing Up My Sleeve",
+   "p": [
+    {
+     "t": "When you roll Initiative and your kit is empty, you add one gadget you know to it."
+    }
+   ]
+  },
+  {
+   "h": "Level 15: Endless Feints",
+   "p": [
+    {
+     "t": "You no longer have a limit on the number of times you can use Feint."
+    }
+   ]
+  },
+  {
+   "h": "Level 17: Grand Design",
+   "p": [
+    {
+     "t": "When a creature succeeds on a saving throw against one of your gadgets, you can force it to reroll the save, and it must use the new roll. You can use this feature a number of times equal to your Intelligence modifier (minimum of once), and you regain all expended uses when you finish a Long Rest."
+    }
+   ]
+  },
+  {
+   "h": "Level 18: Cover for Them",
+   "p": [
+    {
+     "t": "You can also use Sidestep when a creature you can see targets an ally within 30 feet of you with an attack roll."
+    }
+   ]
+  },
+  {
+   "h": "Level 19: Epic Boon",
+   "p": [
+    {
+     "t": "You gain an Epic Boon feat or another feat of your choice for which you qualify. Boon of Fate is recommended."
+    }
+   ]
+  },
+  {
+   "h": "Level 20: Master Trickster",
+   "p": [
+    {
+     "t": "When you roll Initiative, you add two gadgets you know to your kit, even if that puts it above your Kit Capacity. In addition, when you use Feint, the next two attack rolls against each target have Advantage instead of only the next one."
+    }
+   ]
+  }
+ ],
+ "gadgetsIntro": "The gadgets are presented in alphabetical order. A gadget with a level prerequisite can be learned only once your Trickster level meets it. Thrown gadgets have a range of 30 feet unless their description says otherwise.",
+ "gadgetTable": [
+  [
+   "Caltrops Pouch",
+   "1",
+   "Bonus Action",
+   "Difficult Terrain that slows"
+  ],
+  [
+   "Flash Powder",
+   "1",
+   "Bonus Action",
+   "Disadvantage on the next attack, in a cone"
+  ],
+  [
+   "Grapnel Line",
+   "1",
+   "Action",
+   "Climbing line, reusable"
+  ],
+  [
+   "Smelling Salts",
+   "1",
+   "Bonus Action",
+   "A creature at 0 HP gets up"
+  ],
+  [
+   "Smoke Bomb",
+   "1",
+   "Action",
+   "No Reactions, Disadvantage on attacks, in an area"
+  ],
+  [
+   "Weighted Net",
+   "1",
+   "Action",
+   "Snared: must win a check to move or attack"
+  ],
+  [
+   "Tripwire Line",
+   "3",
+   "Bonus Action",
+   "Prone trap"
+  ],
+  [
+   "Bola",
+   "5",
+   "Action",
+   "Prone and Speed 0"
+  ],
+  [
+   "Choking Cloud",
+   "9",
+   "Action",
+   "Incapacitated in an area"
+  ],
+  [
+   "Glimmer Shard",
+   "9",
+   "Bonus Action",
+   "Next attack against an ally has Disadvantage"
+  ],
+  [
+   "Stagger Charge",
+   "13",
+   "Action",
+   "Stunned"
+  ]
+ ],
+ "gadgets": [
+  {
+   "n": "Bola",
+   "t": "Choose a creature you can see within range. It must succeed on a Strength saving throw or have the Prone condition, and its Speed becomes 0 until the start of your next turn.",
+   "v": "(Level 5+)"
+  },
+  {
+   "n": "Caltrops Pouch",
+   "t": "You scatter caltrops over a 10-foot square within 5 feet of you. For 1 minute, the area is Difficult Terrain. A creature that enters the area or starts its turn there must succeed on a Dexterity saving throw or take 1 Piercing damage and have its Speed reduced by 10 feet until the start of its next turn."
+  },
+  {
+   "n": "Choking Cloud",
+   "t": "You throw a powder pot that bursts in a 10-foot-radius Sphere centered on a point within range. Each creature of your choice in the Sphere must succeed on a Constitution saving throw or have the Incapacitated condition until the end of its next turn.",
+   "v": "(Level 9+, Heavy)"
+  },
+  {
+   "n": "Flash Powder",
+   "t": "You throw a pinch of powder that flares in a 15-foot Cone. Each creature of your choice in the Cone must succeed on a Constitution saving throw or have Disadvantage on the next attack roll it makes before the end of its next turn."
+  },
+  {
+   "n": "Glimmer Shard",
+   "t": "You flick a mirrored shard toward yourself or an ally within range. The next attack roll against that creature before the start of your next turn has Disadvantage.",
+   "v": "(Level 9+)"
+  },
+  {
+   "n": "Grapnel Line",
+   "t": "You fire a hook and 60 feet of line at a point within 60 feet of you. The hook holds on stone, wood or ice, and the line can hold up to 500 pounds. Climbing the line costs no extra movement. You can recover the hook and line as a Utilize action, and the gadget then returns to your kit."
+  },
+  {
+   "n": "Smelling Salts",
+   "t": "One creature within 5 feet of you that has 0 Hit Points regains 1 Hit Point."
+  },
+  {
+   "n": "Smoke Bomb",
+   "t": "You throw a smoke pot at a point within range. Smoke fills a 10-foot-radius Sphere centered on that point, and the area is Heavily Obscured until the start of your next turn. Each creature of your choice in the Sphere must succeed on a Wisdom saving throw or be unable to take Reactions and have Disadvantage on attack rolls until the end of its next turn."
+  },
+  {
+   "n": "Stagger Charge",
+   "t": "Choose a creature you can see within range. It must succeed on a Constitution saving throw or have the Stunned condition until the end of its next turn. On a successful save, its Speed is halved until the end of its next turn.",
+   "v": "(Level 13+, Heavy)"
+  },
+  {
+   "n": "Tripwire Line",
+   "t": "You stretch a line between two points within 30 feet of each other and within 30 feet of you. The first creature other than you that moves across the line within the next minute must succeed on a Dexterity saving throw or have the Prone condition.",
+   "v": "(Level 3+)"
+  },
+  {
+   "n": "Weighted Net",
+   "t": "Choose a creature you can see within range. It must succeed on a Strength saving throw or be Snared for 1 minute. At the end of each of its turns, a Snared creature repeats the save, ending the effect on itself on a success. A Huge or larger creature has Advantage on this save. A creature that is already Snared can't be Snared again, but it can still be targeted by your other gadgets.",
+   "more": [
+    "While Snared, a creature's Speed is halved and it can't take Reactions. Each time it tries to move, make an attack, or do anything else that requires moving freely, it must first succeed on a Strength or Dexterity check (its choice) against your gadget save DC. On a failure, that attempt is lost: the movement doesn't happen, or the attack isn't made."
+   ]
+  }
+ ],
+ "subs": [
+  {
+   "id": "snaremaster",
+   "name": "Snaremaster",
+   "tagline": "Nothing gets away twice.",
+   "intro": "Snaremasters learned their trade from trappers and beast-catchers. They weave heavier nets than other Tricksters, throw them farther and tie knots that take a creature's whole turn to undo. Wherever a Snaremaster fights, the biggest threat ends up stuck in place.",
+   "feats": [
+    {
+     "h": "Level 3: Heavy Weave",
+     "p": [
+      {
+       "t": "You always know the Weighted Net gadget, and it doesn't count against your Gadgets Known. A creature Snared by you has a Speed of 0, and attack rolls against it have Advantage if the attacker is within 5 feet of it."
+      }
+     ]
+    },
+    {
+     "h": "Level 3: Spare Nets",
+     "p": [
+      {
+       "t": "When you finish a Long Rest, you add one Weighted Net to your kit. It doesn't count against your Kit Capacity."
+      }
+     ]
+    },
+    {
+     "h": "Level 6: Weighted Edges",
+     "p": [
+      {
+       "t": "Your weapon attacks deal an extra 1d6 Bludgeoning damage to a creature Snared by you."
+      }
+     ]
+    },
+    {
+     "h": "Level 10: Tangled Reactions",
+     "p": [
+      {
+       "t": "When a creature Snared by you fails the check to move or attack, it also has the Prone condition."
+      }
+     ]
+    },
+    {
+     "h": "Level 14: Net Volley",
+     "p": [
+      {
+       "t": "When you use Weighted Net, you can target two creatures within 10 feet of each other. Each makes its own saving throw."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "smokewright",
+   "name": "Smokewright",
+   "tagline": "Now you see me. Now you're fighting smoke.",
+   "intro": "Smokewrights come from the stage and the shadows: illusionists' assistants, smugglers and scouts who learned that the safest place in a fight is somewhere the enemy can't see. They brew thicker, longer-lasting smoke and move through it as if it were clear air.",
+   "feats": [
+    {
+     "h": "Level 3: Smokeskin",
+     "p": [
+      {
+       "t": "You can see normally through smoke created by your gadgets. The Sphere of your Smoke Bomb has a 15-foot radius."
+      }
+     ]
+    },
+    {
+     "h": "Level 3: Vanish",
+     "p": [
+      {
+       "t": "When you use Smoke Bomb, attack rolls against you have Disadvantage until the start of your next turn."
+      }
+     ]
+    },
+    {
+     "h": "Level 6: Lingering Smoke",
+     "p": [
+      {
+       "t": "The smoke from your Smoke Bomb lasts for 1 minute, and you can end it early as a Bonus Action. A creature that fails the saving throw against it repeats the save at the end of each of its turns while it remains in the smoke, ending the effect on itself on a success. Only one of your Smoke Bombs can linger at a time; using another ends the lingering effect of the first."
+      }
+     ]
+    },
+    {
+     "h": "Level 10: Shadow Double",
+     "p": [
+      {
+       "t": "When you use Sidestep, the attack roll automatically misses instead of having Disadvantage."
+      }
+     ]
+    },
+    {
+     "h": "Level 14: Ghost Line",
+     "p": [
+      {
+       "t": "When you use Smoke Bomb, attack rolls against each of your allies within the Sphere or within 5 feet of it have Disadvantage until the start of your next turn."
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "lore": {
+  "h": "Lore: Tricksters in the Crater",
+  "note": "DMs running another world can skip this section.",
+  "p": [
+   {
+    "t": "On the rim, Tricksters are called riggers. No crew goes below the first floors without one, because the way down is all lines, hooks and knots, and the way back up is worse. Riggers set the anchors, test the ropes and carry the nets."
+   },
+   {
+    "t": "The creatures of the deep floors taught riggers their best tricks. Many of them hunt by sound or smell and can't be outfought, only confused, tangled or slipped past. A rigger's smoke pot is the most common way a crew gets home."
+   },
+   {
+    "l": "Story hook.",
+    "t": "A rigger you trained with sold a new kind of net to a guild on the rim. Every crew that bought one came back. The one crew that refused didn't, and the guild wants to know why."
+   }
+  ]
+ },
+ "legal": [
+  "Trickster © 2026 Wildbloom Studio. Compatible with fifth edition. Wildbloom Studio's original content in this class is licensed under the Creative Commons Attribution 4.0 International License (CC-BY-4.0).",
+  "This work includes material from the System Reference Document 5.2.1 (\"SRD 5.2.1\") by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode."
+ ],
+ "playtest": {
+  "text": "This class is a playtest version and may change. Send feedback to Wildbloom Studio at [contact link].",
+  "version": "Version 0.1"
+ },
+ "changelog": [
+  {
+   "v": "v0.1",
+   "items": [
+    "First playtest release: core class, 11 gadgets, Snaremaster and Smokewright subclasses."
+   ]
+  }
+ ]
+}

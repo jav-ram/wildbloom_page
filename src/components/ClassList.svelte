@@ -3,7 +3,7 @@
 
   let { classes, base }: { classes: ClassEntry[]; base: string } = $props();
 
-  const ROLES = ['All', 'Support', 'Striker', 'Explorer'];
+  const ROLES = ['All', 'Support', 'Control', 'Striker', 'Explorer'];
   const STATUSES = ['All', 'Released', 'Playtest', 'Coming soon'];
   const badge: Record<string, string> = {
     Released: 'ws-badge ws-badge--released label',

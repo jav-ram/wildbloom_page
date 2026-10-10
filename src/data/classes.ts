@@ -24,4 +24,14 @@ export const classes: ClassEntry[] = [
     status: 'Playtest',
     simulator: true,
   },
+  {
+    slug: 'trickster',
+    title: 'Trickster',
+    tagline: 'Nets, smoke and feints that take the fight away from your enemies.',
+    ability: 'Dexterity and Intelligence',
+    hitDie: 'D8',
+    roles: ['Control'],
+    status: 'Playtest',
+    simulator: true,
+  },
 ];
