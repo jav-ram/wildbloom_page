@@ -1,0 +1,541 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Island Explorer</title>
+<script>try{var th=new URLSearchParams(location.search).get("theme");if(th==="dark"||th==="light")document.documentElement.setAttribute("data-theme",th);}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Alegreya+Sans:wght@400;500;700&display=swap">
+<style>
+/* Layout: a hex map under fog of war on the left; the party's clock, supplies, prompts and log on the right. */
+:root{
+  --bg:#ECE3CE; --surface:#F6EFDF; --ink:#2B221B; --muted:#6A5C4D; --rule:#B79E70; --line:#D8CBAE;
+  --accent:#7A3B57; --accent-ink:#FFF7EE; --sage:#536F58; --light:#C9922E;
+  --fog:#E4D9BF; --fog-edge:#B7A57F;
+  --t-sea:#BFCBC4; --t-beach:#E6D49A; --t-river:#9FC2C0; --t-jungle:#7E9B66; --t-swamp:#8C9474;
+  --t-hills:#B39C6C; --t-ruins:#A08C7A; --t-peak:#8E7F6B; --t-rim:#7A6A58; --t-crater:#2D2722;
+  --good:#3F6E45; --warn:#99650F; --crit:#9E3329;
+  --display:"IM Fell English", "Iowan Old Style", Georgia, serif;
+  --body:"Alegreya Sans", "Gill Sans", "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121614; --surface:#1A201C; --ink:#ECE4D2; --muted:#A79D8B; --rule:#8A7243; --line:#2E3630;
+  --accent:#D69AB2; --accent-ink:#1A1014; --sage:#93B598; --light:#E3B354;
+  --fog:#262B26; --fog-edge:#4A4A3C;
+  --t-sea:#1C2A2B; --t-beach:#6E6342; --t-river:#2F5556; --t-jungle:#34502F; --t-swamp:#3E4634;
+  --t-hills:#5E5236; --t-ruins:#56493F; --t-peak:#5A5045; --t-rim:#4A4036; --t-crater:#060606;
+  --good:#86B886; --warn:#E0AE52; --crit:#E8857A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121614; --surface:#1A201C; --ink:#ECE4D2; --muted:#A79D8B; --rule:#8A7243; --line:#2E3630;
+  --accent:#D69AB2; --accent-ink:#1A1014; --sage:#93B598; --light:#E3B354;
+  --fog:#262B26; --fog-edge:#4A4A3C;
+  --t-sea:#1C2A2B; --t-beach:#6E6342; --t-river:#2F5556; --t-jungle:#34502F; --t-swamp:#3E4634;
+  --t-hills:#5E5236; --t-ruins:#56493F; --t-peak:#5A5045; --t-rim:#4A4036; --t-crater:#060606;
+  --good:#86B886; --warn:#E0AE52; --crit:#E8857A; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;padding-inline:16px;padding-block:16px 48px}
+.wrap{max-width:1320px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;text-wrap:balance}
+h1{font-size:clamp(1.8rem,4vw,2.5rem);line-height:1.05}
+h2{font-size:1.4rem} h3{font-size:1.1rem}
+p{margin:0}
+.eyebrow{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.num{font-variant-numeric:tabular-nums}
+.hint{font-size:.88rem;color:var(--muted)}
+button,select,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:1px solid var(--rule);background:var(--surface);border-radius:6px;padding:8px 14px;min-height:40px}
+button:hover{border-color:var(--ink)}
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+button.small{min-height:32px;padding:4px 10px;font-size:.9rem}
+button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+button:disabled{opacity:.45;cursor:not-allowed}
+select,input[type=text],input[type=number],textarea{background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:8px 10px;min-height:40px}
+textarea{width:100%;min-height:64px;resize:vertical}
+label{display:flex;flex-direction:column;gap:4px;font-size:.9rem;color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px}
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;border-bottom:2px solid var(--rule);padding-bottom:14px}
+.banner{border:1px dashed var(--rule);border-radius:8px;padding:10px 14px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;color:var(--muted)}
+.main{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-start}
+.mapcol{flex:999 1 640px;min-width:0;display:flex;flex-direction:column;gap:12px}
+.side{flex:1 1 320px;min-width:0;display:flex;flex-direction:column;gap:14px}
+.mapbox{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:8px;overflow:auto;position:relative;max-height:760px}
+.mapbox svg{display:block;width:100%;height:auto;min-width:520px;user-select:none}
+.mapbox svg [data-poi]{cursor:pointer}
+.tip{position:absolute;z-index:2;pointer-events:none;background:var(--ink);color:var(--bg);border-radius:6px;padding:6px 10px;font-size:.88rem;max-width:260px;line-height:1.35}
+.tip strong{font-family:var(--display);font-weight:400;font-size:1.05rem;display:block}
+.toolbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule);border-radius:6px;overflow:hidden;flex-wrap:wrap}
+.seg button{border:0;border-radius:0;min-height:34px;padding:4px 12px;font-size:.9rem}
+.seg button+button{border-left:1px solid var(--rule)}
+.palette{display:flex;flex-wrap:wrap;gap:6px}
+.swatch{display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:4px 10px;font-size:.88rem}
+.swatch i{width:14px;height:14px;border-radius:3px;border:1px solid var(--ink);display:inline-block}
+.stat{display:grid;grid-template-columns:110px 1fr auto;gap:8px;align-items:center;border-top:1px solid var(--line);padding-top:8px}
+.stat:first-of-type{border-top:0;padding-top:0}
+.stat .lbl{font-weight:700;font-size:.92rem}
+.big{font-family:var(--display);font-size:1.35rem;line-height:1.2}
+.bar{height:10px;border-radius:5px;background:var(--line);overflow:hidden;position:relative}
+.bar span{position:absolute;inset:0 auto 0 0;background:var(--sage)}
+.bar span.over{background:var(--crit)}
+.adj{display:flex;gap:4px}
+.adj button{min-height:30px;min-width:30px;padding:0 6px}
+.chip{display:inline-block;font-size:.76rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:2px 10px;border:1px solid currentColor}
+.c-good{color:var(--good)} .c-warn{color:var(--warn)} .c-crit{color:var(--crit)} .c-muted{color:var(--muted)}
+.prompt{border:1px solid var(--warn);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.prompt.crit{border-color:var(--crit)}
+.prompt.ok{border-color:var(--line)}
+.log ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;max-height:420px;overflow:auto}
+.log li{border-top:1px solid var(--line);padding-top:8px;display:flex;flex-direction:column;gap:1px}
+.log li .when{font-weight:700;font-size:.9rem}
+.log li .det{font-size:.9rem;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.85rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:12px;height:12px;border-radius:2px;display:inline-block;border:1px solid var(--rule)}
+.sharing .dm-only{display:none!important}
+.player-only{display:none}
+.sharing .player-only{display:inline-block}
+@media (prefers-reduced-motion:no-preference){.rod{animation:pulse 5s ease-in-out infinite}}
+@keyframes pulse{0%,100%{opacity:.55}50%{opacity:.85}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div style="display:flex;flex-direction:column;gap:4px">
+      <span class="eyebrow">Wildbloom Studio · The Crater, era 1</span>
+      <h1 id="islandName">The Island</h1>
+    </div>
+    <div class="row">
+      <span class="chip c-warn player-only">Player view</span>
+      <button id="viewBtn" type="button">Player view</button>
+      <button id="saveBtn" type="button" class="dm-only">Save map</button>
+      <button id="loadBtn" type="button" class="dm-only">Load map</button>
+      <button id="resetBtn" type="button" class="dm-only">Reset map</button>
+      <input id="fileIn" type="file" accept=".json,application/json" hidden>
+    </div>
+  </header>
+
+
+  <section id="ioPanel" class="card dm-only" hidden aria-label="Save or load"><div id="ioBody" style="display:flex;flex-direction:column;gap:8px"></div></section>
+
+  <div class="main">
+    <div class="mapcol">
+      <div class="card dm-only" style="padding:12px">
+        <div class="toolbar">
+          <span class="eyebrow" style="margin-right:6px">Tool</span>
+          <div class="seg" role="group" aria-label="Map tool" id="modeSeg"></div>
+        </div>
+        <div id="modeHelp" class="hint"></div>
+        <div class="palette" id="palette" hidden></div>
+      </div>
+      <div class="row" style="justify-content:space-between">
+        <div class="seg" role="group" aria-label="Zoom">
+          <button type="button" data-act="zoom" data-z="-1" aria-label="Zoom out">−</button>
+          <button type="button" data-act="zoom" data-z="0" id="zoomLbl" aria-label="Fit the map">100%</button>
+          <button type="button" data-act="zoom" data-z="1" aria-label="Zoom in">+</button>
+        </div>
+        <span class="hint">Hover an icon to see its name. Ctrl + scroll also zooms.</span>
+      </div>
+      <div class="mapbox" id="mapbox"><svg id="map" role="img" aria-label="Hex map of the island"></svg><div id="tip" class="tip" hidden></div></div>
+      <div class="legend" id="legend"></div>
+    </div>
+
+    <aside class="side">
+      <section class="card" aria-label="The party">
+        <div class="row" style="justify-content:space-between;align-items:baseline"><h2 id="clock">Day 1</h2><span class="hint num" id="clockSub"></span></div>
+        <div id="stats"></div>
+      </section>
+      <section class="card dm-only" id="promptCard" aria-label="What happens now">
+        <h3>What happens now</h3>
+        <div id="prompts" style="display:flex;flex-direction:column;gap:10px"></div>
+      </section>
+      <section class="card dm-only" aria-label="Actions">
+        <h3>Actions</h3>
+        <div class="row">
+          <button type="button" data-act="climb" id="climbBtn">Climb (1 hour)</button>
+          <button type="button" data-act="campOpen">Make camp</button>
+        </div>
+        <div id="campPanel" hidden style="display:flex;flex-direction:column;gap:8px">
+          <p class="hint" id="campHint"></p>
+          <div class="seg" role="group" aria-label="Foraging result" id="forageSeg"></div>
+          <div class="row"><button type="button" class="primary" data-act="camp">Spend the night</button><button type="button" class="small" data-act="campClose">Cancel</button></div>
+        </div>
+      </section>
+      <section class="card dm-only" id="poiPanel" hidden aria-label="Place">
+        <h3 id="poiTitle">New place</h3>
+        <label>Kind of place<select id="poiType"></select></label>
+        <label>Name<input id="poiName" type="text" placeholder="Ruined watchtower"></label>
+        <label>DM note<textarea id="poiNote" placeholder="What's here, and what it hints at"></textarea></label>
+        <label style="flex-direction:row;align-items:center;gap:8px;color:var(--ink)"><input id="poiTall" type="checkbox"> Tall: seen from afar (greyed out until reached)</label>
+        <label style="flex-direction:row;align-items:center;gap:8px;color:var(--ink)"><input id="poiSecret" type="checkbox"> Secret: never shown on the player map</label>
+        <div class="row"><button type="button" class="primary" data-act="poiSave">Save place</button><button type="button" data-act="poiDelete" id="poiDel">Remove</button><button type="button" data-act="poiCancel">Cancel</button></div>
+      </section>
+      <section class="card log" aria-label="Exploration log">
+        <h3>Exploration log</h3>
+        <ol id="logList"></ol>
+      </section>
+    </aside>
+  </div>
+</div>
+
+<script>
+(function(){
+const T={
+  sea:{name:'Sea',hours:null,h:0,canopy:false,forage:null,enc:0,table:null},
+  beach:{name:'Beach',hours:1,h:0,canopy:false,forage:10,enc:1,table:'coast'},
+  river:{name:'River or clearing',hours:1,h:0,canopy:false,forage:8,enc:1,table:'coast'},
+  jungle:{name:'Jungle',hours:2,h:1,canopy:true,forage:12,enc:1,table:'jungle'},
+  swamp:{name:'Swamp',hours:3,h:0,canopy:true,forage:13,enc:2,table:'swamp'},
+  hills:{name:'Hills',hours:2,h:2,canopy:false,forage:13,enc:1,table:'high'},
+  ruins:{name:'Ruins',hours:2,h:1,canopy:true,forage:15,enc:2,table:'ruins'},
+  peak:{name:'Peak or cliffs',hours:3,h:3,canopy:false,forage:15,enc:1,table:'high'},
+  rim:{name:'Crater rim',hours:2,h:3,canopy:false,forage:15,enc:1,table:'high'},
+  crater:{name:'The Crater',hours:null,h:0,canopy:false,forage:null,enc:0,table:null}};
+const ORDER=['sea','beach','river','jungle','swamp','hills','ruins','peak','rim','crater'];
+const HN=['Low','Mid','High','Peak'];const SIGHT=[3,4,6,10];
+const TABLES={
+  coast:['Huge tracks lead from the jungle into the water.','The wreck of an earlier expedition\'s boat, with a few supplies left.','Shore hunters burst from the sand. Combat.','A freshwater spring. Foraging succeeds automatically tonight.','A rival party\'s camp, recently abandoned.','Every bird takes flight inland at once. Something is coming.'],
+  jungle:['A predator stalks the party. Fight it or lose it.','A hidden pit or strangling vines. Dexterity save, or lose 1 hour.','A carved stone half-buried in roots, pointing toward ruins.','Fruit trees. Gain 1 day of supplies.','A swarm of insects. No rest tonight without shelter or smoke.','The jungle goes silent. Something no one has ever seen passes close by.'],
+  swamp:['Sinking mud. Strength check, or lose 1 day of supplies.','Foul water. Constitution save, or poisoned until a long rest.','Something large moves beneath the water.','A sunken causeway built by the island\'s old inhabitants. The next swamp hex costs 1 hour.','Leeches, everywhere.','Lights move in the mist at night, keeping their distance.'],
+  ruins:['Carvings of the island\'s old inhabitants, showing the light and figures kneeling.','A collapse. Dexterity save, or take damage.','A creature nests in the ruins.','A sealed chamber. The DM decides what is inside.','The remains of a failed expedition, and a journal.','A mechanism of unknown purpose, far too heavy to carry.'],
+  high:['A perfectly clear sky. Sight range +2 hexes this block.','Strong winds from the Crater. Climbing and ranged attacks are harder.','Winged creatures circle overhead.','A rockslide. Dexterity save, or take damage.','The party spots a possible way down into the Crater.','At the rim, the light is blinding. No long rest without shelter.']};
+const KEY='island-explorer-v2';
+const PT={
+  ruins:{name:'Ruins',tall:false,icon:'M-7 6H7M-5 6V-2M-5 -2H-2V6M1 6V-6M1 -6H4V6'},
+  tower:{name:'Watchtower',tall:true,icon:'M-3 7L-2 -3H2L3 7ZM-4 -3H4V-7H2V-5H1V-7H-1V-5H-2V-7H-4Z'},
+  village:{name:'Abandoned village',tall:false,icon:'M-7 6V0L-4 -3L-1 0V6ZM1 6V-1L4 -4L7 -1V6Z'},
+  lair:{name:'Monster lair',tall:false,icon:'M-5 -6Q-1 0 -4 6M-1 -7Q3 0 0 7M3 -6Q7 0 4 6'},
+  wreck:{name:'Wreck',tall:false,icon:'M-7 1H7L4 6H-4ZM0 1V-7M0 -6L5 -2H0'},
+  water:{name:'Spring or falls',tall:false,icon:'M0 -7C4 -2 6 1 6 3A6 6 0 0 1 -6 3C-6 1 -4 -2 0 -7Z'},
+  way:{name:'Way down',tall:false,icon:'M-7 -6H-3V-2H1V2H5V6'},
+  other:{name:'Other',tall:false,icon:'M0 -6A6 6 0 1 1 0 6A6 6 0 1 1 0 -6ZM0 -1V1'}};
+const ptOf=p=>PT[p.type]||PT.other;
+const R=20,CW=Math.sqrt(3)*R,RH=1.5*R,PAD=14;
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const d6=()=>1+Math.floor(Math.random()*6);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function rng(seed){let s=seed|0;return()=>{s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+
+/* ---------- hex geometry (pointy-top, odd rows shifted right) ---------- */
+let S=null;
+const idx=(c,r)=>r*S.cols+c;
+const cr=i=>[i%S.cols,Math.floor(i/S.cols)];
+const px=(c,r)=>[PAD+CW*(c+0.5*(r&1))+CW/2,PAD+R+RH*r];
+function cube(c,r){const q=c-(r-(r&1))/2;return [q,r,-q-r];}
+function dist(a,b){const [c1,r1]=cr(a),[c2,r2]=cr(b);const x=cube(c1,r1),y=cube(c2,r2);return Math.max(Math.abs(x[0]-y[0]),Math.abs(x[1]-y[1]),Math.abs(x[2]-y[2]));}
+const NB=[[[1,0],[0,-1],[-1,-1],[-1,0],[-1,1],[0,1]],[[1,0],[1,-1],[0,-1],[-1,0],[0,1],[1,1]]];
+function neighbors(i){const [c,r]=cr(i);return NB[r&1].map(([dc,dr])=>[c+dc,r+dr]).filter(([a,b])=>a>=0&&b>=0&&a<S.cols&&b<S.rows).map(([a,b])=>idx(a,b));}
+function hexPath(c,r){const [x,y]=px(c,r);let p='';for(let k=0;k<6;k++){const a=Math.PI/180*(60*k-30);p+=(k?'L':'M')+(x+R*Math.cos(a)).toFixed(1)+' '+(y+R*Math.sin(a)).toFixed(1);}return p+'Z';}
+const passable=i=>T[S.hex[i].t].hours!=null;
+const heightOf=i=>S.hex[i].h!=null?S.hex[i].h:T[S.hex[i].t].h;
+
+/* ---------- island generation ---------- */
+function generate(seed,name,supplies){
+  const cols=24,rows=24,rand=rng(seed);
+  const st={v:1,example:false,name:name||'The Island',cols,rows,seed,hex:[],pois:[],party:null,climbed:false,lost:false,drift:false,lostFrom:null,
+    explored:[],seen:[],tallSeen:[],trail:[],day:1,hour:6,hoursToday:0,blockHours:0,checked:false,supplies:supplies==null?12:supplies,exhaustion:0,log:[],prompt:null,lastEnc:null};
+  S=st;
+  const W=PAD*2+CW*(cols+0.5),H=PAD*2+RH*(rows-1)+2*R,cx=W/2,cy=H/2;
+  const ph=[rand()*6.28,rand()*6.28,rand()*6.28],nf=[[rand()*0.03+0.015,rand()*6.28,rand()*0.03+0.015,rand()*6.28],[rand()*0.05+0.03,rand()*6.28,rand()*0.05+0.03,rand()*6.28]];
+  const noise=(x,y)=>0.6*Math.sin(x*nf[0][0]+nf[0][1])*Math.cos(y*nf[0][2]+nf[0][3])+0.4*Math.sin(x*nf[1][0]+y*0.01+nf[1][1])*Math.cos(y*nf[1][2]-x*0.01+nf[1][3]);
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
+    const [x,y]=px(c,r),dx=x-cx,dy=y-cy,dd=Math.hypot(dx,dy)/CW,ang=Math.atan2(dy,dx);
+    const coast=8.4+0.8*Math.sin(3*ang+ph[0])+0.5*Math.sin(5*ang+ph[1])+0.3*Math.sin(7*ang+ph[2]);
+    let t;
+    if(dd>coast)t='sea';else if(dd<2.6)t='crater';else if(dd<3.6)t='rim';
+    else{const n=noise(x,y);t=n>0.72?'peak':n>0.42?'hills':(n<-0.5&&dd>coast-3.2)?'swamp':'jungle';}
+    st.hex.push({t,h:null});
+  }
+  for(let i=0;i<st.hex.length;i++){const t=st.hex[i].t;if(t!=='sea'&&t!=='crater'&&t!=='rim'&&neighbors(i).some(j=>st.hex[j].t==='sea'))st.hex[i].t=t==='peak'||t==='hills'?'peak':'beach';}
+  // river from the rim to the sea
+  const rimHexes=st.hex.map((h,i)=>i).filter(i=>st.hex[i].t==='rim');
+  let cur=rimHexes[Math.floor(rand()*rimHexes.length)],center=idx(Math.floor(cols/2),Math.floor(rows/2)),guard=0;
+  const centerPx=[cx,cy];const cd=i=>{const [c,r]=cr(i);const [x,y]=px(c,r);return Math.hypot(x-centerPx[0],y-centerPx[1]);};
+  while(guard++<40){const nb=neighbors(cur).filter(j=>cd(j)>cd(cur)+2);if(!nb.length)break;const nx=nb[Math.floor(rand()*nb.length)];if(st.hex[nx].t==='sea')break;st.hex[nx].t='river';cur=nx;}
+  // ruins clusters in the jungle
+  const jungle=st.hex.map((h,i)=>i).filter(i=>st.hex[i].t==='jungle'&&cd(i)/CW>4.5&&cd(i)/CW<7.5);
+  for(let k=0;k<4&&jungle.length;k++){const a=jungle[Math.floor(rand()*jungle.length)];st.hex[a].t='ruins';const nb=neighbors(a).filter(j=>st.hex[j].t==='jungle');if(nb.length&&rand()<0.7)st.hex[nb[0]].t='ruins';}
+  // landing beach: westmost beach
+  const beaches=st.hex.map((h,i)=>i).filter(i=>st.hex[i].t==='beach');
+  const start=beaches.reduce((b,i)=>cr(i)[0]<cr(b)[0]?i:b,beaches[0]);
+  st.party=start;st.trail=[start];
+  return st;
+}
+function examplePois(){
+  const rand=rng((S.seed||7)*31+5);
+  const near=(pred,from,best)=>{let pick=null,bd=1e9;S.hex.forEach((h,i)=>{if(!pred(i)||S.pois.some(q=>q.i===i))return;const dd=dist(i,from);const score=best?Math.abs(dd-best):dd;if(score<bd){bd=score;pick=i;}});return pick;};
+  const p=S.party,crater=S.hex.map((h,i)=>i).filter(i=>S.hex[i].t==='crater');
+  const center=crater.length?crater[Math.floor(crater.length/2)]:idx(12,12);
+  const W=PAD*2+CW*(S.cols+0.5),H=PAD*2+RH*(S.rows-1)+2*R,cx=W/2,cy=H/2;
+  const angOf=i=>{const [x,y]=px(...cr(i));return Math.atan2(y-cy,x-cx);};
+  const radOf=i=>{const [x,y]=px(...cr(i));return Math.hypot(x-cx,y-cy)/CW;};
+  const angDiff=(a,b)=>{let d=Math.abs(a-b)%(2*Math.PI);return d>Math.PI?2*Math.PI-d:d;};
+  const pickAt=(pred,ang)=>{let best=null,bd=1e9;S.hex.forEach((h,i)=>{if(!pred(i)||S.pois.some(q=>q.i===i))return;const s=angDiff(angOf(i),ang);if(s<bd){bd=s;best=i;}});return best;};
+  const add=(i,type,name,note,secret)=>{if(i!=null)S.pois.push({id:'p'+S.pois.length,i,type,name,note,tall:PT[type].tall,secret:!!secret});};
+  const land=i=>passable(i)&&S.hex[i].t!=='rim';
+  // watchtowers ringing the rim, built to keep watch over the Crater
+  const a0=rand()*6.28,towerNames=['North watchtower','East watchtower','South watchtower','West watchtower'];
+  for(let k=0;k<4;k++)add(pickAt(i=>land(i)&&neighbors(i).some(j=>S.hex[j].t==='rim'),a0+k*Math.PI/2),'tower',towerNames[k],'One of the towers the island\'s old inhabitants built to keep watch over the Crater. From the top, sight range is 10 hexes.');
+  // abandoned villages in the outer jungle and along the river
+  const a1=rand()*6.28;
+  ['Village of empty doorways','Stilt village','Terraced village'].forEach((n,k)=>add(pickAt(i=>['jungle','river','beach','swamp'].includes(S.hex[i].t)&&radOf(i)>4.6&&radOf(i)<7.4,a1+k*2.1),'village',n,'Houses of the island\'s old inhabitants, left in a hurry. Tools, pottery, and no bodies.'));
+  // clusters of creatures
+  const a2=rand()*6.28;
+  ['Nesting grounds','Bone-strewn hollow','Hive in the canopy','Drowned den'].forEach((n,k)=>add(pickAt(i=>['jungle','swamp','hills','ruins'].includes(S.hex[i].t)&&radOf(i)>4&&radOf(i)<8,a2+k*1.57+0.6),'lair',n,'A cluster of creatures no one has named yet. Dangerous to cross; worth avoiding or scouting first.'));
+  add(near(i=>S.hex[i].t==='beach'&&i!==p,p,3),'wreck','Wreck of the Saltwren','A rival expedition\'s boat, broken on the rocks. Two days of supplies in the hold, and the captain\'s log.');
+  add(near(i=>S.hex[i].t==='ruins',center,4),'ruins','Hall of kneeling figures','Carvings show the light and people kneeling toward it. A clue to who lived here.');
+  add(near(i=>S.hex[i].t==='river'&&neighbors(i).some(j=>S.hex[j].t==='rim'),center,3),'water','Falls into the deep','The river pours over the rim and vanishes into the Crater.');
+  add(near(i=>S.hex[i].t==='rim',p,10),'way','A way down','A ledge and old carved steps lead below the rim. The first descent starts here.',true);
+  S.pois.forEach(q=>{if(q.type==='water')q.tall=true;});
+}
+
+/* ---------- visibility ---------- */
+const has=(arr,v)=>arr.indexOf(v)>=0;
+const addTo=(arr,v)=>{if(!has(arr,v))arr.push(v);};
+function sight(){const i=S.party;if(i==null)return 0;const t=T[S.hex[i].t];if(t.canopy&&!S.climbed)return 1;return SIGHT[clamp(heightOf(i)+(S.climbed?1:0),0,3)];}
+function underCanopy(){return S.party!=null&&T[S.hex[S.party].t].canopy&&!S.climbed;}
+function updateVis(){
+  if(S.party==null)return;const rng_=sight();
+  addTo(S.explored,S.party);
+  for(let i=0;i<S.hex.length;i++)if(dist(i,S.party)<=rng_)addTo(S.seen,i);
+  S.pois.forEach(p=>{if(p.tall&&!underCanopy()&&dist(p.i,S.party)<=rng_*2)addTo(S.tallSeen,p.id);});
+}
+const isDay=()=>S.hour<20;
+
+/* ---------- rendering ---------- */
+let view='dm',mode='play',paintT='jungle',editPoi=null,painting=false,campForage='none';
+const MODES=[['play','Move party'],['paint','Paint terrain'],['height','Height'],['place','Places'],['fog','Reveal'],['party','Set party']];
+const HELP={play:'Click a neighboring hex to move the party. The tool adds the hours and reveals what they see.',paint:'Pick a terrain, then click or drag across hexes.',height:'Click a hex to cycle its height: terrain default, Low, Mid, High, Peak.',place:'Click a hex to add a place, or click a marked place to edit it.',fog:'Click a hex to reveal it to the players, or hide it again.',party:'Click a hex to put the party there without spending time.'};
+function render(){
+  document.body.classList.toggle('sharing',view==='player');
+  $('islandName').textContent=S.name;
+  $('viewBtn').textContent=view==='player'?'Back to DM view':'Player view';
+  $('modeSeg').innerHTML=MODES.map(([k,n])=>`<button type="button" class="${mode===k?'on':''}" data-act="mode" data-m="${k}" aria-pressed="${mode===k}">${n}</button>`).join('');
+  $('modeHelp').textContent=HELP[mode];
+  $('palette').hidden=mode!=='paint';
+  $('palette').innerHTML=ORDER.map(k=>`<button type="button" class="swatch ${paintT===k?'on':''}" data-act="paintT" data-t="${k}"><i style="background:var(--t-${k})"></i>${T[k].name}</button>`).join('');
+  $('legend').innerHTML=ORDER.filter(k=>k!=='sea').map(k=>`<span><i style="background:var(--t-${k})"></i>${T[k].name}${T[k].hours?` · ${T[k].hours} h`:''}</span>`).join('')+`<span><i style="background:var(--fog)"></i>Unexplored</span>`+
+    Object.entries(PT).filter(([k])=>k!=='other').map(([k,v])=>`<span class="${k==='way'||k==='lair'?'':''}"><svg width="16" height="16" viewBox="-9 -9 18 18" aria-hidden="true"><path d="${v.icon}" fill="none" stroke="var(--ink)" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></svg>${v.name}</span>`).join('');
+  $('map').style.touchAction=mode==='paint'&&view==='dm'?'none':'auto';
+  drawMap();renderSide();
+}
+function drawMap(){
+  const W=PAD*2+CW*(S.cols+0.5),H=PAD*2+RH*(S.rows-1)+2*R;
+  const svg=$('map');svg.setAttribute('viewBox',`0 0 ${W.toFixed(0)} ${H.toFixed(0)}`);
+  const P=view==='player';let g='';
+  for(let i=0;i<S.hex.length;i++){
+    const [c,r]=cr(i),h=S.hex[i],seen=has(S.seen,i),exp=has(S.explored,i);
+    let fill,op=1,stroke='var(--line)';
+    if(h.t==='sea'){fill='var(--t-sea)';stroke='var(--t-sea)';}
+    else if(P&&!seen&&!exp){fill='var(--fog)';stroke='var(--fog-edge)';}
+    else{fill=`var(--t-${h.t})`;if(!exp)op=P?0.62:0.82;}
+    g+=`<path d="${hexPath(c,r)}" fill="${fill}" fill-opacity="${op}" stroke="${stroke}" stroke-width=".7" data-i="${i}"/>`;
+    if(!P&&h.t!=='sea'&&!seen&&!exp)g+=`<path d="${hexPath(c,r)}" fill="url(#fogHatch)" pointer-events="none"/>`;
+    if(h.t==='ruins'&&(!P||seen||exp)&&!S.pois.some(q=>q.i===i)){const [x,y]=px(c,r);g+=`<path d="${PT.ruins.icon}" transform="translate(${x} ${y}) scale(.85)" fill="none" stroke="var(--ink)" stroke-width="1.6" stroke-linecap="round" opacity=".7" pointer-events="none"/>`;}
+    if(!P&&h.h!=null){const [x,y]=px(c,r);g+=`<text x="${x}" y="${y+4}" text-anchor="middle" font-size="10" font-weight="700" fill="var(--ink)" pointer-events="none">${HN[h.h][0]}</text>`;}
+  }
+  // the light
+  const cr_=S.hex.map((h,i)=>i).filter(i=>S.hex[i].t==='crater');
+  let lx=0,ly=0;if(cr_.length){cr_.forEach(i=>{const [x,y]=px(...cr(i));lx+=x;ly+=y;});lx/=cr_.length;ly/=cr_.length;
+    g+=`<circle cx="${lx}" cy="${ly}" r="26" fill="var(--light)" opacity=".25" class="rod" pointer-events="none"/><circle cx="${lx}" cy="${ly}" r="10" fill="var(--light)" opacity=".6" pointer-events="none"/><circle cx="${lx}" cy="${ly}" r="4" fill="var(--light)" pointer-events="none"/><circle cx="${lx}" cy="${ly}" r="16" fill="transparent" data-tip="light" style="cursor:help"/>`;}
+  // trail
+  let trail=S.trail;if(P&&S.lost&&S.lostFrom!=null)trail=trail.slice(0,S.lostFrom);
+  if(trail.length>1)g+=`<polyline points="${trail.map(i=>px(...cr(i)).join(',')).join(' ')}" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-dasharray="1 5" stroke-linecap="round" pointer-events="none"/>`;
+  // places
+  S.pois.forEach(p=>{
+    const [x,y]=px(...cr(p.i));const found=has(S.explored,p.i),faraway=p.tall&&has(S.tallSeen,p.id);
+    let show=!P||(!p.secret&&(found||faraway));if(!show)return;
+    const grey=P&&!found;
+    const col=grey?'var(--muted)':p.secret?'var(--crit)':'var(--ink)';
+    const ring=p.type==='lair'?'var(--crit)':p.tall?'var(--light)':col;
+    g+=`<g data-i="${p.i}" data-poi="${esc(p.id)}" data-grey="${grey?1:0}" aria-label="${esc(p.name)}"><circle cx="${x}" cy="${y}" r="11" fill="${grey?'var(--fog)':'var(--surface)'}" stroke="${grey?'var(--muted)':ring}" stroke-width="1.8" ${grey?'stroke-dasharray="2 2"':''}/>`+
+      `<path d="${ptOf(p).icon}" transform="translate(${x} ${y}) scale(.8)" fill="none" stroke="${col}" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></g>`;
+  });
+  // party
+  if(S.party!=null&&!(P&&S.lost)){const [x,y]=px(...cr(S.party));
+    g+=`<g pointer-events="none"><circle cx="${x}" cy="${y}" r="9" fill="var(--accent)" stroke="var(--surface)" stroke-width="2.5"/><circle cx="${x}" cy="${y}" r="3" fill="var(--surface)"/></g>`;
+    if(!P&&S.lost)g+=`<text x="${x}" y="${y+22}" text-anchor="middle" font-size="11" font-weight="700" fill="var(--crit)" pointer-events="none">LOST</text>`;}
+  if(!P&&mode==='play'&&S.party!=null)neighbors(S.party).filter(passable).forEach(j=>{g+=`<path d="${hexPath(...cr(j))}" fill="none" stroke="var(--accent)" stroke-width="1.6" pointer-events="none"/>`;});
+  svg.innerHTML=`<defs><pattern id="fogHatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="var(--fog-edge)" stroke-width="1" opacity=".5"/></pattern></defs>`+g;
+}
+function clockText(){const h=Math.floor(S.hour)%24;return `${String(h).padStart(2,'0')}:00`;}
+function renderSide(){
+  const t=S.party!=null?T[S.hex[S.party].t]:null;
+  $('clock').textContent=`Day ${S.day}`;
+  $('clockSub').textContent=`${clockText()} · ${isDay()?'daylight':'night'}`;
+  const pct=Math.min(100,S.hoursToday/8*100),over=S.hoursToday>8;
+  const adj=f=>`<div class="adj dm-only"><button type="button" data-act="adj" data-f="${f}" data-d="-1" aria-label="Lower ${f}">−</button><button type="button" data-act="adj" data-f="${f}" data-d="1" aria-label="Raise ${f}">+</button></div>`;
+  $('stats').innerHTML=
+    `<div class="stat"><span class="lbl">Standing in</span><span>${t?esc(t.name):'–'} <span class="hint">${S.party!=null?HN[heightOf(S.party)]+(S.climbed?', climbed':'')+(t.canopy&&!S.climbed?', under canopy':''):''}</span></span><span></span></div>`+
+    `<div class="stat"><span class="lbl">Sight range</span><span class="num">${sight()} ${sight()===1?'hex':'hexes'}</span><span></span></div>`+
+    `<div class="stat"><span class="lbl">Travel today</span><span><span class="num">${S.hoursToday} of 8 hours</span><div class="bar" aria-hidden="true"><span class="${over?'over':''}" style="width:${pct}%"></span></div></span><span></span></div>`+
+    `<div class="stat"><span class="lbl">Supplies</span><span><span class="big num">${S.supplies}</span> <span class="hint">days</span></span>${adj('supplies')}</div>`+
+    `<div class="stat"><span class="lbl">Exhaustion</span><span><span class="chip ${S.exhaustion===0?'c-good':S.exhaustion<3?'c-warn':'c-crit'}">Level ${S.exhaustion}</span> <span class="hint">${S.exhaustion?'−'+(2*S.exhaustion)+' to d20 tests':'Rested'}</span></span>${adj('exhaustion')}</div>`+
+    `<div class="stat dm-only"><span class="lbl">Bearings</span><span>${S.lost?'<span class="chip c-crit">Lost</span> <span class="hint">Players can\'t see their position</span>':S.drift?'<span class="chip c-warn">Will drift</span> <span class="hint">Next move goes astray</span>':'<span class="chip c-good">Sure</span>'}</span><span></span></div>`+
+    `<div class="stat dm-only"><span class="lbl">Mapped</span><span class="num hint">${S.explored.length} hexes walked · ${S.seen.length} seen</span><span></span></div>`+
+    `<div class="stat dm-only"><span class="lbl">Shape seed</span><span class="num">${S.seed!=null?S.seed:'–'}</span><span></span></div>`;
+  renderPrompts();
+  $('climbBtn').disabled=S.climbed||S.party==null;
+  const tf=t&&t.forage!=null?t.forage:null;
+  $('campHint').textContent=tf!=null?`Foraging here: Wisdom (Survival) DC ${tf}, rolled by a player. Then the night costs 1 day of supplies and the tool rolls for a night encounter.`:'';
+  $('forageSeg').innerHTML=[['none','No one forages'],['fail','Failed'],['success','Success (+1)'],['great','Beat by 5 (+2)']].map(([k,n])=>`<button type="button" class="${campForage===k?'on':''}" data-act="forage" data-k="${k}">${n}</button>`).join('');
+  $('logList').innerHTML=S.log.length?S.log.map(l=>`<li><span class="when">${esc(l.when)}</span>${l.lines.map(x=>`<span class="det">${esc(x)}</span>`).join('')}</li>`).join(''):'<li class="hint">Nothing logged yet. Moves, encounters and camps appear here.</li>';
+}
+function renderPrompts(){
+  const out=[];
+  const needLost=S.party!=null&&underCanopy()&&isDay()&&!S.lost&&!S.drift&&!S.checked&&!S.prompt;
+  if(S.prompt&&S.prompt.type==='encounter'){
+    const e=S.prompt;
+    out.push(`<div class="prompt"><span class="eyebrow">End of a travel block · ${esc(T[e.t].name)}</span>
+      ${e.result?(e.result.hit?`<span class="big">Encounter</span><span class="hint">d6 ${e.result.d} (encounter on ${T[e.t].enc===2?'1–2':'1'}), table d6 ${e.result.d2}</span><span>${esc(e.result.text)}</span>`:`<span class="big">Nothing stirs</span><span class="hint">d6 ${e.result.d}. The party keeps moving.</span>`)
+        :`<span>Roll for an encounter on the ${esc(T[e.t].name.toLowerCase())} table.</span>`}
+      <div class="row">${e.result?'<button type="button" class="small primary" data-act="encDone">Continue</button>':'<button type="button" class="small primary" data-act="encRoll">Roll the encounter</button>'}</div></div>`);
+  }
+  if(needLost)out.push(`<div class="prompt"><span class="eyebrow">Under the canopy, by day</span><span>Start of a travel block. The guide makes a Wisdom (Survival) check, DC 12.</span>
+    <div class="row"><button type="button" class="small" data-act="lost" data-r="ok">Succeeded</button><button type="button" class="small" data-act="lost" data-r="fail">Failed</button></div></div>`);
+  if(S.hoursToday>8)out.push(`<div class="prompt crit"><span class="eyebrow">Forced march</span><span>${S.hoursToday-8} ${S.hoursToday-8===1?'hour':'hours'} past 8. For each hour, each character makes a Constitution save, DC ${10+(S.hoursToday-8)}, or gains 1 level of exhaustion.</span></div>`);
+  if(!out.length)out.push(`<div class="prompt ok"><span class="hint">${S.hoursToday>=8?'The travel day is over. Make camp, or push on as a forced march.':`${4-S.blockHours>0?4-S.blockHours:4} hours left in this travel block. Click a neighboring hex to move.`}</span></div>`);
+  $('prompts').innerHTML=out.join('');
+}
+
+/* ---------- actions ---------- */
+function log(lines){S.log.unshift({when:`Day ${S.day}, ${clockText()}`,lines});}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function move(target){
+  if(S.prompt){flash('Resolve the encounter first.');return;}
+  if(!neighbors(S.party).includes(target)){flash('Move one hex at a time: pick a neighboring hex.');return;}
+  if(!passable(target)){flash(`The party can't walk into ${T[S.hex[target].t].name.toLowerCase()}.`);return;}
+  let dest=target,lines=[];
+  if(S.drift){const opts=neighbors(S.party).filter(j=>passable(j)&&j!==target);if(opts.length)dest=opts[Math.floor(Math.random()*opts.length)];
+    S.drift=false;S.lost=true;S.lostFrom=S.trail.length;lines.push('The party drifted off course without realizing it (DM only).');}
+  const t=T[S.hex[dest].t];
+  S.party=dest;S.climbed=false;S.trail.push(dest);
+  S.hoursToday+=t.hours;S.hour+=t.hours;S.blockHours+=t.hours;
+  if(S.lost&&!t.canopy){S.lost=false;S.lostFrom=null;lines.push('Out in the open, the party finds the light again.');}
+  updateVis();
+  const found=S.pois.filter(p=>p.i===dest);
+  lines.unshift(`Entered ${t.name.toLowerCase()} (${t.hours} h).`);
+  found.forEach(p=>lines.push(`Found: ${p.name}.${p.secret?' (secret)':''}`));
+  log(lines);
+  if(S.blockHours>=4){S.blockHours=0;S.checked=false;S.prompt={type:'encounter',t:S.hex[dest].t,result:null};}
+}
+function flash(msg){const p=$('prompts');p.insertAdjacentHTML('afterbegin',`<div class="prompt crit" role="status"><span>${esc(msg)}</span></div>`);}
+
+const svg=$('map');
+svg.addEventListener('pointerdown',e=>{
+  const el=e.target.closest('[data-i]');if(!el||view==='player')return;const i=+el.dataset.i;
+  if(mode==='paint'){painting=true;paint(i);e.preventDefault();return;}
+  click(i);
+});
+svg.addEventListener('pointerover',e=>{if(!painting)return;const el=e.target.closest('[data-i]');if(el)paint(+el.dataset.i);});
+window.addEventListener('pointerup',()=>{if(painting){painting=false;persist();render();}});
+function paint(i){if(S.hex[i].t===paintT)return;S.hex[i].t=paintT;S.hex[i].h=null;const el=svg.querySelector(`[data-i="${i}"]`);if(el)el.setAttribute('fill',`var(--t-${paintT})`);}
+function click(i){
+  if(mode==='play'){if(S.party==null){flash('Set the party first.');return;}move(i);}
+  else if(mode==='height'){const h=S.hex[i].h;S.hex[i].h=h==null?0:h<3?h+1:null;}
+  else if(mode==='place'){const p=S.pois.find(q=>q.i===i);openPoi(p||{id:null,i,name:'',note:'',tall:false,secret:false});return;}
+  else if(mode==='fog'){if(has(S.seen,i)||has(S.explored,i)){S.seen=S.seen.filter(x=>x!==i);S.explored=S.explored.filter(x=>x!==i);}else addTo(S.seen,i);}
+  else if(mode==='party'){if(!passable(i)){flash('The party needs solid ground.');return;}S.party=i;S.trail=[i];S.lost=false;S.drift=false;S.climbed=false;updateVis();}
+  persist();render();
+}
+function openPoi(p){editPoi=p;$('poiPanel').hidden=false;$('poiTitle').textContent=p.id?'Edit place':`New place · ${T[S.hex[p.i].t].name}`;
+  $('poiType').innerHTML=Object.entries(PT).map(([k,v])=>`<option value="${k}" ${(p.type||'other')===k?'selected':''}>${v.name}</option>`).join('');
+  $('poiType').onchange=()=>{if(!p.id)$('poiTall').checked=PT[$('poiType').value].tall;};
+  $('poiName').value=p.name;$('poiNote').value=p.note;$('poiTall').checked=p.tall;$('poiSecret').checked=p.secret;$('poiDel').hidden=!p.id;$('poiName').focus();}
+
+document.addEventListener('click',async e=>{
+  const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act;
+  switch(a){
+    case 'mode':mode=b.dataset.m;break;
+    case 'paintT':paintT=b.dataset.t;break;
+    case 'encRoll':{const p=S.prompt,t=T[p.t],d=d6(),hit=d<=t.enc;let d2=null,text='';if(hit){d2=d6();text=TABLES[t.table][d2-1];}
+      p.result={d,hit,d2,text};log([hit?`Encounter (${t.name.toLowerCase()}): ${text}`:'End of travel block: nothing stirs.']);break;}
+    case 'encDone':S.prompt=null;break;
+    case 'lost':S.checked=true;if(b.dataset.r==='fail'){S.drift=true;log(['The guide misreads the jungle. The next move will go astray (DM only).']);}else log(['The guide keeps the light in sight through the canopy.']);break;
+    case 'climb':if(S.prompt){flash('Resolve the encounter first.');return;}S.climbed=true;S.hoursToday+=1;S.hour+=1;S.blockHours+=1;
+      const wasLost=S.lost;S.lost=false;S.lostFrom=null;S.drift=false;updateVis();log([`Climbed for a better view (1 h). Sight range ${sight()} hexes.`+(wasLost?' The party sees the light and finds its bearings.':'')]);
+      if(S.blockHours>=4){S.blockHours=0;S.checked=false;S.prompt={type:'encounter',t:S.hex[S.party].t,result:null};}break;
+    case 'campOpen':campForage='none';$('campPanel').hidden=false;render();return;
+    case 'campClose':$('campPanel').hidden=true;return;
+    case 'forage':campForage=b.dataset.k;renderSide();return;
+    case 'camp':{const t=T[S.hex[S.party].t];const lines=[];
+      const gain=campForage==='success'?1:campForage==='great'?2:0;if(campForage!=='none')lines.push(gain?`Foraged ${gain} ${gain===1?'day':'days'} of supplies.`:'Foraging found nothing.');
+      S.supplies+=gain;
+      if(S.supplies>0){S.supplies-=1;lines.push(`Ate and drank: 1 day of supplies (${S.supplies} left).`);}
+      else{S.exhaustion=clamp(S.exhaustion+1,0,6);lines.push('No food or water tonight: each character gains 1 level of exhaustion.');}
+      const d=d6(),hit=d<=t.enc;if(hit){const d2=d6();lines.push(`Night encounter (${t.name.toLowerCase()}): ${TABLES[t.table][d2-1]}`);}else lines.push('A quiet night.');
+      if(S.lost){S.lost=false;S.lostFrom=null;lines.push('At night the light shows the way. The party finds its bearings.');}
+      S.drift=false;S.day+=1;S.hour=6;S.hoursToday=0;S.blockHours=0;S.checked=false;S.climbed=false;S.prompt=null;updateVis();
+      S.log.unshift({when:`Night of day ${S.day-1}`,lines});$('campPanel').hidden=true;break;}
+    case 'adj':{const f=b.dataset.f,dl=+b.dataset.d;if(f==='supplies')S.supplies=clamp(S.supplies+dl,0,99);if(f==='exhaustion')S.exhaustion=clamp(S.exhaustion+dl,0,6);break;}
+    case 'poiSave':{const p=editPoi;if(!p)return;p.type=$('poiType').value;p.name=$('poiName').value.trim()||PT[p.type].name;p.note=$('poiNote').value.trim();p.tall=$('poiTall').checked;p.secret=$('poiSecret').checked;
+      if(!p.id){p.id='p'+Date.now();S.pois.push(p);}editPoi=null;$('poiPanel').hidden=true;updateVis();break;}
+    case 'poiDelete':if(editPoi&&editPoi.id)S.pois=S.pois.filter(p=>p.id!==editPoi.id);editPoi=null;$('poiPanel').hidden=true;break;
+    case 'poiCancel':editPoi=null;$('poiPanel').hidden=true;return;
+    case 'zoom':{const z=+b.dataset.z;applyZoom(z===0?1:zoom*(z>0?1.25:0.8));return;}
+    case 'resetMap':official();$('ioPanel').hidden=true;break;
+    case 'copyJson':{const t=$('jsonOut');try{await navigator.clipboard.writeText(t.value);b.textContent='Copied';}catch(err){t.focus();t.select();b.textContent='Selected, press Ctrl+C';}return;}
+    case 'loadPasted':loadText($('jsonIn').value);return;
+    case 'pickFile':$('fileIn').click();return;
+    case 'closeIo':$('ioPanel').hidden=true;return;
+    default:return;
+  }
+  persist();render();
+});
+/* ---------- zoom and hover names ---------- */
+let zoom=1;
+function applyZoom(nz){
+  const box=$('mapbox'),svgEl=$('map');
+  const cxr=(box.scrollLeft+box.clientWidth/2)/Math.max(1,box.scrollWidth),cyr=(box.scrollTop+box.clientHeight/2)/Math.max(1,box.scrollHeight);
+  zoom=clamp(Math.round(nz*100)/100,1,4);
+  svgEl.style.width=(zoom*100)+'%';svgEl.style.minWidth=(520*zoom)+'px';
+  $('zoomLbl').textContent=Math.round(zoom*100)+'%';
+  requestAnimationFrame(()=>{box.scrollLeft=cxr*box.scrollWidth-box.clientWidth/2;box.scrollTop=cyr*box.scrollHeight-box.clientHeight/2;});
+}
+$('mapbox').addEventListener('wheel',e=>{if(!e.ctrlKey&&!e.metaKey)return;e.preventDefault();applyZoom(zoom*(e.deltaY<0?1.15:1/1.15));},{passive:false});
+const tip=$('tip');
+svg.addEventListener('pointermove',e=>{
+  const P=view==='player';let html=null;
+  const lt=e.target.closest('[data-tip="light"]');
+  const g=e.target.closest('[data-poi]');
+  const hx=e.target.closest('[data-i]');
+  if(lt)html='<strong>The light</strong>A rod of light rising from the heart of the Crater. Seen from anywhere on the island; at night it always shows the way.';
+  else if(g){const p=S.pois.find(q=>q.id===g.dataset.poi);if(p){const grey=g.dataset.grey==='1';
+    html=`<strong>${esc(p.name)}${grey?'?':''}</strong>${esc(ptOf(p).name)}${grey?' · seen from afar':''}${!P&&p.secret?' · secret':''}${!P&&p.note?`<br><span style="opacity:.8">${esc(p.note)}</span>`:''}`;}}
+  else if(hx){const i=+hx.dataset.i;if(S.hex[i].t==='crater'&&(!P||has(S.seen,i)||has(S.explored,i)))html='<strong>The Crater</strong>A hole no one has seen the bottom of. It can\'t be entered on foot: find a way down from the rim.';}
+  if(!html){tip.hidden=true;return;}
+  tip.innerHTML=html;
+  const box=$('mapbox').getBoundingClientRect();
+  tip.hidden=false;
+  let x=e.clientX-box.left+$('mapbox').scrollLeft+14,y=e.clientY-box.top+$('mapbox').scrollTop+14;
+  const maxX=$('mapbox').scrollLeft+$('mapbox').clientWidth-tip.offsetWidth-8;if(x>maxX)x=maxX;
+  tip.style.left=x+'px';tip.style.top=y+'px';
+});
+svg.addEventListener('pointerleave',()=>{tip.hidden=true;});
+$('resetBtn').onclick=()=>showIo(`<h3>Reset the map?</h3><p>This brings back the official island with its places, and clears the party's exploration, the log and any terrain you repainted.</p><div class="row"><button type="button" class="small primary" data-act="resetMap">Reset the map</button><button type="button" class="small" data-act="closeIo">Cancel</button></div>`);
+$('viewBtn').onclick=()=>{view=view==='player'?'dm':'player';$('poiPanel').hidden=true;$('campPanel').hidden=true;render();};
+
+/* ---------- save and load ---------- */
+const fileName=()=>(S.name||'island').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')+`-day-${S.day}.json`;
+function showIo(h){$('ioBody').innerHTML=h;$('ioPanel').hidden=false;}
+$('saveBtn').onclick=()=>{
+  const json=JSON.stringify(S);
+  try{const u=URL.createObjectURL(new Blob([json],{type:'application/json'}));const a=document.createElement('a');a.href=u;a.download=fileName();document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1000);
+    showIo(`<p>Map saved as <strong>${esc(fileName())}</strong>. Load it next session to continue.</p><div class="row"><button type="button" class="small" data-act="closeIo">Close</button></div>`);return;}catch(err){}
+  showIo(`<h3>Save this map</h3><p class="hint">Copy this text into a file. Paste it back with "Load map" next session.</p><textarea id="jsonOut" readonly style="min-height:150px">${esc(json)}</textarea><div class="row"><button type="button" class="small primary" data-act="copyJson">Copy</button><button type="button" class="small" data-act="closeIo">Close</button></div>`);
+};
+$('loadBtn').onclick=()=>showIo(`<h3>Load a map</h3><p class="hint">Choose a saved map file, or paste its text.</p><div class="row"><button type="button" class="small primary" data-act="pickFile">Choose file</button></div><label>Or paste saved text<textarea id="jsonIn" style="min-height:110px"></textarea></label><p id="loadMsg" class="hint"></p><div class="row"><button type="button" class="small" data-act="loadPasted">Load pasted text</button><button type="button" class="small" data-act="closeIo">Close</button></div>`);
+$('fileIn').onchange=()=>{const f=$('fileIn').files[0];if(!f)return;const r=new FileReader();r.onload=()=>loadText(String(r.result));r.readAsText(f);$('fileIn').value='';};
+function loadText(t){try{const p=JSON.parse(t);if(!p||p.v!==1||!Array.isArray(p.hex)||p.hex.length!==p.cols*p.rows)throw 0;(p.pois||[]).forEach(q=>{if(!q.type)q.type='other';});S=p;persist();$('ioPanel').hidden=true;render();}
+  catch(err){const m=$('loadMsg');if(m){m.textContent='That file isn\'t a saved map from this tool. Check that you picked the right file.';m.style.color='var(--crit)';}}}
+
+/* ---------- start ---------- */
+try{const raw=localStorage.getItem(KEY);if(raw){const p=JSON.parse(raw);if(p&&p.v===1&&Array.isArray(p.hex))S=p;}}catch(e){}
+function official(){generate(7,'The Island',12);examplePois();updateVis();}
+if(!S||S.seed!==7)official();
+S.example=false;
+render();
+})();
+</script>
+
+</body></html>

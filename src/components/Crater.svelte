@@ -1,7 +1,19 @@
 <script lang="ts">
+  import { url } from '../lib/url';
   import { ERAS, CHARTED, KNOWLEDGE_LABEL, RELICS, RARITIES, tabsFor, type Knowledge } from '../data/crater';
 
   let eraId = $state(2);
+  let mapFrame: HTMLIFrameElement | undefined = $state();
+
+  // The island map is a same-origin page: size the frame to its content so the page has one scrollbar.
+  function fitMap() {
+    const doc = mapFrame?.contentDocument;
+    if (!doc) return;
+    const size = () => { if (mapFrame) mapFrame.style.height = Math.ceil(doc.body.getBoundingClientRect().height) + 'px'; };
+    size();
+    new ResizeObserver(size).observe(doc.body);
+  }
+  const mapTheme = () => (typeof document !== 'undefined' && document.querySelector('.site')?.getAttribute('data-theme')) || 'dark';
   let layer = $state(1);
   let tabId = $state('overview');
   let rarity = $state('All');
@@ -69,6 +81,7 @@
         <p class="body lede">{era.intro}</p>
         <ul class="jump control" aria-label="On this page">
           <li><a class="ws-link" href="#setting">The setting</a></li>
+          {#if eraId === 1}<li><a class="ws-link" href="#island">The island</a></li>{/if}
           <li><a class="ws-link" href="#descent">The descent</a></li>
           <li><a class="ws-link" href="#relics">Relics</a></li>
           <li><a class="ws-link" href="#running">Running the Crater</a></li>
@@ -138,6 +151,26 @@
       </div>
     </div>
   </section>
+
+  <!-- ISLAND (era 1 only) -->
+  {#if eraId === 1}
+    <section id="island" class="section section--sunken" aria-labelledby="island-title">
+      <div class="wrap">
+        <div class="sec-head">
+          <div><p class="ws-kicker label">Interactive map</p><h2 id="island-title" class="chapter-heading ws-h">The Island</h2></div>
+          <p class="rules-text muted" style="max-width: 46ch">Walk a party across the island under fog of war, hour by hour, until they find the way to the rim. Switch to Player view to share the screen.</p>
+        </div>
+        <iframe
+          bind:this={mapFrame}
+          class="island-frame"
+          title="Interactive island map"
+          src={url(`island-map.html?theme=${mapTheme()}`)}
+          onload={fitMap}
+          loading="lazy"
+        ></iframe>
+      </div>
+    </section>
+  {/if}
 
   <!-- DESCENT -->
   <section id="descent" class="section section--sunken" aria-labelledby="descent-title">
