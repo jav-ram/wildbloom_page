@@ -8,10 +8,10 @@ import '../styles/site.css';
 interface Props {
   title: string;
   description?: string;
-  current?: 'home' | 'projects' | 'crater' | 'classes' | 'simulator' | 'about';
+  current?: 'home' | 'projects' | 'below-the-light' | 'classes' | 'simulator' | 'about';
   theme?: 'light' | 'dark';
 }
-const { title, description = 'Wildbloom Studio makes free D&D 5e homebrew, the Crater, and the TTRPG Hellebore.', current, theme = 'light' } = Astro.props;
+const { title, description = 'Wildbloom Studio makes free D&D 5e homebrew, Below the Light, and the TTRPG Hellebore.', current, theme = 'light' } = Astro.props;
 import { url } from '../lib/url';
 ---
 <!doctype html>

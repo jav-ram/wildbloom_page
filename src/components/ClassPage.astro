@@ -59,7 +59,7 @@ const version = d.playtest.version.replace('Version ', '');
           <div class="ws-divider ws-divider--plain" role="separator"></div>
           {d.creating.map((p) => <p class="rules-text ws-prose">{p}</p>)}
           <p class="rules-text ws-prose"><b>Quick Build.</b> {d.quick}</p>
-          <div class="traits-grid">
+          <div class="traits-grid" style={d.lore ? undefined : 'grid-template-columns: minmax(0, 1fr)'}>
             <div class="ws-tablewrap traits" role="region" aria-label={`Core ${name} traits`} tabindex="0">
               <table class="ws-table ws-table--fit">
                 <caption class="section-heading">Core {name} Traits</caption>
@@ -70,11 +70,13 @@ const version = d.playtest.version.replace('Version ', '');
                 </tbody>
               </table>
             </div>
-            <aside class="ws-callout ws-callout--lore" aria-label="Lore">
-              <p class="ws-callout__label label">{d.lore.h.replace(/^Lore:\s*/, 'Lore · ')}</p>
-              <p class="caption muted" style="margin: 0 0 8px">{d.lore.note}</p>
-              {d.lore.p.map((p) => <p class="lore-text">{p.l && <b>{p.l} </b>}{p.t}</p>)}
-            </aside>
+            {d.lore && (
+              <aside class="ws-callout ws-callout--lore" aria-label="Lore">
+                <p class="ws-callout__label label">{d.lore.h.replace(/^Lore:\s*/, 'Lore · ')}</p>
+                <p class="caption muted" style="margin: 0 0 8px">{d.lore.note}</p>
+                {d.lore.p.map((p) => <p class="lore-text">{p.l && <b>{p.l} </b>}{p.t}</p>)}
+              </aside>
+            )}
           </div>
         </section>
 

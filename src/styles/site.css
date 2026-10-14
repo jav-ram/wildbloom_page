@@ -62,7 +62,7 @@ p{margin:0 0 var(--space-2)}
 .class-facts dd{margin:0}
 .card-link{text-decoration:none}
 
-/* crater: era bar ----------------------------------------------------- */
+/* below the light: era bar ----------------------------------------------------- */
 .era-bar{position:sticky;top:0;z-index:5;background:var(--surface-raised);border-block:3px double var(--gold)}
 .era-bar__inner{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-3);padding-block:var(--space-2)}
 .era-bar__label{margin:0;color:var(--ink-muted)}
@@ -78,18 +78,18 @@ p{margin:0 0 var(--space-2)}
 .light-dot{width:14px;height:14px;flex:none;border-radius:50%;background:var(--band-gold);box-shadow:0 0 0 3px rgba(224,182,85,.22),0 0 14px 4px rgba(224,182,85,.55)}
 .light-dot--out{background:transparent;border:2px dashed var(--ink-muted);box-shadow:none}
 
-/* crater: hero illustration ------------------------------------------ */
-.crater-fig{margin:0}
-.crater-svg{display:block;width:100%;max-width:400px;height:auto;margin:0 auto}
-.crater-svg .rim{fill:none;stroke:var(--gold)}
-.crater-svg .rod{stroke:var(--band-gold);stroke-width:3;stroke-linecap:round;filter:drop-shadow(0 0 5px rgba(224,182,85,.9)) drop-shadow(0 0 14px rgba(224,182,85,.5))}
-.crater-svg .rod--out{stroke:var(--ink-muted);stroke-width:1.5;stroke-dasharray:3 9;opacity:.6;filter:none}
-.crater-svg .halo{fill:rgba(224,182,85,.16)}
-.crater-svg .new-crater{fill:none;stroke:var(--accent);stroke-width:1.5}
-.crater-fig figcaption{text-align:center;color:var(--ink-muted);margin-top:var(--space-1)}
+/* below the light: hero illustration ------------------------------------------ */
+.well-fig{margin:0}
+.well-svg{display:block;width:100%;max-width:400px;height:auto;margin:0 auto}
+.well-svg .rim{fill:none;stroke:var(--gold)}
+.well-svg .rod{stroke:var(--band-gold);stroke-width:3;stroke-linecap:round;filter:drop-shadow(0 0 5px rgba(224,182,85,.9)) drop-shadow(0 0 14px rgba(224,182,85,.5))}
+.well-svg .rod--out{stroke:var(--ink-muted);stroke-width:1.5;stroke-dasharray:3 9;opacity:.6;filter:none}
+.well-svg .halo{fill:rgba(224,182,85,.16)}
+.well-svg .new-well{fill:none;stroke:var(--accent);stroke-width:1.5}
+.well-fig figcaption{text-align:center;color:var(--ink-muted);margin-top:var(--space-1)}
 .jump{display:flex;flex-wrap:wrap;gap:var(--space-1) var(--space-3);margin:var(--space-3) 0 0;padding:0;list-style:none}
 
-/* crater: setting tabs ------------------------------------------------ */
+/* below the light: setting tabs ------------------------------------------------ */
 .tabs{display:flex;gap:var(--space-1);border-bottom:var(--border-hairline) solid var(--gold);overflow-x:auto;margin-bottom:var(--space-4)}
 .tab{flex:none;min-height:48px;padding:0 var(--space-2);background:transparent;color:var(--ink);border:0;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
 .tab:hover{color:var(--accent)}
@@ -99,7 +99,7 @@ p{margin:0 0 var(--space-2)}
 .topic h3{color:var(--accent);margin:0 0 var(--space-1);padding-bottom:var(--space-half);border-bottom:var(--border-hairline) solid var(--gold)}
 .topic p{margin:0}
 
-/* crater: descent ----------------------------------------------------- */
+/* below the light: descent ----------------------------------------------------- */
 .descent{display:grid;grid-template-columns:320px minmax(0,1fr);gap:var(--space-5);align-items:start}
 .gauge{position:sticky;top:104px}
 .gauge__head{display:flex;justify-content:space-between;align-items:baseline;gap:var(--space-1);margin:0 0 var(--space-1)}

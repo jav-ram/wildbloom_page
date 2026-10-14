@@ -8,6 +8,16 @@
   color: var(--ink); font: 16px/1.5 var(--body);
 }
 [data-theme="dark"] .pg { --good: #6cbf8f; --bad: #e88a80; --rog: #7fc6b4; }
+/* One colour per comparison class (SRD 5.2.1), light then dark. */
+.pg {
+  --c-paladin: var(--cmp); --c-fighter: var(--ftr); --c-rogue: var(--rog);
+  --c-barbarian: #b0442a; --c-bard: #8a3f8f; --c-cleric: #5b6b8c; --c-druid: #4f7a2a; --c-monk: #c06a1a;
+  --c-ranger: #2d6a8a; --c-sorcerer: #c2307a; --c-warlock: #5a3a8a; --c-wizard: #2a4f9e;
+}
+[data-theme="dark"] .pg {
+  --c-barbarian: #f0957a; --c-bard: #d49ad8; --c-cleric: #a9b8d8; --c-druid: #9cc87a; --c-monk: #f0a868;
+  --c-ranger: #85bfdc; --c-sorcerer: #f08cbf; --c-warlock: #b39ae0; --c-wizard: #8fb0f0;
+}
 .pg [hidden] { display: none !important; }
 .pg .pgwrap { padding: 24px 24px 48px; }
 .pg * { box-sizing: border-box; }
@@ -132,5 +142,5 @@
 .pg .ref pre { font: 12.5px/1.5 var(--mono); background: var(--wash); padding: 10px; border-radius: 4px; overflow-x: auto; }
 .pg .ref table { font-size: 13.5px; }
 .pg .ref .tablewrap { margin: 6px 0 10px; }
-.pg .cmpset { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.pg .cmpset { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 12px; }
 .pg .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; }

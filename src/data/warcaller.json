@@ -632,22 +632,6 @@
    ]
   }
  ],
- "lore": {
-  "h": "Lore: Warcallers in the Crater",
-  "note": "DMs running another world can skip this section.",
-  "p": [
-   {
-    "t": "On the rim, Warcallers are everywhere and belong to everyone. The Collective hires them to keep order at the descent gates. Guilds pay them to lead expeditions. Rescue crews follow them down when a team stops sending signals."
-   },
-   {
-    "t": "Delvers have a saying: \"a planted banner is a way back.\" A Warcaller's standard tied to a ledge marks a camp that held, and a route that someone climbed out alive. Some of the oldest standards still hang far below the rim, faded and unclaimed, and finding one is both a good omen and a warning."
-   },
-   {
-    "l": "Story hook.",
-    "t": "A recruit you trained went down with a crew that never came back. Last week, someone on the rim saw your old company's sign on a banner rising from the Crater's light."
-   }
-  ]
- },
  "legal": [
   "Warcaller © 2026 Wildbloom Studio. Compatible with fifth edition. Wildbloom Studio's original content in this class is licensed under the Creative Commons Attribution 4.0 International License (CC-BY-4.0).",
   "This work includes material from the System Reference Document 5.2.1 (\"SRD 5.2.1\") by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode."

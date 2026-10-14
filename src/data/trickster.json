@@ -605,22 +605,6 @@
    ]
   }
  ],
- "lore": {
-  "h": "Lore: Tricksters in the Crater",
-  "note": "DMs running another world can skip this section.",
-  "p": [
-   {
-    "t": "On the rim, Tricksters are called riggers. No crew goes below the first floors without one, because the way down is all lines, hooks and knots, and the way back up is worse. Riggers set the anchors, test the ropes and carry the nets."
-   },
-   {
-    "t": "The creatures of the deep floors taught riggers their best tricks. Many of them hunt by sound or smell and can't be outfought, only confused, tangled or slipped past. A rigger's smoke pot is the most common way a crew gets home."
-   },
-   {
-    "l": "Story hook.",
-    "t": "A rigger you trained with sold a new kind of net to a guild on the rim. Every crew that bought one came back. The one crew that refused didn't, and the guild wants to know why."
-   }
-  ]
- },
  "legal": [
   "Trickster © 2026 Wildbloom Studio. Compatible with fifth edition. Wildbloom Studio's original content in this class is licensed under the Creative Commons Attribution 4.0 International License (CC-BY-4.0).",
   "This work includes material from the System Reference Document 5.2.1 (\"SRD 5.2.1\") by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode."

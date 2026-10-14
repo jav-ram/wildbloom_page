@@ -1,0 +1,27 @@
+{
+  "id": "simple-lines",
+  "name": "Simple lines",
+  "paper": "#f5ecd8",
+  "ink": "#2a1c16",
+  "inkSoft": "rgba(42, 28, 22, 0.28)",
+  "plum": "#6b2a4d",
+  "water": "#cfdde0",
+  "waterLine": "#7d9aa3",
+  "lines": { "thin": 1, "thick": 2.4, "minPx": 0.75, "maxPx": 4 },
+  "lod": { "fillsOnly": 10, "outlines": 22 },
+  "fonts": { "display": "'Cormorant SC', 'Cormorant Garamond', Georgia, serif", "body": "'Crimson Pro', Georgia, serif" },
+  "terrain": {
+    "sea":      { "fill": "#cfdde0", "symbol": "waves" },
+    "lake":     { "fill": "#cfdde0", "symbol": "ripples" },
+    "coast":    { "fill": "#f1e6c7", "symbol": "dots" },
+    "plains":   { "fill": null, "symbol": "grass" },
+    "valley":   { "fill": "#e3e8d1", "symbol": null },
+    "forest":   { "fill": "#cfd8b8", "symbol": "trees" },
+    "hills":    { "fill": "#e6d6a8", "symbol": "humps" },
+    "mountain": { "fill": "#d9d0c0", "symbol": "peaks" },
+    "swamp":    { "fill": "#d8dcbd", "symbol": "marsh" },
+    "desert":   { "fill": "#eddcae", "symbol": "dunes" },
+    "chasm":    { "fill": "#1a0f18", "symbol": "chasm" }
+  },
+  "unknownTerrain": { "fill": "#d6d2c8", "symbol": null }
+}

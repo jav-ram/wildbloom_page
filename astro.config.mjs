@@ -7,5 +7,7 @@ export default defineConfig({
   site: 'https://jav-ram.github.io',
   base: '/wildbloom_page',
   trailingSlash: 'always',
+  // The setting page used to live at /crater/. GitHub Pages cannot send a 301, so Astro writes a redirect page.
+  redirects: { '/crater': '/wildbloom_page/below-the-light/' },
   integrations: [svelte()],
 });

@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Island Explorer</title>
+<title>Lightrest Explorer</title>
 <script>try{var th=new URLSearchParams(location.search).get("theme");if(th==="dark"||th==="light")document.documentElement.setAttribute("data-theme",th);}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Alegreya+Sans:wght@400;500;700&display=swap">
@@ -10,7 +10,7 @@
   --accent:#7A3B57; --accent-ink:#FFF7EE; --sage:#536F58; --light:#C9922E;
   --fog:#E4D9BF; --fog-edge:#B7A57F;
   --t-sea:#BFCBC4; --t-beach:#E6D49A; --t-river:#9FC2C0; --t-jungle:#7E9B66; --t-swamp:#8C9474;
-  --t-hills:#B39C6C; --t-ruins:#A08C7A; --t-peak:#8E7F6B; --t-rim:#7A6A58; --t-crater:#2D2722;
+  --t-hills:#B39C6C; --t-ruins:#A08C7A; --t-peak:#8E7F6B; --t-rim:#7A6A58; --t-well:#2D2722;
   --good:#3F6E45; --warn:#99650F; --crit:#9E3329;
   --display:"IM Fell English", "Iowan Old Style", Georgia, serif;
   --body:"Alegreya Sans", "Gill Sans", "Segoe UI", sans-serif;
@@ -20,14 +20,14 @@
   --accent:#D69AB2; --accent-ink:#1A1014; --sage:#93B598; --light:#E3B354;
   --fog:#262B26; --fog-edge:#4A4A3C;
   --t-sea:#1C2A2B; --t-beach:#6E6342; --t-river:#2F5556; --t-jungle:#34502F; --t-swamp:#3E4634;
-  --t-hills:#5E5236; --t-ruins:#56493F; --t-peak:#5A5045; --t-rim:#4A4036; --t-crater:#060606;
+  --t-hills:#5E5236; --t-ruins:#56493F; --t-peak:#5A5045; --t-rim:#4A4036; --t-well:#060606;
   --good:#86B886; --warn:#E0AE52; --crit:#E8857A; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#121614; --surface:#1A201C; --ink:#ECE4D2; --muted:#A79D8B; --rule:#8A7243; --line:#2E3630;
   --accent:#D69AB2; --accent-ink:#1A1014; --sage:#93B598; --light:#E3B354;
   --fog:#262B26; --fog-edge:#4A4A3C;
   --t-sea:#1C2A2B; --t-beach:#6E6342; --t-river:#2F5556; --t-jungle:#34502F; --t-swamp:#3E4634;
-  --t-hills:#5E5236; --t-ruins:#56493F; --t-peak:#5A5045; --t-rim:#4A4036; --t-crater:#060606;
+  --t-hills:#5E5236; --t-ruins:#56493F; --t-peak:#5A5045; --t-rim:#4A4036; --t-well:#060606;
   --good:#86B886; --warn:#E0AE52; --crit:#E8857A; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;padding-inline:16px;padding-block:16px 48px}
@@ -100,8 +100,8 @@ header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:spac
 <div class="wrap">
   <header class="top">
     <div style="display:flex;flex-direction:column;gap:4px">
-      <span class="eyebrow">Wildbloom Studio · The Crater, era 1</span>
-      <h1 id="islandName">The Island</h1>
+      <span class="eyebrow">Wildbloom Studio · Below the Light, era 1</span>
+      <h1 id="islandName">Lightrest</h1>
     </div>
     <div class="row">
       <span class="chip c-warn player-only">Player view</span>
@@ -134,7 +134,7 @@ header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:spac
         </div>
         <span class="hint">Hover an icon to see its name. Ctrl + scroll also zooms.</span>
       </div>
-      <div class="mapbox" id="mapbox"><svg id="map" role="img" aria-label="Hex map of the island"></svg><div id="tip" class="tip" hidden></div></div>
+      <div class="mapbox" id="mapbox"><svg id="map" role="img" aria-label="Hex map of Lightrest"></svg><div id="tip" class="tip" hidden></div></div>
       <div class="legend" id="legend"></div>
     </div>
 
@@ -187,16 +187,16 @@ const T={
   hills:{name:'Hills',hours:2,h:2,canopy:false,forage:13,enc:1,table:'high'},
   ruins:{name:'Ruins',hours:2,h:1,canopy:true,forage:15,enc:2,table:'ruins'},
   peak:{name:'Peak or cliffs',hours:3,h:3,canopy:false,forage:15,enc:1,table:'high'},
-  rim:{name:'Crater rim',hours:2,h:3,canopy:false,forage:15,enc:1,table:'high'},
-  crater:{name:'The Crater',hours:null,h:0,canopy:false,forage:null,enc:0,table:null}};
-const ORDER=['sea','beach','river','jungle','swamp','hills','ruins','peak','rim','crater'];
+  rim:{name:'Well rim',hours:2,h:3,canopy:false,forage:15,enc:1,table:'high'},
+  well:{name:'The Well',hours:null,h:0,canopy:false,forage:null,enc:0,table:null}};
+const ORDER=['sea','beach','river','jungle','swamp','hills','ruins','peak','rim','well'];
 const HN=['Low','Mid','High','Peak'];const SIGHT=[3,4,6,10];
 const TABLES={
   coast:['Huge tracks lead from the jungle into the water.','The wreck of an earlier expedition\'s boat, with a few supplies left.','Shore hunters burst from the sand. Combat.','A freshwater spring. Foraging succeeds automatically tonight.','A rival party\'s camp, recently abandoned.','Every bird takes flight inland at once. Something is coming.'],
   jungle:['A predator stalks the party. Fight it or lose it.','A hidden pit or strangling vines. Dexterity save, or lose 1 hour.','A carved stone half-buried in roots, pointing toward ruins.','Fruit trees. Gain 1 day of supplies.','A swarm of insects. No rest tonight without shelter or smoke.','The jungle goes silent. Something no one has ever seen passes close by.'],
-  swamp:['Sinking mud. Strength check, or lose 1 day of supplies.','Foul water. Constitution save, or poisoned until a long rest.','Something large moves beneath the water.','A sunken causeway built by the island\'s old inhabitants. The next swamp hex costs 1 hour.','Leeches, everywhere.','Lights move in the mist at night, keeping their distance.'],
-  ruins:['Carvings of the island\'s old inhabitants, showing the light and figures kneeling.','A collapse. Dexterity save, or take damage.','A creature nests in the ruins.','A sealed chamber. The DM decides what is inside.','The remains of a failed expedition, and a journal.','A mechanism of unknown purpose, far too heavy to carry.'],
-  high:['A perfectly clear sky. Sight range +2 hexes this block.','Strong winds from the Crater. Climbing and ranged attacks are harder.','Winged creatures circle overhead.','A rockslide. Dexterity save, or take damage.','The party spots a possible way down into the Crater.','At the rim, the light is blinding. No long rest without shelter.']};
+  swamp:['Sinking mud. Strength check, or lose 1 day of supplies.','Foul water. Constitution save, or poisoned until a long rest.','Something large moves beneath the water.','A sunken causeway built by Lightrest\'s old inhabitants. The next swamp hex costs 1 hour.','Leeches, everywhere.','Lights move in the mist at night, keeping their distance.'],
+  ruins:['Carvings of Lightrest\'s old inhabitants, showing the light and figures kneeling.','A collapse. Dexterity save, or take damage.','A creature nests in the ruins.','A sealed chamber. The DM decides what is inside.','The remains of a failed expedition, and a journal.','A mechanism of unknown purpose, far too heavy to carry.'],
+  high:['A perfectly clear sky. Sight range +2 hexes this block.','Strong winds from the Well. Climbing and ranged attacks are harder.','Winged creatures circle overhead.','A rockslide. Dexterity save, or take damage.','The party spots a possible way down into the Well.','At the rim, the light is blinding. No long rest without shelter.']};
 const KEY='island-explorer-v2';
 const PT={
   ruins:{name:'Ruins',tall:false,icon:'M-7 6H7M-5 6V-2M-5 -2H-2V6M1 6V-6M1 -6H4V6'},
@@ -232,7 +232,7 @@ const heightOf=i=>S.hex[i].h!=null?S.hex[i].h:T[S.hex[i].t].h;
 /* ---------- island generation ---------- */
 function generate(seed,name,supplies){
   const cols=24,rows=24,rand=rng(seed);
-  const st={v:1,example:false,name:name||'The Island',cols,rows,seed,hex:[],pois:[],party:null,climbed:false,lost:false,drift:false,lostFrom:null,
+  const st={v:1,example:false,name:name||'Lightrest',cols,rows,seed,hex:[],pois:[],party:null,climbed:false,lost:false,drift:false,lostFrom:null,
     explored:[],seen:[],tallSeen:[],trail:[],day:1,hour:6,hoursToday:0,blockHours:0,checked:false,supplies:supplies==null?12:supplies,exhaustion:0,log:[],prompt:null,lastEnc:null};
   S=st;
   const W=PAD*2+CW*(cols+0.5),H=PAD*2+RH*(rows-1)+2*R,cx=W/2,cy=H/2;
@@ -242,11 +242,11 @@ function generate(seed,name,supplies){
     const [x,y]=px(c,r),dx=x-cx,dy=y-cy,dd=Math.hypot(dx,dy)/CW,ang=Math.atan2(dy,dx);
     const coast=8.4+0.8*Math.sin(3*ang+ph[0])+0.5*Math.sin(5*ang+ph[1])+0.3*Math.sin(7*ang+ph[2]);
     let t;
-    if(dd>coast)t='sea';else if(dd<2.6)t='crater';else if(dd<3.6)t='rim';
+    if(dd>coast)t='sea';else if(dd<2.6)t='well';else if(dd<3.6)t='rim';
     else{const n=noise(x,y);t=n>0.72?'peak':n>0.42?'hills':(n<-0.5&&dd>coast-3.2)?'swamp':'jungle';}
     st.hex.push({t,h:null});
   }
-  for(let i=0;i<st.hex.length;i++){const t=st.hex[i].t;if(t!=='sea'&&t!=='crater'&&t!=='rim'&&neighbors(i).some(j=>st.hex[j].t==='sea'))st.hex[i].t=t==='peak'||t==='hills'?'peak':'beach';}
+  for(let i=0;i<st.hex.length;i++){const t=st.hex[i].t;if(t!=='sea'&&t!=='well'&&t!=='rim'&&neighbors(i).some(j=>st.hex[j].t==='sea'))st.hex[i].t=t==='peak'||t==='hills'?'peak':'beach';}
   // river from the rim to the sea
   const rimHexes=st.hex.map((h,i)=>i).filter(i=>st.hex[i].t==='rim');
   let cur=rimHexes[Math.floor(rand()*rimHexes.length)],center=idx(Math.floor(cols/2),Math.floor(rows/2)),guard=0;
@@ -264,8 +264,8 @@ function generate(seed,name,supplies){
 function examplePois(){
   const rand=rng((S.seed||7)*31+5);
   const near=(pred,from,best)=>{let pick=null,bd=1e9;S.hex.forEach((h,i)=>{if(!pred(i)||S.pois.some(q=>q.i===i))return;const dd=dist(i,from);const score=best?Math.abs(dd-best):dd;if(score<bd){bd=score;pick=i;}});return pick;};
-  const p=S.party,crater=S.hex.map((h,i)=>i).filter(i=>S.hex[i].t==='crater');
-  const center=crater.length?crater[Math.floor(crater.length/2)]:idx(12,12);
+  const p=S.party,well=S.hex.map((h,i)=>i).filter(i=>S.hex[i].t==='well');
+  const center=well.length?well[Math.floor(well.length/2)]:idx(12,12);
   const W=PAD*2+CW*(S.cols+0.5),H=PAD*2+RH*(S.rows-1)+2*R,cx=W/2,cy=H/2;
   const angOf=i=>{const [x,y]=px(...cr(i));return Math.atan2(y-cy,x-cx);};
   const radOf=i=>{const [x,y]=px(...cr(i));return Math.hypot(x-cx,y-cy)/CW;};
@@ -273,18 +273,18 @@ function examplePois(){
   const pickAt=(pred,ang)=>{let best=null,bd=1e9;S.hex.forEach((h,i)=>{if(!pred(i)||S.pois.some(q=>q.i===i))return;const s=angDiff(angOf(i),ang);if(s<bd){bd=s;best=i;}});return best;};
   const add=(i,type,name,note,secret)=>{if(i!=null)S.pois.push({id:'p'+S.pois.length,i,type,name,note,tall:PT[type].tall,secret:!!secret});};
   const land=i=>passable(i)&&S.hex[i].t!=='rim';
-  // watchtowers ringing the rim, built to keep watch over the Crater
+  // watchtowers ringing the rim, built to keep watch over the Well
   const a0=rand()*6.28,towerNames=['North watchtower','East watchtower','South watchtower','West watchtower'];
-  for(let k=0;k<4;k++)add(pickAt(i=>land(i)&&neighbors(i).some(j=>S.hex[j].t==='rim'),a0+k*Math.PI/2),'tower',towerNames[k],'One of the towers the island\'s old inhabitants built to keep watch over the Crater. From the top, sight range is 10 hexes.');
+  for(let k=0;k<4;k++)add(pickAt(i=>land(i)&&neighbors(i).some(j=>S.hex[j].t==='rim'),a0+k*Math.PI/2),'tower',towerNames[k],'One of the towers Lightrest\'s old inhabitants built to keep watch over the Well. From the top, sight range is 10 hexes.');
   // abandoned villages in the outer jungle and along the river
   const a1=rand()*6.28;
-  ['Village of empty doorways','Stilt village','Terraced village'].forEach((n,k)=>add(pickAt(i=>['jungle','river','beach','swamp'].includes(S.hex[i].t)&&radOf(i)>4.6&&radOf(i)<7.4,a1+k*2.1),'village',n,'Houses of the island\'s old inhabitants, left in a hurry. Tools, pottery, and no bodies.'));
+  ['Village of empty doorways','Stilt village','Terraced village'].forEach((n,k)=>add(pickAt(i=>['jungle','river','beach','swamp'].includes(S.hex[i].t)&&radOf(i)>4.6&&radOf(i)<7.4,a1+k*2.1),'village',n,'Houses of Lightrest\'s old inhabitants, left in a hurry. Tools, pottery, and no bodies.'));
   // clusters of creatures
   const a2=rand()*6.28;
   ['Nesting grounds','Bone-strewn hollow','Hive in the canopy','Drowned den'].forEach((n,k)=>add(pickAt(i=>['jungle','swamp','hills','ruins'].includes(S.hex[i].t)&&radOf(i)>4&&radOf(i)<8,a2+k*1.57+0.6),'lair',n,'A cluster of creatures no one has named yet. Dangerous to cross; worth avoiding or scouting first.'));
   add(near(i=>S.hex[i].t==='beach'&&i!==p,p,3),'wreck','Wreck of the Saltwren','A rival expedition\'s boat, broken on the rocks. Two days of supplies in the hold, and the captain\'s log.');
   add(near(i=>S.hex[i].t==='ruins',center,4),'ruins','Hall of kneeling figures','Carvings show the light and people kneeling toward it. A clue to who lived here.');
-  add(near(i=>S.hex[i].t==='river'&&neighbors(i).some(j=>S.hex[j].t==='rim'),center,3),'water','Falls into the deep','The river pours over the rim and vanishes into the Crater.');
+  add(near(i=>S.hex[i].t==='river'&&neighbors(i).some(j=>S.hex[j].t==='rim'),center,3),'water','Falls into the deep','The river pours over the rim and vanishes into the Well.');
   add(near(i=>S.hex[i].t==='rim',p,10),'way','A way down','A ledge and old carved steps lead below the rim. The first descent starts here.',true);
   S.pois.forEach(q=>{if(q.type==='water')q.tall=true;});
 }
@@ -335,7 +335,7 @@ function drawMap(){
     if(!P&&h.h!=null){const [x,y]=px(c,r);g+=`<text x="${x}" y="${y+4}" text-anchor="middle" font-size="10" font-weight="700" fill="var(--ink)" pointer-events="none">${HN[h.h][0]}</text>`;}
   }
   // the light
-  const cr_=S.hex.map((h,i)=>i).filter(i=>S.hex[i].t==='crater');
+  const cr_=S.hex.map((h,i)=>i).filter(i=>S.hex[i].t==='well');
   let lx=0,ly=0;if(cr_.length){cr_.forEach(i=>{const [x,y]=px(...cr(i));lx+=x;ly+=y;});lx/=cr_.length;ly/=cr_.length;
     g+=`<circle cx="${lx}" cy="${ly}" r="26" fill="var(--light)" opacity=".25" class="rod" pointer-events="none"/><circle cx="${lx}" cy="${ly}" r="10" fill="var(--light)" opacity=".6" pointer-events="none"/><circle cx="${lx}" cy="${ly}" r="4" fill="var(--light)" pointer-events="none"/><circle cx="${lx}" cy="${ly}" r="16" fill="transparent" data-tip="light" style="cursor:help"/>`;}
   // trail
@@ -499,10 +499,10 @@ svg.addEventListener('pointermove',e=>{
   const lt=e.target.closest('[data-tip="light"]');
   const g=e.target.closest('[data-poi]');
   const hx=e.target.closest('[data-i]');
-  if(lt)html='<strong>The light</strong>A rod of light rising from the heart of the Crater. Seen from anywhere on the island; at night it always shows the way.';
+  if(lt)html='<strong>The light</strong>A rod of light rising from the heart of the Well. Seen from anywhere on Lightrest; at night it always shows the way.';
   else if(g){const p=S.pois.find(q=>q.id===g.dataset.poi);if(p){const grey=g.dataset.grey==='1';
     html=`<strong>${esc(p.name)}${grey?'?':''}</strong>${esc(ptOf(p).name)}${grey?' · seen from afar':''}${!P&&p.secret?' · secret':''}${!P&&p.note?`<br><span style="opacity:.8">${esc(p.note)}</span>`:''}`;}}
-  else if(hx){const i=+hx.dataset.i;if(S.hex[i].t==='crater'&&(!P||has(S.seen,i)||has(S.explored,i)))html='<strong>The Crater</strong>A hole no one has seen the bottom of. It can\'t be entered on foot: find a way down from the rim.';}
+  else if(hx){const i=+hx.dataset.i;if(S.hex[i].t==='well'&&(!P||has(S.seen,i)||has(S.explored,i)))html='<strong>The Well</strong>A hole no one has seen the bottom of. It can\'t be entered on foot: find a way down from the rim.';}
   if(!html){tip.hidden=true;return;}
   tip.innerHTML=html;
   const box=$('mapbox').getBoundingClientRect();
@@ -512,11 +512,11 @@ svg.addEventListener('pointermove',e=>{
   tip.style.left=x+'px';tip.style.top=y+'px';
 });
 svg.addEventListener('pointerleave',()=>{tip.hidden=true;});
-$('resetBtn').onclick=()=>showIo(`<h3>Reset the map?</h3><p>This brings back the official island with its places, and clears the party's exploration, the log and any terrain you repainted.</p><div class="row"><button type="button" class="small primary" data-act="resetMap">Reset the map</button><button type="button" class="small" data-act="closeIo">Cancel</button></div>`);
+$('resetBtn').onclick=()=>showIo(`<h3>Reset the map?</h3><p>This brings back the official Lightrest with its places, and clears the party's exploration, the log and any terrain you repainted.</p><div class="row"><button type="button" class="small primary" data-act="resetMap">Reset the map</button><button type="button" class="small" data-act="closeIo">Cancel</button></div>`);
 $('viewBtn').onclick=()=>{view=view==='player'?'dm':'player';$('poiPanel').hidden=true;$('campPanel').hidden=true;render();};
 
 /* ---------- save and load ---------- */
-const fileName=()=>(S.name||'island').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')+`-day-${S.day}.json`;
+const fileName=()=>(S.name||'lightrest').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')+`-day-${S.day}.json`;
 function showIo(h){$('ioBody').innerHTML=h;$('ioPanel').hidden=false;}
 $('saveBtn').onclick=()=>{
   const json=JSON.stringify(S);
@@ -526,12 +526,18 @@ $('saveBtn').onclick=()=>{
 };
 $('loadBtn').onclick=()=>showIo(`<h3>Load a map</h3><p class="hint">Choose a saved map file, or paste its text.</p><div class="row"><button type="button" class="small primary" data-act="pickFile">Choose file</button></div><label>Or paste saved text<textarea id="jsonIn" style="min-height:110px"></textarea></label><p id="loadMsg" class="hint"></p><div class="row"><button type="button" class="small" data-act="loadPasted">Load pasted text</button><button type="button" class="small" data-act="closeIo">Close</button></div>`);
 $('fileIn').onchange=()=>{const f=$('fileIn').files[0];if(!f)return;const r=new FileReader();r.onload=()=>loadText(String(r.result));r.readAsText(f);$('fileIn').value='';};
-function loadText(t){try{const p=JSON.parse(t);if(!p||p.v!==1||!Array.isArray(p.hex)||p.hex.length!==p.cols*p.rows)throw 0;(p.pois||[]).forEach(q=>{if(!q.type)q.type='other';});S=p;persist();$('ioPanel').hidden=true;render();}
+function migrateState(p){/* saves made before the rename: hole type 'crater' is now 'well', default name 'The Island' is now 'Lightrest' */
+  if(!p||!Array.isArray(p.hex))return p;let n=0;
+  p.hex.forEach(h=>{if(h&&h.t==='crater'){h.t='well';n++;}});
+  if(p.name==='The Island')p.name='Lightrest';
+  if(n&&!migrateState.warned){migrateState.warned=1;console.warn('[island map] Converted old terrain "crater" to "well" in saved data.');}
+  return p;}
+function loadText(t){try{const p=migrateState(JSON.parse(t));if(!p||p.v!==1||!Array.isArray(p.hex)||p.hex.length!==p.cols*p.rows)throw 0;(p.pois||[]).forEach(q=>{if(!q.type)q.type='other';});S=p;persist();$('ioPanel').hidden=true;render();}
   catch(err){const m=$('loadMsg');if(m){m.textContent='That file isn\'t a saved map from this tool. Check that you picked the right file.';m.style.color='var(--crit)';}}}
 
 /* ---------- start ---------- */
-try{const raw=localStorage.getItem(KEY);if(raw){const p=JSON.parse(raw);if(p&&p.v===1&&Array.isArray(p.hex))S=p;}}catch(e){}
-function official(){generate(7,'The Island',12);examplePois();updateVis();}
+try{const raw=localStorage.getItem(KEY);if(raw){const p=migrateState(JSON.parse(raw));if(p&&p.v===1&&Array.isArray(p.hex))S=p;}}catch(e){}
+function official(){generate(7,'Lightrest',12);examplePois();updateVis();}
 if(!S||S.seed!==7)official();
 S.example=false;
 render();

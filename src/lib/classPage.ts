@@ -22,7 +22,8 @@ export interface ClassData {
   table: string[][];
   feats: Feat[];
   subs: { id: string; name: string; tagline: string; intro: string; feats: Feat[] }[];
-  lore: { h: string; note: string; p: Para[] };
+  /** Optional in-world lore callout. Class pages stay setting-neutral unless this is set. */
+  lore?: { h: string; note: string; p: Para[] };
   legal: string[];
   playtest: { text: string; version: string };
   changelog: { v: string; items: string[] }[];

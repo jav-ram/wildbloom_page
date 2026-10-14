@@ -1,11 +1,11 @@
 <script lang="ts">
   import { url } from '../lib/url';
-  import { ERAS, CHARTED, KNOWLEDGE_LABEL, RELICS, RARITIES, tabsFor, type Knowledge } from '../data/crater';
+  import { ERAS, CHARTED, KNOWLEDGE_LABEL, RELICS, RARITIES, tabsFor, type Knowledge } from '../data/below-the-light';
 
   let eraId = $state(2);
   let mapFrame: HTMLIFrameElement | undefined = $state();
 
-  // The island map is a same-origin page: size the frame to its content so the page has one scrollbar.
+  // The Lightrest map is a same-origin page: size the frame to its content so the page has one scrollbar.
   function fitMap() {
     const doc = mapFrame?.contentDocument;
     if (!doc) return;
@@ -73,22 +73,22 @@
 <main>
   <!-- HERO -->
   <div class="wrap">
-    <section class="hero" aria-labelledby="crater-title" style="padding-bottom: 48px">
+    <section class="hero" aria-labelledby="below-the-light-title" style="padding-bottom: 48px">
       <div>
         <p class="ws-kicker label">Setting hub · D&amp;D 5e · Building now</p>
-        <h1 id="crater-title" class="page-title">The Crater</h1>
+        <h1 id="below-the-light-title" class="page-title">Below the Light</h1>
         <p class="lore-text lede" style="color: var(--ink-muted)">{era.num} · {era.name}. {era.summary}</p>
         <p class="body lede">{era.intro}</p>
         <ul class="jump control" aria-label="On this page">
           <li><a class="ws-link" href="#setting">The setting</a></li>
-          {#if eraId === 1}<li><a class="ws-link" href="#island">The island</a></li>{/if}
+          {#if eraId === 1}<li><a class="ws-link" href="#lightrest">Lightrest</a></li>{/if}
           <li><a class="ws-link" href="#descent">The descent</a></li>
           <li><a class="ws-link" href="#relics">Relics</a></li>
-          <li><a class="ws-link" href="#running">Running the Crater</a></li>
+          <li><a class="ws-link" href="#running">Running Below the Light</a></li>
         </ul>
       </div>
-      <figure class="crater-fig">
-        <svg class="crater-svg" viewBox="0 0 400 380" aria-hidden="true">
+      <figure class="well-fig">
+        <svg class="well-svg" viewBox="0 0 400 380" aria-hidden="true">
           {#if era.lit}<ellipse class="halo" cx="200" cy="40" rx="60" ry="14"></ellipse>{/if}
           <path d="M20 40 L176 340 M380 40 L224 340" fill="none" stroke="var(--gold-soft)" stroke-width="1"></path>
           {#each RIMS as [cy, rx, ry, sw, op]}
@@ -96,14 +96,14 @@
           {/each}
           <line class={era.lit ? 'rod' : 'rod rod--out'} x1="200" y1="4" x2="200" y2="346"></line>
           {#if !era.lit}
-            <ellipse class="new-crater" cx="44" cy="10" rx="26" ry="6"></ellipse>
-            <ellipse class="new-crater" cx="44" cy="10" rx="12" ry="3"></ellipse>
-            <ellipse class="new-crater" cx="360" cy="12" rx="22" ry="5"></ellipse>
-            <ellipse class="new-crater" cx="360" cy="12" rx="10" ry="2.5"></ellipse>
+            <ellipse class="new-well" cx="44" cy="10" rx="26" ry="6"></ellipse>
+            <ellipse class="new-well" cx="44" cy="10" rx="12" ry="3"></ellipse>
+            <ellipse class="new-well" cx="360" cy="12" rx="22" ry="5"></ellipse>
+            <ellipse class="new-well" cx="360" cy="12" rx="10" ry="2.5"></ellipse>
           {/if}
         </svg>
         <figcaption class="caption">
-          {era.lit ? 'Thirteen layers, and a light seen across the world.' : 'Thirteen layers. The light has gone out, and two new craters have appeared.'}
+          {era.lit ? 'Thirteen layers, and a light seen across the world.' : 'Thirteen layers. The light has gone out, and two new wells have appeared.'}
         </figcaption>
       </figure>
     </section>
@@ -152,18 +152,18 @@
     </div>
   </section>
 
-  <!-- ISLAND (era 1 only) -->
+  <!-- LIGHTREST (era 1 only) -->
   {#if eraId === 1}
-    <section id="island" class="section section--sunken" aria-labelledby="island-title">
+    <section id="lightrest" class="section section--sunken" aria-labelledby="lightrest-title">
       <div class="wrap">
         <div class="sec-head">
-          <div><p class="ws-kicker label">Interactive map</p><h2 id="island-title" class="chapter-heading ws-h">The Island</h2></div>
-          <p class="rules-text muted" style="max-width: 46ch">Walk a party across the island under fog of war, hour by hour, until they find the way to the rim. Switch to Player view to share the screen.</p>
+          <div><p class="ws-kicker label">Interactive map</p><h2 id="lightrest-title" class="chapter-heading ws-h">Lightrest</h2></div>
+          <p class="rules-text muted" style="max-width: 46ch">Walk a party across Lightrest under fog of war, hour by hour, until they find the way to the rim. Switch to Player view to share the screen.</p>
         </div>
         <iframe
           bind:this={mapFrame}
           class="island-frame"
-          title="Interactive island map"
+          title="Interactive map of Lightrest"
           src={url(`island-map.html?theme=${mapTheme()}`)}
           onload={fitMap}
           loading="lazy"
@@ -180,7 +180,7 @@
         <p class="rules-text muted" style="max-width: 46ch">Thirteen layers. The deeper you go, the less is known. What is charted depends on the era.</p>
       </div>
       <div class="descent">
-        <nav class={era.lit ? 'gauge' : 'gauge gauge--out'} aria-label="Layers of the Crater">
+        <nav class={era.lit ? 'gauge' : 'gauge gauge--out'} aria-label="Layers of the Well">
           <div class="gauge__head"><p class="label">Depth gauge</p><p class="caption muted">{knownCount} of 13 charted</p></div>
           <ol class="gauge__list">
             {#each layers as l}
@@ -201,7 +201,7 @@
               </li>
             {/each}
           </ol>
-          <p class="gauge__foot caption">{era.lit ? 'Gold line: the light of the Crater.' : 'The light has gone out. Six adventurers reached the bottom.'}</p>
+          <p class="gauge__foot caption">{era.lit ? 'Gold line: the light of the Well.' : 'The light has gone out. Six adventurers reached the bottom.'}</p>
         </nav>
 
         <div class="layer-panel" style={`background-color: color-mix(in srgb, var(--surface) ${shade(layer)}%, #000)`} aria-live="polite">
@@ -313,11 +313,11 @@
     </div>
   </section>
 
-  <!-- RUNNING THE CRATER -->
+  <!-- RUNNING BELOW THE LIGHT -->
   <section id="running" class="section section--sunken" aria-labelledby="running-title">
     <div class="wrap">
       <div class="sec-head">
-        <div><p class="ws-kicker label">For the table</p><h2 id="running-title" class="chapter-heading ws-h">Running the Crater</h2></div>
+        <div><p class="ws-kicker label">For the table</p><h2 id="running-title" class="chapter-heading ws-h">Running Below the Light</h2></div>
         <p class="rules-text muted" style="max-width: 46ch">Rules for the climb back up, and advice for running a descent. No spoilers: secrets stay in the book.</p>
       </div>
       <div class="ascent">

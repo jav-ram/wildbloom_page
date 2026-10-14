@@ -1,0 +1,7 @@
+---
+import Base from '../layouts/Base.astro';
+import Windrose from '../components/windrose/Windrose.svelte';
+---
+<Base title="Windrose — Wildbloom Studio" description="Windrose: a hex map authoring tool for tabletop games. Paint a map, save it in your browser, export it as JSON or PNG.">
+  <Windrose client:only="svelte" />
+</Base>

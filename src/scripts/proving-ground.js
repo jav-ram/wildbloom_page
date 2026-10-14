@@ -94,6 +94,9 @@ const EFFECT_KIND = {
   snare: 'prevent', daze: 'prevent', hinder: 'prevent', stun: 'prevent', veil: 'prevent', imposeDisadvantage: 'prevent', negate: 'prevent',
   expose: 'dealt', revive: 'count',
   snaredBonusDamage: 'dealt',
+  damage: 'dealt', repairSuit: 'heal', suitRegen: 'heal', weaponDamage: 'dealt', splashDamage: 'dealt', suitDamageReduction: 'prevent', suitDropTo1: 'count',
+  noCost: 'none', resourceMax: 'none',
+  suitAc: 'none', suitHpBonus: 'none', weaponOverride: 'none', setRole: 'none', freeSystems: 'none', suitFloor: 'none',
   gainResource: 'none', saveReroll: 'none', replaceAttack: 'none', snareUpgrade: 'none', area: 'none', linger: 'none', knowOption: 'none',
 };
 const EFFECT_TYPES = Object.keys(EFFECT_KIND);
@@ -109,8 +112,8 @@ function term(pc, t, mode) {
   t = t.trim(); if (!t) return 0;
   let m;
   if (/^-?\d+(\.\d+)?$/.test(t)) return +t;
-  if ((m = t.match(/^(\d+)\*(\w+)$/))) return +m[1] * term(pc, m[2], mode);
-  if ((m = t.match(/^(\w+)\*(\d+)$/))) return +m[2] * term(pc, m[1], mode);
+  if (t.includes('/')) { const [a, ...rest] = t.split('/'); return rest.reduce((v, x) => Math.floor(v / term(pc, x, mode)), term(pc, a, mode)); }
+  if (t.includes('*')) return t.split('*').reduce((v, x) => v * term(pc, x, mode), 1);
   if (t === 'level') return pc.L;
   if (t === 'pb') return PB(pc.L);
   if (ABIL.includes(t)) return mod(pc.sc[t]);
@@ -133,9 +136,17 @@ function ev(pc, e, mode = 'roll', min) {
 const LABEL = {
   weapon: 'Weapon attacks', sap: 'Sap mastery (enemy disadvantage)', vex: 'Vex mastery (hits gained)', graze: 'Graze mastery', secondwind: 'Second Wind',
   smite: 'Divine Smite', radiant: 'Radiant Strikes', defense: 'Defense style (+1 AC)', loh: 'Lay on Hands', aop: 'Aura of Protection',
-  anchor: 'Anchor broken',
+  sneak: 'Sneak Attack', superiorPrey: "Superior Hunter's Prey", huntersDefense: "Superior Hunter's Defense",
+  rage: 'Rage damage', rageRes: 'Rage resistance', frenzy: 'Frenzy', brutal: 'Brutal Strike', retaliation: 'Retaliation', relentless: 'Relentless Rage',
+  mockery: 'Vicious Mockery', inspiration: 'Bardic Inspiration hits gained', cuttingWords: 'Cutting Words', hypnotic: 'Hypnotic Pattern', shatter: 'Shatter',
+  healingWord: 'Healing Word', preserveLife: 'Preserve Life', spiritGuardians: 'Spirit Guardians', toll: 'Toll the Dead', moonbeam: 'Moonbeam', cantrip: 'Damage cantrip',
+  flurry: 'Flurry of Blows', stunningStrike: 'Stunning Strike', openHand: 'Open Hand Technique', deflect: 'Deflect Attacks',
+  huntersMark: "Hunter's Mark", colossus: 'Colossus Slayer', fireBolt: 'Fire Bolt', fireball: 'Fireball', scorchingRay: 'Scorching Ray', chromaticOrb: 'Chromatic Orb',
+  eldritchBlast: 'Eldritch Blast', hex: 'Hex', darkBlessing: "Dark One's Blessing", arcanum: 'Mystic Arcanum', hurl: 'Hurl Through Hell',
+  coneOfCold: 'Cone of Cold', magicMissile: 'Magic Missile', shield: 'Shield spell',
+  anchor: 'Anchor broken', suit: 'Suit Hit Points (damage absorbed)', suitOffline: 'Suit knocked offline', topple: 'Topple mastery (Prone)',
 };
-const KIND_WORD = { dealt: 'dealt', prevent: 'prevented', heal: 'healed', count: 'times' };
+const KIND_WORD = { dealt: 'dealt', prevent: 'prevented', heal: 'healed', count: 'times', soak: 'absorbed' };
 function credit(ctx, owner, id, kind, v, n = 1) {
   if (!owner || owner !== ctx.slot || kind === 'none') return;
   const key = id + '|' + kind;
@@ -169,7 +180,7 @@ function choiceFeatures(def) { return (def.features || []).filter(f => f.choose)
 function knownOptions(def, L, fid, manual, extra) {
   const f = (def.features || []).find(x => x.id === fid);
   if (!f || !f.choose) return [];
-  const all = (def.options[f.choose.from] || []).filter(o => (o.level || 1) <= L && !(extra || []).includes(o.id));
+  const all = (def.options[f.choose.from] || []).filter(o => (o.level || 1) <= L && !o.subclass && !(extra || []).includes(o.id));
   const n = Math.floor(ev({ L, def, sc: {} }, f.choose.known, 'avg'));
   if (manual && manual.length) { const v = manual.map(id => all.find(o => o.id === id)).filter(Boolean).slice(0, n); if (v.length) return v; }
   return [...all].sort((a, b) => (a.pick ?? 99) - (b.pick ?? 99)).slice(0, n);
@@ -192,8 +203,21 @@ function buildHB(def, L, cfg) {
   const ac = Math.floor(ev({ L, def, sc }, scaleAt(def.core.ac, L), 'avg'));
   const pc = basePC({ name: def.name, cls: 'hb', L, sc, hd: def.core.hitDie, saves, ac, role: def.role || 'front' });
   pc.def = def; pc.feats = feats; pc.sub = cfg.sub;
-  const w = def.core.weapon, am = mod(sc[w.ability || 'str']);
-  pc.atk = { hit: PB(L) + am, dmg: spec(w.damage + '+' + am), mastery: w.mastery || null };
+  let w = def.core.weapon;
+  for (const f of feats) for (const e of f.effects || []) { if (e.type === 'weaponOverride') w = { ...w, ...e.weapon }; if (e.type === 'setRole') pc.role = e.role; }
+  const am = mod(sc[w.ability || 'str']);
+  pc.atk = { hit: PB(L) + am, dmg: spec(w.damage + '+' + am), mastery: w.mastery || null, ranged: !!w.ranged };
+  if (def.core.suit) {
+    const su = def.core.suit, ctxPc = { L, def, sc };
+    pc.suit = true;
+    pc.suitMax = Math.floor(ev(ctxPc, su.hp, 'avg'));
+    for (const f of feats) for (const e of f.effects || []) {
+      if (e.type === 'suitHpBonus') pc.suitMax += Math.floor(ev(ctxPc, e.amount, 'avg'));
+      if (e.type === 'suitAc') pc.ac += Math.floor(ev(ctxPc, e.amount, 'avg'));
+    }
+    pc.acOn = pc.ac;
+    pc.acOff = Math.floor(ev(ctxPc, scaleAt(su.offlineAc ?? '10+dex', L), 'avg'));
+  }
   pc.nAtk = scaleAt(def.core.attacks, L) || 1;
   pc.atkAvg = pc.atk.dmg.avg;
   pc.dc = ev(pc, def.core.saveDC || '8+pb', 'avg');
@@ -208,14 +232,23 @@ const fx = (pc, when) => pc.feats.filter(f => f.when === when);
 const passives = (pc, type) => { const out = []; for (const f of pc.feats) if (f.when === 'passive') for (const e of f.effects || []) if (e.type === type) out.push([f, e]); return out; };
 const mods = (pc, fid) => { const out = []; for (const f of pc.feats) if (f.when === 'modify' && f.feature === fid) for (const e of f.effects || []) out.push([f, e]); return out; };
 function usesMax(pc, f) { return f.uses ? Math.floor(ev(pc, f.uses.max, 'avg', f.uses.min)) : Infinity; }
-function hasUse(pc, f) { return !f.uses || (pc.uses[f.id] ?? 0) > 0; }
-function spendUse(pc, f) { if (f.uses) pc.uses[f.id]--; }
+function resMax(pc, rid) { let m = Math.floor(ev(pc, pc.def.resources[rid].max, 'avg')); for (const [, e] of passives(pc, 'resourceMax')) if (e.resource === rid) m += Math.floor(ev(pc, e.amount, 'avg')); return m; }
+function ready(pc, f) { return !(f.requires === 'suitOnline' && pc.suit && !pc.suitOn); }
+const noCost = (pc, f) => pc.feats.some(m => m.when === 'modify' && m.feature === f.id && (m.effects || []).some(e => e.type === 'noCost'));
+function hasUse(pc, f) { return ready(pc, f) && (!f.uses || (pc.uses[f.id] ?? 0) > 0) && (!f.cost || f.choose || noCost(pc, f) || (pc.res[f.cost] || 0) >= (f.costAmount || 1)); }
+function spendUse(pc, f) { if (f.uses) pc.uses[f.id]--; if (f.cost && !f.choose && !noCost(pc, f)) pc.res[f.cost] -= (f.costAmount || 1); }
+function setSuit(ctx, pc, on) {
+  if (!pc.suit || pc.suitOn === on) return;
+  pc.suitOn = on; pc.ac = on ? pc.acOn : pc.acOff;
+  if (!on) { credit(ctx, pc, 'suitOffline', 'count', 0); log(ctx, 'ko', `${pc.name}'s suit goes offline`); }
+}
 function inAuraOf(hc, p) { return p === hc || p.inAura; }
 
 const HB = {
   startDay(pc, ctx) {
     pc.res = {}; pc.uses = {};
-    for (const [rid, r] of Object.entries(pc.def.resources || {})) pc.res[rid] = Math.floor(ev(pc, r.max, 'avg'));
+    if (pc.suit) { pc.suitHp = pc.suitMax; pc.suitOn = true; pc.ac = pc.acOn; }
+    for (const [rid, r] of Object.entries(pc.def.resources || {})) pc.res[rid] = resMax(pc, rid);
     for (const f of pc.feats) if (f.uses) pc.uses[f.id] = usesMax(pc, f);
     const an = pc.def.aura && pc.def.aura.anchor;
     if (an) { pc.anchorMax = ev(pc, an.hp || '0', 'avg'); pc.anchorHp = pc.anchorMax; pc.anchorBroken = false; }
@@ -227,8 +260,9 @@ const HB = {
     }
   },
   shortRest(pc) {
+    if (pc.suit) { pc.suitHp = pc.suitMax; pc.suitOn = true; pc.ac = pc.acOn; }
     for (const [rid, r] of Object.entries(pc.def.resources || {})) {
-      const max = Math.floor(ev(pc, r.max, 'avg'));
+      const max = resMax(pc, rid);
       if (r.shortRest === 'all') pc.res[rid] = max; else if (r.shortRest) pc.res[rid] = Math.max(pc.res[rid], Math.min(max, pc.res[rid] + Math.floor(ev(pc, r.shortRest, 'avg', r.shortRestMin))));
     }
     for (const f of pc.feats) if (f.uses && f.uses.shortRest) pc.uses[f.id] = f.uses.shortRest === 'all' ? usesMax(pc, f) : Math.min(usesMax(pc, f), pc.uses[f.id] + f.uses.shortRest);
@@ -253,9 +287,10 @@ function position(ctx, hc) {
   const pA = ctx.advance ? 1 : clamp(ctx.cfg.tight * size / 15, 0, 1);
   ctx.advance = false;
   for (const p of ctx.party) {
-    if (p === hc) { p.inAura = true; p.adj = false; continue; }
+    if (p === hc) { p.inAura = true; p.adj = false; p.near = false; continue; }
     p.inAura = size > 0 && R() < pA;
     p.adj = R() < clamp(ctx.cfg.adj * (p.role === 'front' ? 1.5 : 1), 0, 1);
+    p.near = p.adj || R() < clamp(ctx.cfg.adj * (p.role === 'front' ? 1.5 : 1.1), 0, 1);
   }
   const pE = clamp(0.7 * size / 15, 0, 1);
   for (const m of ctx.monsters) m.inAura = size > 0 && R() < pE;
@@ -279,9 +314,10 @@ function pickTargets(ctx, hc, targets, revive) {
 }
 // how many targets an effect reaches (single-target kinds default to 1, areas to 2)
 function targetCount(hc, e, bonus) {
-  const base = e.count != null ? ev(hc, e.count, 'avg') : (e.targets === 'enemiesArea' ? 2 : (['enemy', 'focusEnemy', 'allyAtRisk'].includes(e.targets) ? 1 : 99));
+  const base = e.count != null ? ev(hc, e.count, 'avg') : (e.targets === 'enemiesArea' ? 2 : (['enemy', 'focusEnemy', 'allyAtRisk', 'self', 'downedAlly'].includes(e.targets) ? 1 : 99));
   return Math.max(1, Math.floor(base + (bonus || 0)));
 }
+function inRange(p, range) { return range === 'adjacent' ? p.adj : range === 'near' ? p.near : range === 'allies' ? true : p.inAura; }
 function snareUpg(hc) { const u = {}; for (const [, e] of passives(hc, 'snareUpgrade')) Object.assign(u, e); return u; }
 function monSave(ctx, hc, m, ab, src) {
   let ok = d(20) + (m.sv[ab] ?? 0) >= hc.dc;
@@ -304,9 +340,20 @@ function effectEV(ctx, hc, e) {
   const perPC = atks / cons, pHit = 0.55;
   const amt = e.amount != null ? ev(hc, e.amount, 'avg') : 0;
   switch (e.type) {
-    case 'bonusDamage': return aff.filter(p => p.atk).length * 0.75 * amt;
+    case 'bonusDamage': return (e.targets === 'self' ? 1 : aff.filter(p => p.atk).length) * 0.75 * amt;
     case 'advantageVsMark': return aff.reduce((a, p) => a + (p.atk ? 0.2 * p.atkAvg : 0), 0);
-    case 'tempHp': return n * Math.min(amt, perPC * pHit * hitAvg);
+    case 'tempHp': return (e.targets === 'allies' ? Math.min(targetCount(hc, e), cons) : n) * Math.min(amt, perPC * pHit * hitAvg);
+    case 'damage': {
+      const k = targetCount(hc, e, e._area || 0);
+      const pool = [...mons].sort((a, b) => b.hp - a.hp).slice(0, k);
+      return pool.reduce((a, m) => { const pf = pFail(m.sv[e.save || 'dex'], hc.dc); return a + Math.min(m.hp, amt * (pf + (1 - pf) * (e.half === false ? 0 : 0.5))) + (e.prone ? pf * 0.1 * aff.reduce((x, p) => x + (p.atkAvg || 0), 0) : 0); }, 0) * (e.aiWeight ?? 1);
+    }
+    case 'repairSuit': {
+      if (!hc.suit) return 0;
+      const miss = hc.suitMax - hc.suitHp;
+      if (!hc.suitOn) return Math.min(amt, hc.suitMax) + perPC * pHit * hitAvg * 0.6;
+      return miss >= amt * 0.8 ? Math.min(amt, miss) * 0.8 : 0;
+    }
     case 'resistNext': return n * Math.min(1, perPC * pHit) * hitAvg / 2;
     case 'frighten': return mons.filter(m => m.inAura).reduce((a, m) => a + pFail(m.sv[e.save || 'wis'], hc.dc) * m.dpr * 0.25, 0);
     case 'saveAdvantage': { const br = mons.find(m => m.breath && m.breathReady); return br ? n * 0.15 * br.breathAvg * 0.5 : 0.5; }
@@ -346,6 +393,8 @@ function optionEV(ctx, hc, o) {
   return effs.reduce((a, e) => a + effectEV(ctx, hc, e), 0);
 }
 function chooseOptions(ctx, hc, f, free, dry) {
+  if (!ready(hc, f)) return null;
+  free = free || !!(ctx.dur.freeSys && f.systems);
   if (!free && f.cost && (hc.res[f.cost] || 0) <= 0) return null;
   const evs = (hc.known[f.id] || []).filter(o => free || !f.cost || f.costPer !== 'option' || (hc.res[f.cost] || 0) >= (o.cost || 1)).map(o => [o, optionEV(ctx, hc, o)]).filter(x => x[1] > 0).sort((a, b) => b[1] - a[1]);
   if (!evs.length) return null;
@@ -359,13 +408,14 @@ function chooseOptions(ctx, hc, f, free, dry) {
   return out;
 }
 function useChoice(ctx, hc, f, opts, free) {
-  if (!free && f.cost) { const k = f.costPer === 'option' ? opts.reduce((a, o) => a + (o.cost || 1), 0) : 1; hc.res[f.cost] -= k; hc.spent[f.id] += k; credit(ctx, hc, f.cost, 'count', 0, k); }
+  const noCost = free || !!(ctx.dur.freeSys && f.systems);
+  if (!noCost && f.cost) { const k = f.costPer === 'option' ? opts.reduce((a, o) => a + (o.cost || 1), 0) : 1; hc.res[f.cost] -= k; hc.spent[f.id] += k; credit(ctx, hc, f.cost, 'count', 0, k); }
   for (const o of opts) {
     const mods = optionMods(hc, o);
     const area = mods.filter(e => e.type === 'area').reduce((a, e) => a + (e.amount || 1), 0), lg = mods.find(e => e.type === 'linger');
     applyEffects(ctx, hc, o, [...(o.effects || []).map(e => ({ ...e, _area: area, _linger: !!lg, _single: !!(lg && lg.single) })), ...mods.filter(e => !['area', 'linger'].includes(e.type))]);
   }
-  for (const af of fx(hc, 'afterChoice')) if (af.feature === f.id) applyEffects(ctx, hc, af, af.effects);
+  for (const af of fx(hc, 'afterChoice')) if (af.feature === f.id || (Array.isArray(af.feature) && af.feature.includes(f.id))) applyEffects(ctx, hc, af, af.effects);
   const an = hc.def.aura && hc.def.aura.anchor;
   if (an && an.plant === 'withBonusAction' && !free && !hc.planted && !hc.anchorBroken) { hc.planted = true; log(ctx, 'wc', `The ${an.name || 'anchor'} is planted`); }
 }
@@ -379,7 +429,7 @@ function applyEffects(ctx, hc, src, effects, dur) {
       case 'tempHp': {
         const base = ev(hc, e.amount);
         const selfExtra = e.selfAmount ? ev(hc, e.selfAmount, 'avg') - ev(hc, e.amount, 'avg') : 0;
-        for (const p of tg()) {
+        for (const p of tg().slice(0, targetCount(hc, e))) {
           const r = (e.rollOnce === false ? ev(hc, e.amount) : base) + (p === hc ? selfExtra : 0);
           if (r > p.thp) { p.thp = r; p.thpSrc = src.id; }
         }
@@ -392,7 +442,7 @@ function applyEffects(ctx, hc, src, effects, dur) {
       case 'saveAdvantage': for (const p of tg()) p.f.saveAdv = src.id; break;
       case 'gatherAura': ctx.advance = true; for (const p of ctx.party) if (p.conscious) p.inAura = true; credit(ctx, hc, src.id, 'count', 0); break;
       case 'frighten': { let k = 0; for (const m of tg()) if (d(20) + (m.sv[e.save || 'wis'] ?? 0) < hc.dc) { m.fright = src.id; k++; } note = ` (${k} Frightened)`; break; }
-      case 'taunt': for (const m of tg()) if (d(20) + (m.sv[e.save || 'wis'] ?? 0) < hc.dc) { m.taunt = src.id; credit(ctx, hc, src.id, 'count', 0); log(ctx, 'wc', `${src.name}: ${m.name} is drawn to the ${hc.name}`); } break;
+      case 'taunt': for (const m of tg().slice(0, targetCount(hc, e))) if (d(20) + (m.sv[e.save || 'wis'] ?? 0) < hc.dc) { m.taunt = src.id; credit(ctx, hc, src.id, 'count', 0); log(ctx, 'wc', `${src.name}: ${m.name} is drawn to the ${hc.name}`); } break;
       case 'spendHitDie':
         for (const p of tg()) {
           if (p.hdLeft <= 0 && p.conscious) continue;
@@ -437,11 +487,34 @@ function applyEffects(ctx, hc, src, effects, dur) {
       case 'veil': for (const p of tg().slice(0, targetCount(hc, e))) { if (e.once) p.f.veilOnce = src.id; else p.f.veil = src.id; } break;
       case 'revive': for (const p of tg()) { heal(ctx, p, 1); credit(ctx, hc, src.id, 'count', 0); note = `: ${p.name} gets up`; } break;
       case 'gainResource': { const cur = hc.res[e.resource] || 0; if (!e.ifEmpty || cur <= 0) { hc.res[e.resource] = cur + ev(hc, e.amount ?? 1, 'avg'); } break; }
+      case 'damage': {
+        const n = targetCount(hc, e, e._area || 0); let tot = 0, k = 0;
+        const pool = e.targets === 'enemiesArea' ? tg().slice(0, n) : tg().slice(0, n);
+        const dmg = ev(hc, e.amount);
+        for (const m of pool) {
+          const ok = monSave(ctx, hc, m, e.save || 'dex', src);
+          const x = ok ? (e.half === false ? 0 : Math.floor(dmg / 2)) : dmg;
+          const before = m.hp; damageMon(ctx, m, x); tot += Math.min(before, x); k++;
+          if (!ok && e.prone && m.hp > 0) { m.prone = src.id; m.exposed = { id: src.id, left: 99, until: 'targetTurn' }; }
+        }
+        credit(ctx, hc, src.id, 'dealt', tot);
+        note = ` (${tot} damage to ${k})`; break;
+      }
+      case 'repairSuit': {
+        if (!hc.suit) break;
+        const amt = ev(hc, e.amount);
+        const g = Math.min(amt, hc.suitMax - hc.suitHp);
+        hc.suitHp += g; credit(ctx, hc, src.id, 'heal', g);
+        if (!hc.suitOn && hc.suitHp > 0) setSuit(ctx, hc, true);
+        note = ` (suit +${g} HP)`; break;
+      }
+      case 'freeSystems': ctx.dur.freeSys = { rounds: dur || 10 }; break;
+      case 'suitFloor': ctx.dur.suitFloor = { rounds: dur || 10 }; break;
       case 'auraSize': ctx.dur.aura = { size: ev(hc, e.amount, 'avg'), rounds: dur || 10 }; break;
       case 'rollBonus': ctx.dur.roll = { id: src.id, rolls: e.rolls || ['attack'], amount: e.amount, rounds: dur || 10 }; break;
       case 'regen': ctx.dur.regen = { id: src.id, amount: e.amount, rounds: dur || 10 }; break;
     }
-    if (src.name && ['tempHp', 'bonusDamage', 'advantageVsMark', 'resistNext', 'dropTo1', 'saveAdvantage', 'gatherAura', 'frighten', 'spendHitDie', 'auraSize', 'snare', 'daze', 'hinder', 'stun', 'expose', 'veil', 'revive'].includes(e.type) && !logged) { logged = true; log(ctx, 'wc', `${hc.name} uses ${src.name}${note}`); }
+    if (src.name && ['tempHp', 'bonusDamage', 'advantageVsMark', 'resistNext', 'dropTo1', 'saveAdvantage', 'gatherAura', 'frighten', 'spendHitDie', 'auraSize', 'snare', 'daze', 'hinder', 'stun', 'expose', 'veil', 'revive', 'damage', 'repairSuit'].includes(e.type) && !logged) { logged = true; log(ctx, 'wc', `${hc.name} uses ${src.name}${note}`); }
   }
 }
 function hbTurn(ctx, hc) {
@@ -577,7 +650,7 @@ const CLS = {
     turn(ctx, p) {
       if (!p.conscious) return deathSave(ctx, p);
       const t = focus(ctx); if (!t) return;
-      pcAttack(ctx, p, t, { adv: R() < 0.5 ? 'self' : null, onHit: crit => nd(p.sneak * (crit ? 2 : 1), 6) });
+      pcAttack(ctx, p, t, { adv: R() < 0.5 ? 'self' : null, onHit: crit => { const v = nd(p.sneak * (crit ? 2 : 1), 6); credit(ctx, p, 'sneak', 'dealt', v); return v; } });
     },
   },
   cleric: {
@@ -607,10 +680,352 @@ const CLS = {
   },
 };
 
+
+// ----- SRD 5.2.1 comparison classes (seat only; simplified play) -----
+const tierOf = L => step(L, [[1, 1], [5, 2], [11, 3], [17, 4]]);
+const liveMons = ctx => ctx.monsters.filter(m => m.hp > 0);
+function monSaves(m, ab, dc) { return d(20) + (m.sv[ab] ?? 0) >= dc; }
+function hasSlot(p, min) { for (let i = min - 1; i < p.slots.length; i++) if (p.slots[i] > 0) return i + 1; return 0; }
+function takeSlot(p, min) { const lv = hasSlot(p, min); if (lv) p.slots[lv - 1]--; return lv; }
+function slotBudget(p, ctx) { p.castShare = Math.ceil(p.slots.reduce((a, b) => a + b, 0) / Math.max(1, ctx.fights - ctx.fi)); p.castFight = 0; p.conc = null; }
+function canCast(p, min) { return p.castFight < p.castShare && hasSlot(p, min); }
+function cast(p, min) { const lv = takeSlot(p, min); if (lv) p.castFight++; return lv; }
+function untilRest(ctx) { return Math.max(1, ctx.srAt > ctx.fi ? ctx.srAt - ctx.fi : ctx.fights - ctx.fi); }
+function areaPick(ctx, n) { return liveMons(ctx).sort(() => R() - 0.5).slice(0, n); }
+function saveSpell(ctx, p, targets, dmg, ab, key, half = true) {
+  let tot = 0;
+  for (const m of targets) { const ok = monSaves(m, ab, p.dc); const x = ok ? (half ? Math.floor(dmg / 2) : 0) : dmg; const b = m.hp; damageMon(ctx, m, x); tot += Math.min(b, x); }
+  credit(ctx, p, key, 'dealt', tot);
+  if (ctx.log) log(ctx, 'wc', `${p.name} casts ${LABEL[key] || key} (${tot} damage)`);
+  return tot;
+}
+function spellAttack(ctx, p, t, dmgSpec, key, o = {}) {
+  if (!t) return false;
+  const r = d20(!!o.adv, false), crit = r.nat === 20, hit = crit || (r.nat !== 1 && r.nat + p.spellHit >= t.ac);
+  let x = 0;
+  if (hit) x = roll(dmgSpec, crit) + (o.bonus || 0); else if (o.halfOnMiss) x = Math.floor((roll(dmgSpec) + (o.bonus || 0)) / 2);
+  if (x > 0) { const b = t.hp; damageMon(ctx, t, x); credit(ctx, p, key, 'dealt', Math.min(b, x)); }
+  return hit;
+}
+function healingWord(ctx, p, abil, lifeBonus) {
+  const down = ctx.party.filter(x => !x.dead && !x.conscious);
+  if (!down.length) return false;
+  const lv = takeSlot(p, 1); if (!lv) return false;
+  const g = heal(ctx, down[0], nd(2 * lv, 4) + abil + (lifeBonus ? 2 + lv : 0), p, 'healingWord');
+  log(ctx, 'heal', `${p.name} casts Healing Word: ${down[0].name} back up with ${g} HP`);
+  return true;
+}
+function endConc(ctx, p) {
+  if (!p.conc) return;
+  if (p.conc.kind === 'hypnotic') for (const m of ctx.monsters) if (m.mez && m.mez.by === p) m.mez = null;
+  p.conc = null;
+}
+function recoverSlots(p, budget, maxLv = 5) {
+  for (let lv = Math.min(maxLv, p.slots.length); lv >= 1 && budget > 0; lv--) while (budget >= lv && p.slots[lv - 1] < p.slotsMax[lv - 1]) { p.slots[lv - 1]++; budget -= lv; }
+}
+const SEAT_CLS = {
+  barbarian: {
+    name: 'Barbarian',
+    build(L) {
+      const sc = ASI(L, { str: 16, dex: 14, con: 14, wis: 12 }, [[4, 'str', 2], [8, 'str', 2], [12, 'con', 2], [16, 'con', 2], [19, 'con', 2]]);
+      if (L >= 20) { sc.str = Math.min(24, sc.str + 4); sc.con = Math.min(24, sc.con + 4); }
+      const pc = basePC({ name: 'Barbarian', cls: 'barbarian', L, sc, hd: 12, saves: ['str', 'con'], ac: L >= 5 ? 17 : 16, role: 'front' });
+      const s = mod(sc.str);
+      Object.assign(pc, { atk: { hit: PB(L) + s, dmg: spec('2d6+' + s), minDie: 0, mastery: 'graze' }, nAtk: L >= 5 ? 2 : 1, atkAvg: 7 + s,
+        rageMax: step(L, [[1, 2], [3, 3], [6, 4], [12, 5], [17, 6]]), rageDmg: step(L, [[1, 2], [9, 3], [16, 4]]) });
+      return pc;
+    },
+    startDay(p) { p.rage = p.rageMax; p.relentDC = 10; },
+    shortRest(p) { p.rage = Math.min(p.rageMax, p.rage + 1); p.relentDC = 10; },
+    startFight(p) { p.raging = false; p.f.reckless = false; },
+    turn(ctx, p) {
+      p.f.reckless = false;
+      if (!p.conscious) return deathSave(ctx, p);
+      if (!p.raging && p.rage > 0) { p.rage--; p.raging = true; log(ctx, 'sys', 'Barbarian rages'); }
+      p.f.reckless = true;
+      let frenzy = p.L >= 3 && p.raging;
+      const g = mod(p.sc.str);
+      for (let i = 0; i < p.nAtk; i++) {
+        const t = focus(ctx); if (!t) return;
+        const brutal = p.L >= 9 && i === 0;
+        pcAttack(ctx, p, t, {
+          adv: brutal ? null : 'self',
+          onMiss: () => { damageMon(ctx, t, g); credit(ctx, p, 'graze', 'dealt', g); },
+          onHit: crit => {
+            let x = 0;
+            if (p.raging) { x += p.rageDmg; credit(ctx, p, 'rage', 'dealt', p.rageDmg); }
+            if (frenzy) { frenzy = false; const v = nd(p.rageDmg * (crit ? 2 : 1), 6); x += v; credit(ctx, p, 'frenzy', 'dealt', v); }
+            if (brutal) { const v = nd((p.L >= 17 ? 2 : 1) * (crit ? 2 : 1), 10); x += v; credit(ctx, p, 'brutal', 'dealt', v); }
+            return x;
+          },
+        });
+      }
+    },
+    onDamage(ctx, p, dmg, info) { if (p.raging && info.bps) { const h = Math.floor(dmg / 2); credit(ctx, p, 'rageRes', 'prevent', dmg - h); return h; } return dmg; },
+    afterDamage(ctx, p, info) {
+      if (p.L >= 10 && p.reaction && info.attacker && info.attacker.hp > 0) { p.reaction = false; pcAttack(ctx, p, info.attacker, { key: 'retaliation' }); }
+    },
+    onDrop(ctx, p) {
+      if (p.L >= 11 && p.raging && d(20) + p.sv.con >= p.relentDC) { p.relentDC += 5; p.hp = 2 * p.L; credit(ctx, p, 'relentless', 'count', 0); ctx.S.saved++; log(ctx, 'heal', 'Relentless Rage: the Barbarian stays up'); return true; }
+      return false;
+    },
+  },
+  bard: {
+    name: 'Bard',
+    build(L) {
+      const sc = ASI(L, { cha: 16, dex: 14, con: 14, wis: 12 }, [[4, 'cha', 2], [8, 'cha', 2], [12, 'dex', 2], [16, 'con', 2], [19, 'con', 2]]);
+      const pc = basePC({ name: 'Bard', cls: 'bard', L, sc, hd: 8, saves: ['dex', 'cha'], ac: (L >= 5 ? 12 : 11) + mod(sc.dex), role: 'mid' });
+      Object.assign(pc, { dc: 8 + PB(L) + mod(sc.cha), spellHit: PB(L) + mod(sc.cha), slotsMax: FULL[L - 1], inspDie: step(L, [[1, 6], [5, 8], [10, 10], [15, 12]]), inspMax: Math.max(1, mod(sc.cha)) });
+      return pc;
+    },
+    startDay(p) { p.slots = [...p.slotsMax]; p.insp = p.inspMax; },
+    shortRest(p) { if (p.L >= 5) p.insp = p.inspMax; },
+    startFight(p, ctx) { slotBudget(p, ctx); },
+    turn(ctx, p) {
+      if (!p.conscious) return deathSave(ctx, p);
+      if (!healingWord(ctx, p, mod(p.sc.cha)) && p.insp > (p.L >= 3 ? 1 : 0)) {
+        const ally = ctx.party.filter(q => q !== p && q.conscious && q.atk && !q.f.insp).sort((a, b) => b.atkAvg * b.nAtk - a.atkAvg * a.nAtk)[0];
+        if (ally) { p.insp--; ally.f.insp = { die: p.inspDie, by: p }; }
+      }
+      const mons = liveMons(ctx); if (!mons.length) return;
+      if (!p.conc && mons.length >= 2 && p.L >= 5 && canCast(p, 3)) {
+        cast(p, 3); p.conc = { kind: 'hypnotic' }; let k = 0;
+        for (const m of areaPick(ctx, 3)) if (!monSaves(m, 'wis', p.dc)) { m.mez = { by: p, id: 'hypnotic' }; k++; }
+        log(ctx, 'wc', `Bard casts Hypnotic Pattern (${k} entranced)`); return;
+      }
+      if (p.L >= 10 && mons.length >= 2 && canCast(p, 3)) { const lv = cast(p, 3); saveSpell(ctx, p, areaPick(ctx, 3), nd(5 + lv, 6), 'dex', 'fireball'); return; }
+      if (p.L >= 3 && mons.length >= 2 && canCast(p, 2)) { const lv = cast(p, 2); saveSpell(ctx, p, areaPick(ctx, 2), nd(1 + lv, 8), 'con', 'shatter'); return; }
+      const t = [...mons].sort((a, b) => b.dpr - a.dpr)[0];
+      if (!monSaves(t, 'wis', p.dc)) {
+        const x = nd(tierOf(p.L), 6), b = t.hp; damageMon(ctx, t, x); credit(ctx, p, 'mockery', 'dealt', Math.min(b, x));
+        if (t.hp > 0) { t.hinder = 'mockery'; t.hinderBy = p; }
+      }
+    },
+    guard(ctx, p, tgt, m, s, r) {
+      if (p.L < 3 || !p.reaction || p.insp <= 0 || r.total - r.ac >= p.inspDie) return false;
+      if (s.avg < 6 && tgt.hp > s.avg * 2) return false;
+      p.reaction = false; p.insp--;
+      if (r.total - d(p.inspDie) < r.ac) { credit(ctx, p, 'cuttingWords', 'prevent', s.avg); return true; }
+      return false;
+    },
+  },
+  lifeCleric: {
+    name: 'Cleric',
+    build(L) { const pc = CLS.cleric.build(L); pc.cls = 'lifeCleric'; pc.name = 'Cleric (seat)'; pc.cdMax = L >= 18 ? 4 : L >= 6 ? 3 : L >= 2 ? 2 : 0; return pc; },
+    startDay(p) { p.slots = [...p.slotsMax]; p.cd = p.cdMax; },
+    shortRest(p) { p.cd = Math.min(p.cdMax, p.cd + 1); },
+    turn(ctx, p) {
+      if (!p.conscious) return deathSave(ctx, p);
+      healingWord(ctx, p, mod(p.sc.wis), true);
+      const hurt = ctx.party.filter(x => !x.dead && x.conscious && x.hp < x.maxHp / 2);
+      if (p.cd > 0 && hurt.length >= 2) {
+        p.cd--; let pool = 5 * p.L;
+        for (const q of hurt.sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)) { const g = Math.min(pool, Math.floor(q.maxHp / 2) - q.hp); if (g > 0) { heal(ctx, q, g, p, 'preserveLife'); pool -= g; } }
+        log(ctx, 'heal', 'Cleric uses Preserve Life'); return;
+      }
+      if (p.L >= 5 && !p.f.sg) {
+        let i = -1; for (let k = 2; k < p.slots.length; k++) if (p.slots[k] > 0) { i = k; break; }
+        if (i >= 0) { p.slots[i]--; p.f.sg = i + 1; log(ctx, 'sys', 'Cleric casts Spirit Guardians'); return; }
+      }
+      const t = focus(ctx); if (!t) return;
+      if (!monSaves(t, 'wis', p.dc)) { const x = nd(tierOf(p.L), 12) + (p.L >= 7 ? mod(p.sc.wis) : 0), b = t.hp; damageMon(ctx, t, x); credit(ctx, p, 'toll', 'dealt', Math.min(b, x)); }
+    },
+  },
+  druid: {
+    name: 'Druid',
+    build(L) {
+      const sc = ASI(L, { wis: 16, con: 14, dex: 14, int: 10 }, [[4, 'wis', 2], [8, 'wis', 2], [12, 'con', 2], [16, 'con', 2], [19, 'con', 2]]);
+      const pc = basePC({ name: 'Druid', cls: 'druid', L, sc, hd: 8, saves: ['int', 'wis'], ac: (L >= 5 ? 12 : 11) + mod(sc.dex) + 2, role: 'mid' });
+      Object.assign(pc, { dc: 8 + PB(L) + mod(sc.wis), spellHit: PB(L) + mod(sc.wis), slotsMax: FULL[L - 1] });
+      return pc;
+    },
+    startDay(p) { p.slots = [...p.slotsMax]; p.recovered = false; },
+    shortRest(p) { if (p.L >= 6 && !p.recovered) { p.recovered = true; recoverSlots(p, Math.ceil(p.L / 2)); } },
+    startFight(p, ctx) { slotBudget(p, ctx); },
+    turn(ctx, p) {
+      if (!p.conscious) return deathSave(ctx, p);
+      healingWord(ctx, p, mod(p.sc.wis));
+      const mons = liveMons(ctx); if (!mons.length) return;
+      if (p.conc && p.conc.kind === 'moonbeam') { const t = areaPick(ctx, 1)[0]; if (t) saveSpell(ctx, p, [t], nd(p.conc.n, 10), 'con', 'moonbeam'); }
+      if (!liveMons(ctx).length) return;
+      if (p.L >= 5 && liveMons(ctx).length >= 2 && canCast(p, 3)) { const lv = cast(p, 3); saveSpell(ctx, p, areaPick(ctx, 3), nd(5 + lv, 6), 'dex', 'fireball'); return; }
+      if (p.L >= 3 && !p.conc && canCast(p, 2)) { const lv = cast(p, 2); p.conc = { kind: 'moonbeam', n: lv }; const t = areaPick(ctx, 1)[0]; if (t) saveSpell(ctx, p, [t], nd(lv, 10), 'con', 'moonbeam'); return; }
+      spellAttack(ctx, p, focus(ctx), spec(tierOf(p.L) + (p.L >= 3 ? 'd10' : 'd8')), 'cantrip');
+    },
+  },
+  monk: {
+    name: 'Monk',
+    build(L) {
+      const sc = ASI(L, { dex: 16, wis: 14, con: 14, str: 10 }, [[4, 'dex', 2], [8, 'dex', 2], [12, 'wis', 2], [16, 'wis', 2], [19, 'con', 2]]);
+      if (L >= 20) { sc.dex = Math.min(25, sc.dex + 4); sc.wis = Math.min(25, sc.wis + 4); }
+      const pc = basePC({ name: 'Monk', cls: 'monk', L, sc, hd: 8, saves: ['str', 'dex'].concat(L >= 14 ? ['con', 'int', 'wis', 'cha'] : []), ac: 10 + mod(sc.dex) + mod(sc.wis), role: 'front' });
+      const x = mod(sc.dex), die = step(L, [[1, 6], [5, 8], [11, 10], [17, 12]]);
+      Object.assign(pc, { atk: { hit: PB(L) + x, dmg: spec('1d' + die + '+' + x) }, nAtk: L >= 5 ? 2 : 1, atkAvg: (die + 1) / 2 + x, dc: 8 + PB(L) + mod(sc.wis), focusMax: L >= 2 ? L : 0, evasion: L >= 7 });
+      return pc;
+    },
+    startDay(p) { p.focus = p.focusMax; },
+    shortRest(p) { p.focus = p.focusMax; },
+    startFight(p, ctx) { p.focusShare = Math.ceil(p.focus / untilRest(ctx)); p.focusUsed = 0; },
+    turn(ctx, p) {
+      if (!p.conscious) return deathSave(ctx, p);
+      let stunTry = p.L >= 5;
+      const spend = () => p.focus > 0 && p.focusUsed < p.focusShare;
+      const strike = (flurry) => {
+        const t = focus(ctx); if (!t) return false;
+        pcAttack(ctx, p, t, {
+          key: flurry ? 'flurry' : 'weapon',
+          onHit: () => {
+            if (stunTry && spend() && !t.stun && t.hp > 0) {
+              stunTry = false; p.focus--; p.focusUsed++;
+              if (!monSaves(t, 'con', p.dc)) { t.stun = 'stunningStrike'; t.stunBy = p; t.exposed = { id: 'stunningStrike', left: 99, until: 'targetEnd' }; log(ctx, 'wc', `Stunning Strike: ${t.name} is Stunned`); }
+              else t.exposed = { id: 'stunningStrike', left: 1, until: 'targetTurn' };
+            }
+            if (flurry && p.L >= 3 && t.hp > 0 && !t.prone && !monSaves(t, 'dex', p.dc)) { t.prone = 'openHand'; if (!t.exposed) t.exposed = { id: 'openHand', left: 99, until: 'targetTurn' }; }
+            return 0;
+          },
+        });
+        return true;
+      };
+      for (let i = 0; i < p.nAtk; i++) if (!strike(false)) return;
+      if (p.L >= 2 && spend()) { p.focus--; p.focusUsed++; for (let i = 0; i < (p.L >= 10 ? 3 : 2); i++) if (!strike(true)) return; }
+      else strike(false);
+    },
+    onDamage(ctx, p, dmg, info) {
+      if (p.L >= 3 && info.attack && p.reaction && dmg >= 6) { p.reaction = false; const r = Math.min(dmg, d(10) + mod(p.sc.dex) + p.L); credit(ctx, p, 'deflect', 'prevent', r); return dmg - r; }
+      return dmg;
+    },
+  },
+  ranger: {
+    name: 'Ranger',
+    build(L) {
+      const sc = ASI(L, { dex: 16, wis: 14, con: 14, str: 10 }, [[4, 'dex', 2], [8, 'dex', 2], [12, 'wis', 2], [16, 'con', 2], [19, 'wis', 2]]);
+      const x = mod(sc.dex);
+      const pc = basePC({ name: 'Ranger', cls: 'ranger', L, sc, hd: 10, saves: ['str', 'dex'], ac: 12 + x, role: 'back' });
+      Object.assign(pc, { atk: { hit: PB(L) + x + (L >= 2 ? 2 : 0), dmg: spec('1d8+' + x) }, nAtk: L >= 5 ? 2 : 1, atkAvg: 8 + x, slotsMax: HALF[L - 1],
+        hmFreeMax: step(L, [[1, 2], [5, 3], [9, 4], [13, 5], [17, 6]]), hmDie: L >= 20 ? 10 : 6 });
+      return pc;
+    },
+    startDay(p) { p.slots = [...p.slotsMax]; p.hmFree = p.hmFreeMax; },
+    startFight(p) { p.conc = null; },
+    onDamage(ctx, p, dmg, info) {
+      if (p.L >= 15 && p.reaction && dmg >= 8) { p.reaction = false; const h = Math.floor(dmg / 2); credit(ctx, p, 'huntersDefense', 'prevent', dmg - h); return h; }
+      return dmg;
+    },
+    turn(ctx, p) {
+      if (!p.conscious) return deathSave(ctx, p);
+      if (!p.conc && (p.hmFree > 0 || takeSlot(p, 1))) { if (p.hmFree > 0) p.hmFree--; p.conc = { kind: 'hm' }; }
+      let slayer = p.L >= 3, prey = true;
+      for (let i = 0; i < p.nAtk; i++) {
+        const t = focus(ctx); if (!t) return;
+        pcAttack(ctx, p, t, {
+          adv: p.L >= 17 && p.conc ? 'self' : null,
+          onHit: crit => {
+            let x = 0;
+            if (p.conc) {
+              const v = nd(crit ? 2 : 1, p.hmDie); x += v; credit(ctx, p, 'huntersMark', 'dealt', v);
+              if (p.L >= 11 && prey) { const o = liveMons(ctx).find(m => m !== t); if (o) { prey = false; const w = d(p.hmDie), b = o.hp; damageMon(ctx, o, w); credit(ctx, p, 'superiorPrey', 'dealt', Math.min(b, w)); } }
+            }
+            if (slayer && t.hp < t.max) { slayer = false; const v = nd(crit ? 2 : 1, 8); x += v; credit(ctx, p, 'colossus', 'dealt', v); }
+            return x;
+          },
+        });
+      }
+    },
+  },
+  sorcerer: {
+    name: 'Sorcerer',
+    build(L) {
+      const sc = ASI(L, { cha: 16, con: 14, dex: 14, wis: 10 }, [[4, 'cha', 2], [8, 'cha', 2], [12, 'con', 2], [16, 'con', 2], [19, 'dex', 2]]);
+      const pc = basePC({ name: 'Sorcerer', cls: 'sorcerer', L, sc, hd: 6, saves: ['con', 'cha'], ac: Math.max(13 + mod(sc.dex), L >= 3 ? 10 + mod(sc.dex) + mod(sc.cha) : 0), role: 'back' });
+      if (L >= 3) { pc.maxHp += L; pc.hp = pc.maxHp; }
+      Object.assign(pc, { dcBase: 8 + PB(L) + mod(sc.cha), spellHit: PB(L) + mod(sc.cha), slotsMax: FULL[L - 1], affinity: L >= 6 ? mod(sc.cha) : 0 });
+      pc.dc = pc.dcBase;
+      return pc;
+    },
+    startDay(p) { p.slots = [...p.slotsMax]; p.innate = 2; },
+    startFight(p, ctx) { slotBudget(p, ctx); p.innateOn = false; },
+    turn(ctx, p) {
+      if (!p.conscious) return deathSave(ctx, p);
+      if (!p.innateOn && p.innate > 0 && ctx.round === 1) { p.innate--; p.innateOn = true; }
+      p.dc = p.dcBase + (p.innateOn ? 1 : 0);
+      const adv = p.innateOn, mons = liveMons(ctx); if (!mons.length) return;
+      if (p.L >= 5 && mons.length >= 2 && canCast(p, 3)) { const lv = cast(p, 3); saveSpell(ctx, p, areaPick(ctx, 3), nd(5 + lv, 6) + p.affinity, 'dex', 'fireball'); return; }
+      if (p.L >= 3 && canCast(p, 2)) { const lv = cast(p, 2); for (let i = 0; i < lv + 1; i++) spellAttack(ctx, p, focus(ctx), spec('2d6'), 'scorchingRay', { adv, bonus: i === 0 ? p.affinity : 0 }); return; }
+      if (canCast(p, 1)) { const lv = cast(p, 1); spellAttack(ctx, p, focus(ctx), spec((2 + lv) + 'd8'), 'chromaticOrb', { adv }); return; }
+      spellAttack(ctx, p, focus(ctx), spec(tierOf(p.L) + 'd10'), 'fireBolt', { adv, bonus: p.affinity });
+    },
+  },
+  warlock: {
+    name: 'Warlock',
+    build(L) {
+      const sc = ASI(L, { cha: 16, con: 14, dex: 14, wis: 10 }, [[4, 'cha', 2], [8, 'cha', 2], [12, 'con', 2], [16, 'con', 2], [19, 'dex', 2]]);
+      const pc = basePC({ name: 'Warlock', cls: 'warlock', L, sc, hd: 8, saves: ['wis', 'cha'], ac: (L >= 5 ? 12 : 11) + mod(sc.dex), role: 'back' });
+      const c = mod(sc.cha);
+      Object.assign(pc, { dc: 8 + PB(L) + c, spellHit: PB(L) + c, pactMax: step(L, [[1, 1], [2, 2], [11, 3], [17, 4]]), pactLv: step(L, [[1, 1], [3, 2], [5, 3], [7, 4], [9, 5]]), beams: tierOf(L), ebBonus: L >= 2 ? c : 0 });
+      return pc;
+    },
+    startDay(p) { p.pact = p.pactMax; p.arcana = [11, 13, 15, 17].filter(l => p.L >= l); p.hurl = p.L >= 14; },
+    shortRest(p) { p.pact = p.pactMax; },
+    startFight(p) { p.conc = null; },
+    turn(ctx, p) {
+      if (!p.conscious) return deathSave(ctx, p);
+      const bless = () => { if (p.L >= 3) for (const m of ctx.monsters) if (m.hp <= 0 && !m.blessed) { m.blessed = true; const v = mod(p.sc.cha) + p.L; if (v > p.thp) { p.thp = v; p.thpSrc = 'darkBlessing'; p.thpOwner = p; } } };
+      const mons = liveMons(ctx); if (!mons.length) return;
+      if (p.arcana.length && mons.length >= 2) {
+        const lv = p.arcana.pop();
+        if (lv === 17) saveSpell(ctx, p, areaPick(ctx, 4), nd(40, 6), 'dex', 'arcanum');
+        else if (lv === 15) saveSpell(ctx, p, areaPick(ctx, 3), nd(10, 8), 'dex', 'arcanum');
+        else if (lv === 13) saveSpell(ctx, p, [mons.sort((a, b) => b.hp - a.hp)[0]], nd(7, 8) + 30, 'con', 'arcanum');
+        else saveSpell(ctx, p, areaPick(ctx, 3), nd(8, 8), 'con', 'arcanum');
+        bless(); return;
+      }
+      if (p.L >= 5 && mons.length >= 2 && p.pact > 0) { p.pact--; saveSpell(ctx, p, areaPick(ctx, 3), nd(5 + p.pactLv, 6), 'dex', 'fireball'); bless(); return; }
+      if (!p.conc && p.pact > 0) { p.pact--; p.conc = { kind: 'hex' }; }
+      for (let i = 0; i < p.beams; i++) {
+        const t = focus(ctx); if (!t) break;
+        if (spellAttack(ctx, p, t, spec('1d10'), 'eldritchBlast', { bonus: p.ebBonus }) && t.hp > 0) {
+          if (p.conc) { const v = d(6), b = t.hp; damageMon(ctx, t, v); credit(ctx, p, 'hex', 'dealt', Math.min(b, v)); }
+          if (p.hurl && t.hp > 0) { p.hurl = false; if (!monSaves(t, 'wis', p.dc)) { const v = nd(8, 10), b = t.hp; damageMon(ctx, t, v); credit(ctx, p, 'hurl', 'dealt', Math.min(b, v)); if (t.hp > 0) { t.stun = 'hurl'; t.stunBy = p; } } }
+        }
+        bless();
+      }
+    },
+  },
+  wizard: {
+    name: 'Wizard',
+    build(L) {
+      const sc = ASI(L, { int: 16, con: 14, dex: 14, wis: 12 }, [[4, 'int', 2], [8, 'int', 2], [12, 'con', 2], [16, 'con', 2], [19, 'dex', 2]]);
+      const pc = basePC({ name: 'Wizard', cls: 'wizard', L, sc, hd: 6, saves: ['int', 'wis'], ac: 13 + mod(sc.dex), role: 'back' });
+      Object.assign(pc, { dc: 8 + PB(L) + mod(sc.int), spellHit: PB(L) + mod(sc.int), slotsMax: FULL[L - 1], empower: L >= 10 ? mod(sc.int) : 0, potent: L >= 3, acBase: pc.ac });
+      return pc;
+    },
+    startDay(p) { p.slots = [...p.slotsMax]; p.recovered = false; },
+    shortRest(p) { if (!p.recovered) { p.recovered = true; recoverSlots(p, Math.ceil(p.L / 2)); } },
+    startFight(p, ctx) { slotBudget(p, ctx); p.ac = p.acBase; },
+    turn(ctx, p) {
+      p.ac = p.acBase;
+      if (!p.conscious) return deathSave(ctx, p);
+      const mons = liveMons(ctx); if (!mons.length) return;
+      if (p.L >= 9 && mons.length >= 2 && canCast(p, 5)) { const lv = cast(p, 5); saveSpell(ctx, p, areaPick(ctx, 3), nd(3 + lv, 8) + p.empower, 'con', 'coneOfCold'); return; }
+      if (p.L >= 5 && mons.length >= 2 && canCast(p, 3)) { const lv = cast(p, 3); saveSpell(ctx, p, areaPick(ctx, 3), nd(5 + lv, 6) + p.empower, 'dex', 'fireball'); return; }
+      if (p.L >= 3 && canCast(p, 2)) { const lv = cast(p, 2); for (let i = 0; i < lv + 1; i++) spellAttack(ctx, p, focus(ctx), spec('2d6'), 'scorchingRay', { bonus: i === 0 ? p.empower : 0 }); return; }
+      if (p.slots[0] > 2 && canCast(p, 1)) { cast(p, 1); const t = focus(ctx); const x = 3 * (d(4) + 1) + p.empower, b = t.hp; damageMon(ctx, t, x); credit(ctx, p, 'magicMissile', 'dealt', Math.min(b, x)); return; }
+      spellAttack(ctx, p, focus(ctx), spec(tierOf(p.L) + 'd10'), 'fireBolt', { halfOnMiss: p.potent, bonus: p.empower });
+    },
+    guard(ctx, p, tgt, m, s, r) {
+      if (tgt !== p || !p.reaction || r.total >= r.ac + 5 || p.slots[0] <= 0) return false;
+      if (s.avg < 6 && p.hp > s.avg * 2) return false;
+      p.reaction = false; p.slots[0]--; p.ac = p.acBase + 5; credit(ctx, p, 'shield', 'prevent', s.avg); return true;
+    },
+  },
+};
+Object.assign(CLS, SEAT_CLS);
+
 // ----- Combat helpers -----
 function focus(ctx) { let b = null; for (const m of ctx.monsters) if (m.hp > 0 && (!b || m.hp < b.hp)) b = m; return b; }
 function damageMon(ctx, m, dmg) {
   if (m.hp <= 0 || dmg <= 0) return;
+  if (m.mez) m.mez = null;
   m.hp -= dmg;
   if (m.hp <= 0) { m.hp = 0; log(ctx, 'mon', `${m.name} falls`); }
 }
@@ -661,7 +1076,7 @@ function pcAttack(ctx, p, t, opt = {}) {
     for (const f of fx(hc, 'reaction')) {
       if (f.trigger !== 'allyMiss' || !hasUse(hc, f)) continue;
       const range = (mods(hc, f.id).find(([, e]) => e.type === 'range') || [])[1]?.range || f.range || 'aura';
-      if (range === 'adjacent' ? !p.adj : !p.inAura) continue;
+      if (!inRange(p, range)) continue;
       const e = (f.effects || []).find(x => x.type === 'addToRoll'); if (!e) continue;
       if (t.ac - total > ev(hc, e.amount, 'max')) continue;
       hc.reaction = false; spendUse(hc, f);
@@ -669,6 +1084,11 @@ function pcAttack(ctx, p, t, opt = {}) {
       if (total + add >= t.ac) { hit = true; src = f.id; log(ctx, 'wc', `${f.name}: ${p.name}'s miss becomes a hit (+${add})`); }
       break;
     }
+  }
+  let inspBy = null;
+  if (!hit && r.nat !== 1 && p.f.insp && t.ac - total <= p.f.insp.die) {
+    const add = d(p.f.insp.die); inspBy = p.f.insp.by; p.f.insp = null;
+    if (total + add >= t.ac) hit = true; else inspBy = null;
   }
   if (!hit) { if (opt.onMiss) opt.onMiss(); return false; }
   const hpBefore = t.hp;
@@ -680,12 +1100,27 @@ function pcAttack(ctx, p, t, opt = {}) {
     extra += x; credit(ctx, hc, p.f.bonusDmg.id, 'dealt', x);
   }
   if (opt.onHit) extra += opt.onHit(crit, t) || 0;
+  if (p === hc && (!hc.suit || hc.suitOn)) for (const [f, e] of passives(hc, 'weaponDamage')) { const x = ev(hc, e.amount) + (crit && /d/.test(String(scaleAt(e.amount, hc.L))) ? ev(hc, e.amount) : 0); extra += x; credit(ctx, hc, f.id, 'dealt', x); }
   if (p === hc && t.snare) for (const [f, e] of passives(hc, 'snaredBonusDamage')) { const x = ev(hc, e.amount) + (crit ? ev(hc, e.amount) : 0); extra += x; credit(ctx, hc, f.id, 'dealt', x); }
   const tot = base + extra;
+  if (inspBy) credit(ctx, inspBy, 'inspiration', 'dealt', Math.min(tot, hpBefore));
   if (src) credit(ctx, hc, src, 'dealt', Math.min(tot, hpBefore));
   credit(ctx, p, opt.key || 'weapon', 'dealt', Math.min(base, hpBefore));
   if (a.mastery === 'sap') t.sapped = p;
   if (a.mastery === 'vex') p.f.vex = { t, id: 'vex' };
+  if (a.mastery === 'topple' && t.hp - tot > 0 && d(20) + (t.sv.con ?? 0) < 8 + a.hit) { t.prone = 'topple'; t.exposed = { id: 'topple', left: 99, until: 'targetTurn' }; }
+  if (p === hc && (!hc.suit || hc.suitOn)) for (const [f, e] of passives(hc, 'splashDamage')) {
+    if (hc.splashTurn === ctx.turnId || !hasUse(hc, f)) continue;
+    const others = ctx.monsters.filter(m => m !== t && m.hp > 0);
+    if (!others.length || (f.cost && (hc.res[f.cost] || 0) <= (others.length > 1 ? 0 : 1))) continue;
+    hc.splashTurn = ctx.turnId; spendUse(hc, f);
+    let tot2 = 0;
+    for (const m of others.sort(() => R() - 0.5).slice(0, targetCount(hc, e))) {
+      const ok = monSave(ctx, hc, m, e.save || 'dex', f); const x = ok ? 0 : ev(hc, e.amount);
+      const b = m.hp; damageMon(ctx, m, x); tot2 += Math.min(b, x);
+    }
+    credit(ctx, hc, f.id, 'dealt', tot2);
+  }
   if (hc && p !== hc && p.inAura && !a.mastery) for (const [f, e] of passives(hc, 'grantMastery')) if (e.mastery === 'vex') p.f.vex = { t, id: f.id };
   if (p === hc && ctx.log) log(ctx, 'wc', `${hc.name} ${crit ? 'crits' : 'hits'} ${t.name} for ${tot}`);
   damageMon(ctx, t, tot);
@@ -718,7 +1153,7 @@ function dmgPC(ctx, p, dmg, info) {
       if (f.trigger !== 'allyHit' || !hasUse(hc, f)) continue;
       const fm = mods(hc, f.id);
       const range = (fm.find(([, e]) => e.type === 'range') || [])[1]?.range || f.range || 'aura';
-      if (range === 'adjacent' ? !p.adj : !p.inAura) continue;
+      if (!inRange(p, range)) continue;
       const e = (f.effects || []).find(x => x.type === 'reduceDamage'); if (!e) continue;
       const exp = ev(hc, e.amount, 'avg', e.min);
       if (!(dmg >= exp || dmg >= p.hp + p.thp)) continue;
@@ -731,6 +1166,7 @@ function dmgPC(ctx, p, dmg, info) {
     }
   }
   if (info.attack && p.cls === 'rogue' && p.L >= 5 && p.reaction && dmg >= 8) { p.reaction = false; dmg = Math.floor(dmg / 2); }
+  if (CLS[p.cls].onDamage && dmg > 0) dmg = CLS[p.cls].onDamage(ctx, p, dmg, info);
   if (dmg > 0) {
     let resId = null;
     if (p.f.resistNext) { resId = p.f.resistNext; p.f.resistNext = null; }
@@ -738,18 +1174,31 @@ function dmgPC(ctx, p, dmg, info) {
       for (const [f, e] of passives(hc, 'resistance')) {
         if (e.limit === 'firstPerRound' && hc.resUsed) continue;
         if (e.requires === 'nearAnchor' && !(hc.planted && !hc.anchorBroken && R() < 0.85)) continue;
+        if (e.requires === 'suitOnline' && hc.suit && !hc.suitOn) continue;
         if (e.limit === 'firstPerRound') hc.resUsed = true;
         resId = f.id; break;
       }
     }
     if (resId) { const h = Math.floor(dmg / 2); credit(ctx, hc, resId, 'prevent', dmg - h); dmg = h; }
   }
-  if (p.thp > 0 && dmg > 0) { const a = Math.min(p.thp, dmg); p.thp -= a; dmg -= a; if (p.thpSrc) credit(ctx, hc, p.thpSrc, 'prevent', a); }
+  if (p.thp > 0 && dmg > 0) { const a = Math.min(p.thp, dmg); p.thp -= a; dmg -= a; if (p.thpSrc) credit(ctx, p.thpOwner || hc, p.thpSrc, 'prevent', a); }
+  if (dmg > 0 && p.suit && p.suitOn) {
+    for (const [f, e] of passives(p, 'suitDamageReduction')) { const r = Math.min(dmg, ev(p, e.amount, 'avg', e.min)); dmg -= r; credit(ctx, p, f.id, 'prevent', r); }
+    const a = Math.min(p.suitHp, dmg); p.suitHp -= a; dmg -= a; credit(ctx, p, 'suit', 'soak', a);
+    if (p.suitHp <= 0) {
+      const floor = ctx.dur.suitFloor && ctx.dur.suitFloor.rounds > 0;
+      const red = passives(p, 'suitDropTo1').find(([f]) => hasUse(p, f));
+      if (floor) { p.suitHp = 1; }
+      else if (red) { spendUse(p, red[0]); p.suitHp = 1; credit(ctx, p, red[0].id, 'count', 0); log(ctx, 'wc', `${red[0].name}: the suit holds at 1 HP`); }
+      else { p.suitHp = 0; setSuit(ctx, p, false); }
+    }
+  }
   if (dmg <= 0) return;
   if (p.f.sg && d(20) + p.sv.con < Math.max(10, Math.floor(dmg / 2))) { p.f.sg = 0; log(ctx, 'sys', 'Cleric loses concentration on Spirit Guardians'); }
+  if (p.conc && d(20) + p.sv.con < Math.max(10, Math.floor(dmg / 2))) { log(ctx, 'sys', `${p.name} loses concentration`); endConc(ctx, p); }
   ctx.S.partyDmg += Math.min(dmg, p.hp);
   p.hp -= dmg;
-  if (p.hp > 0) return;
+  if (p.hp > 0) { CLS[p.cls].afterDamage?.(ctx, p, info); return; }
   const over = -p.hp;
   if (p.f.dropTo1) { const id = p.f.dropTo1; p.f.dropTo1 = null; p.hp = 1; credit(ctx, hc, id, 'count', 0); ctx.S.saved++; log(ctx, 'wc', `${p.name} stays up at 1 HP`); return; }
   if (hc && p === hc) {
@@ -761,7 +1210,8 @@ function dmgPC(ctx, p, dmg, info) {
       return;
     }
   }
-  p.hp = 0; p.thp = 0; p.conscious = false; p.ds = { s: 0, f: 0 }; p.stable = false; p.f.sg = 0;
+  if (CLS[p.cls].onDrop?.(ctx, p)) return;
+  p.hp = 0; p.thp = 0; p.conscious = false; p.ds = { s: 0, f: 0 }; p.stable = false; p.f.sg = 0; endConc(ctx, p);
   ctx.S.knock++;
   log(ctx, 'ko', `${p.name} drops to 0 HP`);
   if (over >= p.maxHp) kill(ctx, p);
@@ -793,7 +1243,7 @@ function monAttack(ctx, m, s, tgt) {
   if (m.daze) dis.push([m.daze.id, hc]);
   if (m.prone) dis.push([m.prone, hc]);
   if (m.snare && m.snare.dis) dis.push([m.snare.id, hc]);
-  if (m.hinder) { dis.push([m.hinder, hc]); m.hinder = null; }
+  if (m.hinder) { dis.push([m.hinder, m.hinderBy || hc]); m.hinder = null; m.hinderBy = null; }
   if (tgt.f.veil) dis.push([tgt.f.veil, hc]);
   if (tgt.f.veilOnce) { dis.push([tgt.f.veilOnce, hc]); tgt.f.veilOnce = null; }
   if (m.sapped) { dis.push(['sap', m.sapped]); m.sapped = null; }
@@ -811,12 +1261,13 @@ function monAttack(ctx, m, s, tgt) {
       break;
     }
   }
-  const r = d20(false, dis.length > 0);
+  const r = d20(!!tgt.f.reckless, dis.length > 0);
   const total = r.nat + m.hit;
   const [sw, swId] = acBonus(ctx, tgt);
   const ac = tgt.ac + sw;
   const crit = r.nat === 20;
-  const hit = crit || (r.nat !== 1 && total >= ac);
+  let hit = crit || (r.nat !== 1 && total >= ac);
+  if (hit && !crit) for (const q of ctx.party) { const g = CLS[q.cls].guard; if (g && q.conscious && g(ctx, q, tgt, m, s, { total, ac })) { hit = false; break; } }
   if (!hit) {
     if (r.nat !== 1) {
       if (r.mode === 'dis' && (r.alt === 20 || r.alt + m.hit >= ac)) { const [k, o] = dis[0]; credit(ctx, o, k, 'prevent', s.avg); }
@@ -841,8 +1292,12 @@ function monTurn(ctx, m) {
   m.prone = null;
   if (m.regen && m.hp < m.max) m.hp = Math.min(m.max, m.hp + m.regen);
   if (m.stun) {
-    credit(ctx, ctx.hc, m.stun, 'prevent', m.dpr * 0.55); log(ctx, 'mon', `${m.name} loses its turn`);
-    m.stun = null; m.fright = null; endMonTurn(ctx, m); return;
+    credit(ctx, m.stunBy || ctx.hc, m.stun, 'prevent', m.dpr * 0.55); log(ctx, 'mon', `${m.name} loses its turn`);
+    m.stun = null; m.stunBy = null; m.fright = null; endMonTurn(ctx, m); return;
+  }
+  if (m.mez) {
+    credit(ctx, m.mez.by, m.mez.id, 'prevent', m.dpr * 0.55); log(ctx, 'mon', `${m.name} stands entranced`);
+    m.fright = null; endMonTurn(ctx, m); return;
   }
   if (m.breath && !m.breathReady && d(6) >= 5) m.breathReady = true;
   const hc = ctx.hc;
@@ -854,7 +1309,7 @@ function monTurn(ctx, m) {
     for (const p of c) {
       const ok = pcSave(ctx, p, m.breath.save, m.breath.dc, dmg);
       let x = ok ? Math.floor(dmg / 2) : dmg;
-      if (p.cls === 'rogue' && p.L >= 7 && m.breath.save === 'dex') x = ok ? 0 : Math.floor(dmg / 2);
+      if (((p.cls === 'rogue' && p.L >= 7) || p.evasion) && m.breath.save === 'dex') x = ok ? 0 : Math.floor(dmg / 2);
       dmgPC(ctx, p, x, { attack: false, bps: false });
     }
   } else {
@@ -892,10 +1347,10 @@ function monTurn(ctx, m) {
   }
   m.fright = null;
   endMonTurn(ctx, m);
-  const cl = ctx.party.find(p => p.cls === 'cleric' && p.conscious && p.f.sg);
-  if (cl && m.hp > 0 && R() < 0.6) {
+  for (const cl of ctx.party.filter(p => (p.cls === 'cleric' || p.cls === 'lifeCleric') && p.conscious && p.f.sg)) {
+    if (m.hp <= 0 || R() >= 0.6) continue;
     let x = nd(3 + (cl.f.sg - 3), 8); if (d(20) + m.sv.wis >= cl.dc) x = Math.floor(x / 2);
-    damageMon(ctx, m, x);
+    const b = m.hp; damageMon(ctx, m, x); credit(ctx, cl, 'spiritGuardians', 'dealt', Math.min(b, x));
   }
 }
 
@@ -907,6 +1362,7 @@ function takeTurn(ctx, c) {
   for (const m of ctx.monsters) if (m.sapped === c) m.sapped = null;
   const hc = ctx.hc, rg = ctx.dur.regen;
   if (rg && hc && hc.conscious && c.conscious && c.hp >= 1 && inAuraOf(hc, c)) heal(ctx, c, Math.max(0, ev(hc, rg.amount)), hc, rg.id);
+  if (c === hc && hc.suit && hc.suitOn && hc.suitHp >= 1) for (const [f, e] of passives(hc, 'suitRegen')) { const g = Math.min(Math.max(0, ev(hc, e.amount)), hc.suitMax - hc.suitHp); hc.suitHp += g; credit(ctx, hc, f.id, 'heal', g); }
   CLS[c.cls].turn(ctx, c);
 }
 const over = ctx => ctx.monsters.every(m => m.hp <= 0) || !ctx.party.some(p => p.conscious);
@@ -939,7 +1395,9 @@ function runFight(ctx) {
   log(ctx, 'fight-end', won ? `Party wins in ${rounds} rounds` : !ctx.party.some(p => p.conscious) ? 'The party is wiped out' : 'Fight drags past 20 rounds');
   return { won, rounds };
 }
-function buildSlot(cfg, slotCls) { return slotCls === 'hb' ? buildHB(cfg.def, cfg.L, cfg) : CLS[slotCls].build(cfg.L, cfg); }
+const SEAT = { cleric: 'lifeCleric' };
+const SEAT_CLASSES = ['barbarian', 'bard', 'cleric', 'druid', 'fighter', 'monk', 'paladin', 'ranger', 'rogue', 'sorcerer', 'warlock', 'wizard'];
+function buildSlot(cfg, slotCls) { return slotCls === 'hb' ? buildHB(cfg.def, cfg.L, cfg) : CLS[SEAT[slotCls] || slotCls].build(cfg.L, cfg); }
 function runDay(cfg, slotCls, wantLog) {
   const party = [buildSlot(cfg, slotCls), CLS.fighter.build(cfg.L, cfg), CLS.rogue.build(cfg.L, cfg), CLS.cleric.build(cfg.L, cfg)];
   if (slotCls === 'fighter') party[0].name = 'Fighter (seat)';
@@ -948,6 +1406,7 @@ function runDay(cfg, slotCls, wantLog) {
   const ctx = { cfg, party, slot: party[0], hc: slotCls === 'hb' ? party[0] : null, pal: slotCls === 'paladin' ? party[0] : null, S, turnId: 0, fights: cfg.fights, fi: 0, round: 0, log: wantLog ? [] : null, dur: {}, monsters: [] };
   party.forEach(p => CLS[p.cls].startDay?.(p, ctx));
   const sr = cfg.shortRest && cfg.fights >= 2 ? Math.ceil(cfg.fights / 2) : -1;
+  ctx.srAt = sr;
   let wiped = false;
   for (ctx.fi = 0; ctx.fi < cfg.fights; ctx.fi++) {
     if (ctx.fi === sr) {
@@ -1003,7 +1462,8 @@ function validateClass(def) {
   for (const [k, b] of Object.entries(c.builds || {})) need(b.scores && ABIL.every(a => typeof b.scores[a] === 'number'), `build "${k}" needs scores for all six abilities.`);
   need(c.weapon && /^\d*d\d+$/.test(c.weapon.damage || ''), 'core.weapon.damage must be dice like "1d8".');
   if (c.weapon) need(ABIL.includes(c.weapon.ability || 'str'), 'core.weapon.ability must be an ability.');
-  if (def.compare != null) need(Array.isArray(def.compare) && def.compare.length && def.compare.every(k => ['paladin', 'fighter', 'rogue'].includes(k)), 'compare must list one or more of "paladin", "fighter", "rogue".');
+  if (def.compare != null) need(Array.isArray(def.compare) && def.compare.length && def.compare.every(k => SEAT_CLASSES.includes(k)), `compare must list one or more of ${SEAT_CLASSES.join(', ')}.`);
+  for (const sc of def.subclasses || []) if (sc.compare != null) need(Array.isArray(sc.compare) && sc.compare.length && sc.compare.every(k => SEAT_CLASSES.includes(k)), `subclass ${sc.id}: compare must list one or more of ${SEAT_CLASSES.join(', ')}.`);
   const res = def.resources || {}, opts = def.options || {};
   const subIds = (def.subclasses || []).map(s => s.id);
   const allFeats = [...(def.features || []).map(f => [f, 'features']), ...(def.subclasses || []).flatMap(s => (s.features || []).map(f => [f, `subclass ${s.id}`]))];
@@ -1023,7 +1483,7 @@ function validateClass(def) {
     if (f.cost) need(res[f.cost], `${w}: cost "${f.cost}" is not in resources.`);
     if (f.choose) { need(opts[f.choose.from], `${w}: choose.from "${f.choose.from}" is not in options.`); need(f.choose.known != null, `${w}: choose.known is missing.`); }
     const optIds = new Set(Object.values(opts).flat().map(o => o.id));
-    if (f.when === 'afterChoice' || (f.when === 'modify' && !f.option)) need(featIds.has(f.feature), `${w}: feature "${f.feature}" not found.`);
+    if (f.when === 'afterChoice' || (f.when === 'modify' && !f.option)) need([].concat(f.feature).every(x => featIds.has(x)), `${w}: feature "${f.feature}" not found.`);
     if (f.when === 'modify' && f.option) need(optIds.has(f.option), `${w}: option "${f.option}" not found.`);
     if (f.choose && f.costPer) need(f.costPer === 'option', `${w}: costPer can only be "option".`);
     checkEffects(f.effects, w);
@@ -1041,16 +1501,24 @@ function validateClass(def) {
   }
   return err.filter(Boolean);
 }
-if (typeof module !== 'undefined') module.exports = { runMany, runDay, autoEncounter, validateClass, knownOptions, knownFor, MON_BY };
-const REFERENCE_MD = "# Wildbloom class skeleton (schema `wildbloom-class/1`)\n\nOne JSON file describes one class for the Proving Ground. Start from `class-template.json`, or copy `warcaller.class.json` or `trickster.class.json`. Paste the file into the simulator's **Class JSON** panel and press **Load class**; the panel lists anything it can't read.\n\n## Top level\n\n| Field | Required | What it is |\n|---|---|---|\n| `schema` | yes | Always `\"wildbloom-class/1\"` |\n| `id`, `name`, `version` | yes | Short id, display name, version string |\n| `compare` | no | Which classes the Proving Ground compares it with: any of `\"paladin\"`, `\"fighter\"`, `\"rogue\"`. Default Paladin and Fighter. Pick classes with a similar job: armored front-liners for a tank, the Rogue for a light-armored skirmisher |\n| `role` | no | `front`, `mid` or `back`. How often monsters target it (front is targeted most). Default `front` |\n| `core` | yes | Hit die, saves, armor, builds, weapon, attacks |\n| `scales` | no | Named values that change by level |\n| `resources` | no | Pools of uses, like Battle Cries |\n| `aura` | no | An aura that moves with the character, plus an optional planted anchor |\n| `features` | yes | Class features, in level order |\n| `options` | no | Lists of pickable options, like Battle Cries or maneuvers |\n| `subclasses` | no | Each with `id`, `name` and its own `features` |\n\n## Level tables\n\nAnything that changes by level is written as `{ \"level\": value }`. The highest key at or below the character's level wins: `{ \"1\": \"d6\", \"5\": \"d8\" }` is a d6 at levels 1–4 and a d8 from level 5.\n\n## Expressions\n\nAmounts are numbers, level tables or short expressions joined with `+`:\n\n- Ability modifiers: `str`, `dex`, `con`, `int`, `wis`, `cha`\n- `pb` (proficiency bonus) and `level`\n- Dice: `d6`, `2d8`\n- Any scale name, such as `rallyDie`\n- A multiplier on one term: `5*level`\n\nExamples: `\"rallyDie+cha\"`, `\"8+cha+pb\"`, `\"5*level\"`. Add `\"min\": 1` next to an amount for a minimum.\n\n## core\n\n| Field | Example | Notes |\n|---|---|---|\n| `hitDie` | `10` | 6, 8, 10 or 12 |\n| `saves` | `[\"con\",\"cha\"]` | Saving throw proficiencies |\n| `ac` | `{ \"1\": 18, \"5\": 20 }` or `{ \"1\": \"11+dex\" }` | Armor Class by level, before any feature bonus. Expressions work |\n| `builds` | see template | Each build has `label`, all six `scores`, and `asi` by level |\n| `weapon` | `{ \"damage\": \"1d8\", \"ability\": \"str\", \"mastery\": \"sap\" }` | Masteries the sim knows: `sap` (target's next attack has Disadvantage) and `vex` (your next attack against the target has Advantage). Others are accepted but have no effect yet |\n| `attacks` | `{ \"1\": 1, \"5\": 2 }` | Attacks per Attack action |\n| `saveDC` | `\"8+cha+pb\"` | DC for the class's saving throws |\n| `subclassLevel` | `3` | Level the subclass features start |\n\n## resources\n\n```json\n\"battleCries\": { \"label\": \"Battle Cries\", \"max\": { \"1\": 2, \"5\": 3 }, \"shortRest\": 1, \"longRest\": \"all\" }\n```\n\n`shortRest` is a number or expression regained (capped at `max`), or `\"all\"`; add `shortRestMin` for a minimum. Level tables work, such as `{ \"1\": 0, \"2\": \"int\" }`. The sim spreads a resource evenly over the fights in a day, but emergency options (`dropTo1`, `spendHitDie`) can dip into the reserve.\n\n## aura\n\n```json\n\"aura\": { \"size\": \"auraSize\",\n          \"anchor\": { \"name\": \"War Standard\", \"plant\": \"withBonusAction\", \"ac\": { \"1\": 15, \"7\": 18 },\n                      \"hp\": \"5*level\", \"brokenSize\": 5, \"repair\": \"shortRest\" } }\n```\n\n`size` is in feet. Each round, allies are inside the aura with the chance set by the Battlefield slider, scaled by size. The anchor is optional: it's planted on the first turn (free with a bonus-action feature when `plant` is `withBonusAction`), monsters can attack it, and when it breaks the aura drops to `brokenSize` until a rest.\n\n## features\n\nEvery feature has `id`, `name`, `level`, `when` and usually `effects`.\n\n| `when` | Fires | Extra fields |\n|---|---|---|\n| `passive` | Always on | — |\n| `action` | Instead of attacking | Used with `choose`. The sim picks it when the best option is worth more than the attacks it gives up. A `replaceAttack` passive lets it replace one attack instead |\n| `bonusAction` | On your turn, one per turn | `cost` (resource id), `choose` (pick from options) or `effects`; `\"ai\": \"firstRound\"` to use it on round 1; `duration` in rounds |\n| `reaction` | One per round | `trigger`: `allyHit` (an ally is hit), `allyMiss` (an ally misses) or `targeted` (an enemy attacks you); `range`: `adjacent`, `aura`, `self` or `allies` |\n| `dropToZero` | You'd drop to 0 HP | Usually `dropTo1` plus something |\n| `initiative` | When initiative is rolled | — |\n| `longRest` | At the start of the day | — |\n| `afterChoice` | Right after you use a `choose` feature | `feature`: the choose feature's id |\n| `modify` | Changes another feature or option | `feature`: a feature id, or `option`: an option id. On an option, `area` and `linger` change its effects and any other effect is added to it |\n| `exploration` | Not simulated | Kept for completeness |\n\nLimited uses: `\"uses\": { \"max\": \"cha\", \"min\": 1, \"shortRest\": \"all\", \"longRest\": \"all\" }`.\n\nPick from options: `\"choose\": { \"from\": \"cries\", \"known\": \"criesKnown\", \"count\": 1, \"label\": \"Battle Cries\" }`. `from` is a list in `options`, `known` is how many you know (a scale or number), `count` is how many you use at once, and `label` names the list on the page. Add `\"filter\": { \"use\": \"bonusAction\" }` to let a feature use only some of the options; two features can share one list.\n\nSpending: `cost` names a resource. With `\"costPer\": \"option\"`, each option used spends its own `cost` (default 1), so a Heavy gadget can cost 2.\n\n## options\n\n```json\n\"cries\": [ { \"id\": \"holdFast\", \"name\": \"Hold Fast!\", \"level\": 1, \"pick\": 2, \"effects\": [ ... ] } ]\n```\n\n`pick` sets the order the sim auto-selects known options (lowest first). The page also lets you tick your own. Options can also carry `use` (`action` or `bonusAction`, used by `filter`) and `cost`.\n\n## Targets\n\n| `targets` | Who |\n|---|---|\n| `self` | Only you |\n| `selfAndAura` | You and allies in your aura |\n| `aura` | Allies in your aura, not you |\n| `enemiesInAura` | Every enemy in your aura |\n| `enemyInAura` | The most dangerous enemy in your aura |\n| `allies` | Every conscious ally, you included |\n| `allyAtRisk` | The ally most likely to drop |\n| `downedAlly` | An ally at 0 Hit Points |\n| `enemy` | The most dangerous enemy |\n| `focusEnemy` | The enemy the party is focusing (lowest Hit Points) |\n| `enemiesArea` | Enemies caught in an area; set how many with `count` (default 2) |\n\n## Effect types\n\nEffects from options and bonus actions last until the start of your next turn unless noted.\n\n| `type` | Fields | What it does | Counted as |\n|---|---|---|---|\n| `acBonus` | `targets`, `amount` | Passive bonus to AC | prevented |\n| `reduceDamage` | `amount`, `min` | Reaction: cut the damage of a hit | prevented |\n| `tempHp` | `targets`, `amount`, `selfAmount`, `rollOnce` | Temporary Hit Points; `selfAmount` is what you get instead | prevented (when absorbed) |\n| `resistNext` | `targets` | Resistance to the next damage taken | prevented |\n| `resistance` | `targets: \"self\"`, `limit: \"firstPerRound\"`, `requires: \"nearAnchor\"` | Passive Resistance to weapon damage | prevented |\n| `frighten` | `targets`, `save` | Save or Frightened (Disadvantage on attacks) until the end of its next turn | prevented |\n| `saveAdvantage` | `targets` | Advantage on the next saving throw | prevented |\n| `bonusDamage` | `targets`, `amount`, `oncePerTurn` | Extra damage on a hit | dealt |\n| `advantageVsMark` | `targets` | First attack against the marked enemy has Advantage | dealt (hits gained) |\n| `addToRoll` | `amount` | Reaction: add to an ally's missed attack roll | dealt (hits gained) |\n| `counterAttack` | — | Used with `modify`: a weapon attack against the attacker | dealt |\n| `advantageTokens` | `count`, `min` | Used with `longRest`: that many creatures get Advantage on one attack | dealt (hits gained) |\n| `grantMastery` | `targets`, `mastery: \"vex\"` | Allies without a mastery gain Vex | dealt (hits gained) |\n| `rollBonus` | `targets`, `rolls: [\"attack\",\"save\"]`, `amount` | Adds to rolls for the feature's `duration` | dealt / prevented |\n| `spendHitDie` | `targets`, `revive` | Each target spends a Hit Die to heal; `revive` gets downed allies to 1 HP first | healed |\n| `regen` | `targets`, `amount` | Heals at the start of each turn for the feature's `duration` | healed |\n| `dropTo1` | `targets` | Next time it would drop to 0 HP, it drops to 1 instead | knockdowns stopped |\n| `gatherAura` | — | Everyone moves into your aura for a round | uses |\n| `taunt` | `targets: \"enemyInAura\"`, `save` | Save or the enemy can only attack you well | uses |\n| `deathSaveAdvantage` | `targets` | Passive Advantage on death saves | death saves turned |\n| `freeChoice` | `feature` | Use a `choose` feature for free | uses |\n| `extraChoice` | `feature`, `count` | Passive: use more options at once; respects the feature's `uses` | — |\n| `saveProficiency` | `save` | Passive save proficiency | — |\n| `initiativeBonus` | `targets`, `amount`, `min` | Passive bonus to initiative | — |\n| `auraSize` | `amount` | Sets aura size for the feature's `duration` | — |\n| `range` | `range` | Used with `modify` on a reaction to change its range | — |\n| `snare` | `targets`, `save`, `attackCheck`, `checkOncePerTurn`, `attacks: \"oneFewer\"`, `saveEnds`, `aiWeight` | Save or Snared until the end of its next turn; `saveEnds` repeats the save each turn for up to 1 minute. With `attackCheck`, each attack needs a Strength or Dexterity check against your DC (`checkOncePerTurn`: one check covers the turn); otherwise `attacks: \"oneFewer\"` removes one attack. `aiWeight` below 1 makes the simulated player use it less eagerly | prevented |\n| `snaredBonusDamage` | `amount` | Passive: your weapon hits on a creature you Snared deal extra damage | dealt |\n| `daze` | `targets`, `count`, `save` | Save or Disadvantage on attack rolls until the end of its next turn | prevented |\n| `hinder` | `targets`, `count`, `save` | Save or Disadvantage on its next attack roll | prevented |\n| `stun` | `targets`, `count`, `save`, `exposed` | Save or it loses its next turn; `exposed` also gives Advantage on attacks against it | prevented |\n| `expose` | `targets`, `count`, `attacks`, `save`, `until` | The next `attacks` attack rolls against it have Advantage, from anyone | dealt (hits gained) |\n| `veil` | `targets`, `count`, `once` | Attacks against the targets have Disadvantage until your next turn (`once`: only the next attack) | prevented |\n| `imposeDisadvantage` | — | Reaction: the triggering attack has Disadvantage | prevented |\n| `negate` | — | Used with `modify` on a reaction: the attack misses instead | prevented |\n| `revive` | `targets: \"downedAlly\"` | The target regains 1 Hit Point | uses |\n| `gainResource` | `resource`, `amount`, `ifEmpty` | Adds to a resource, even above its max (with `longRest` or `initiative`) | — |\n| `saveReroll` | — | Passive with `uses`: an enemy that succeeds on a save against you rerolls | uses |\n| `replaceAttack` | `feature` | Passive: an `action` feature replaces one attack instead of the whole action | — |\n| `snareUpgrade` | `exposed`, `saveEnds`, `targets2`, `disadvantage`, `escapeDisadvantage`, `checkDisadvantage`, `proneOnFail` | Passive: improves your `snare` effects (`proneOnFail`: a failed struggle check also knocks it Prone) | — |\n| `area` | `amount` | Used with `modify` on an option: its area effects reach more enemies | — |\n| `linger` | — | Used with `modify` on an option: its `daze` lasts up to 1 minute, save each turn | — |\n| `knowOption` | `option` | Passive: you always know this option, free of your known limit | — |\n\nIf a rule needs something not on this list, it has to be added to the simulator's engine first. Write the closest effect you can and note what's missing in the class doc's Open questions.\n\n## What the simulator does not model\n\nPositions are abstract, monsters don't use spells or legendary actions, and features marked `exploration` have no effect in combat.\n";
+if (typeof module !== 'undefined') module.exports = { runMany, runDay, autoEncounter, validateClass, knownOptions, knownFor, MON_BY, SEAT_CLASSES };
+const REFERENCE_MD = "# Wildbloom class skeleton (schema `wildbloom-class/1`)\n\nOne JSON file describes one class for the Proving Ground. Start from `class-template.json`, or copy `warcaller.class.json`, `trickster.class.json` or `exopilot.class.json`. Paste the file into the simulator's **Class JSON** panel and press **Load class**; the panel lists anything it can't read.\n\n## Top level\n\n| Field | Required | What it is |\n|---|---|---|\n| `schema` | yes | Always `\"wildbloom-class/1\"` |\n| `id`, `name`, `version` | yes | Short id, display name, version string |\n| `compare` | no | Which classes the Proving Ground compares it with: any of the SRD 5.2.1 classes, `\"barbarian\"`, `\"bard\"`, `\"cleric\"`, `\"druid\"`, `\"fighter\"`, `\"monk\"`, `\"paladin\"`, `\"ranger\"`, `\"rogue\"`, `\"sorcerer\"`, `\"warlock\"`, `\"wizard\"`. Default Paladin and Fighter. Pick classes with a similar job: armored front-liners for a tank, the Rogue or Ranger for a light-armored skirmisher, a full caster for a caster |\n| `role` | no | `front`, `mid` or `back`. How often monsters target it (front is targeted most). Default `front` |\n| `core` | yes | Hit die, saves, armor, builds, weapon, attacks |\n| `scales` | no | Named values that change by level |\n| `resources` | no | Pools of uses, like Battle Cries |\n| `aura` | no | An aura that moves with the character, plus an optional planted anchor |\n| `features` | yes | Class features, in level order |\n| `options` | no | Lists of pickable options, like Battle Cries or maneuvers |\n| `subclasses` | no | Each with `id`, `name`, its own `features`, and optionally its own `compare` list, which wins over the class's (Siege Frame compares with the Rogue and Fighter) |\n\n## Level tables\n\nAnything that changes by level is written as `{ \"level\": value }`. The highest key at or below the character's level wins: `{ \"1\": \"d6\", \"5\": \"d8\" }` is a d6 at levels 1–4 and a d8 from level 5.\n\n## Expressions\n\nAmounts are numbers, level tables or short expressions joined with `+`:\n\n- Ability modifiers: `str`, `dex`, `con`, `int`, `wis`, `cha`\n- `pb` (proficiency bonus) and `level`\n- Dice: `d6`, `2d8`\n- Any scale name, such as `rallyDie`\n- Products and whole-number division: `5*level`, `int*level/2`\n\nExamples: `\"rallyDie+cha\"`, `\"8+cha+pb\"`, `\"6*level\"`. Add `\"min\": 1` next to an amount for a minimum.\n\n## core\n\n| Field | Example | Notes |\n|---|---|---|\n| `hitDie` | `10` | 6, 8, 10 or 12 |\n| `saves` | `[\"con\",\"cha\"]` | Saving throw proficiencies |\n| `ac` | `{ \"1\": 18, \"5\": 20 }` or `{ \"1\": \"11+dex\" }` | Armor Class by level, before any feature bonus. Expressions work |\n| `builds` | see template | Each build has `label`, all six `scores`, and `asi` by level |\n| `weapon` | `{ \"damage\": \"1d8\", \"ability\": \"str\", \"mastery\": \"sap\" }` | Masteries the sim knows: `sap` (target's next attack has Disadvantage), `vex` (your next attack against the target has Advantage) and `topple` (Constitution save or Prone). Others are accepted but have no effect yet |\n| `suit` | `{ \"hp\": \"6*level\", \"offlineAc\": \"16\" }` | Optional. A suit with its own Hit Points that soaks damage after Temporary Hit Points; at 0 it goes offline, AC drops to `offlineAc`, and features with `\"requires\": \"suitOnline\"` stop working. It's fully restored on a Short or Long Rest |\n| `attacks` | `{ \"1\": 1, \"5\": 2 }` | Attacks per Attack action |\n| `saveDC` | `\"8+cha+pb\"` | DC for the class's saving throws |\n| `subclassLevel` | `3` | Level the subclass features start |\n\n## resources\n\n```json\n\"battleCries\": { \"label\": \"Battle Cries\", \"max\": { \"1\": 2, \"5\": 3 }, \"shortRest\": 1, \"longRest\": \"all\" }\n```\n\n`shortRest` is a number or expression regained (capped at `max`), or `\"all\"`; add `shortRestMin` for a minimum. Level tables work, such as `{ \"1\": 0, \"2\": \"int\" }`. The sim spreads a resource evenly over the fights in a day, but emergency options (`dropTo1`, `spendHitDie`) can dip into the reserve.\n\n## aura\n\n```json\n\"aura\": { \"size\": \"auraSize\",\n          \"anchor\": { \"name\": \"War Standard\", \"plant\": \"withBonusAction\", \"ac\": { \"1\": 15, \"7\": 18 },\n                      \"hp\": \"5*level\", \"brokenSize\": 5, \"repair\": \"shortRest\" } }\n```\n\n`size` is in feet. Each round, allies are inside the aura with the chance set by the Battlefield slider, scaled by size. The anchor is optional: it's planted on the first turn (free with a bonus-action feature when `plant` is `withBonusAction`), monsters can attack it, and when it breaks the aura drops to `brokenSize` until a rest.\n\n## features\n\nEvery feature has `id`, `name`, `level`, `when` and usually `effects`.\n\n| `when` | Fires | Extra fields |\n|---|---|---|\n| `passive` | Always on | — |\n| `action` | Instead of attacking | Used with `choose`. The sim picks it when the best option is worth more than the attacks it gives up. A `replaceAttack` passive lets it replace one attack instead |\n| `bonusAction` | On your turn, one per turn | `cost` (resource id), `choose` (pick from options) or `effects`; `\"ai\": \"firstRound\"` to use it on round 1; `duration` in rounds |\n| `reaction` | One per round | `trigger`: `allyHit` (an ally is hit), `allyMiss` (an ally misses) or `targeted` (an enemy attacks you); `range`: `adjacent` (5 feet), `near` (about 10 feet), `aura`, `self` or `allies` |\n| `dropToZero` | You'd drop to 0 HP | Usually `dropTo1` plus something |\n| `initiative` | When initiative is rolled | — |\n| `longRest` | At the start of the day | — |\n| `afterChoice` | Right after you use a `choose` feature | `feature`: the choose feature's id |\n| `modify` | Changes another feature or option | `feature`: a feature id, or `option`: an option id. On an option, `area` and `linger` change its effects and any other effect is added to it |\n| `exploration` | Not simulated | Kept for completeness |\n\nLimited uses: `\"uses\": { \"max\": \"cha\", \"min\": 1, \"shortRest\": \"all\", \"longRest\": \"all\" }`.\n\nAny feature can also carry `cost` (a resource spent each use, `costAmount` for more than 1) and `\"requires\": \"suitOnline\"`. Mark `choose` features that count as suit systems with `\"systems\": true` so `freeSystems` applies to them. `afterChoice` can name a list of features.\n\nPick from options: `\"choose\": { \"from\": \"cries\", \"known\": \"criesKnown\", \"count\": 1, \"label\": \"Battle Cries\" }`. `from` is a list in `options`, `known` is how many you know (a scale or number), `count` is how many you use at once, and `label` names the list on the page. Add `\"filter\": { \"use\": \"bonusAction\" }` to let a feature use only some of the options; two features can share one list.\n\nSpending: `cost` names a resource. With `\"costPer\": \"option\"`, each option used spends its own `cost` (default 1), so a Heavy gadget can cost 2.\n\n## options\n\n```json\n\"cries\": [ { \"id\": \"holdFast\", \"name\": \"Hold Fast!\", \"level\": 1, \"pick\": 2, \"effects\": [ ... ] } ]\n```\n\n`pick` sets the order the sim auto-selects known options (lowest first). The page also lets you tick your own. Options can also carry `use` (`action` or `bonusAction`, used by `filter`), `cost`, and `subclass` (only that subclass can know it, through `knowOption`).\n\n## Targets\n\n| `targets` | Who |\n|---|---|\n| `self` | Only you |\n| `selfAndAura` | You and allies in your aura |\n| `aura` | Allies in your aura, not you |\n| `enemiesInAura` | Every enemy in your aura |\n| `enemyInAura` | The most dangerous enemy in your aura |\n| `allies` | Every conscious ally, you included |\n| `allyAtRisk` | The ally most likely to drop |\n| `downedAlly` | An ally at 0 Hit Points |\n| `enemy` | The most dangerous enemy |\n| `focusEnemy` | The enemy the party is focusing (lowest Hit Points) |\n| `enemiesArea` | Enemies caught in an area; set how many with `count` (default 2) |\n\n## Effect types\n\nEffects from options and bonus actions last until the start of your next turn unless noted.\n\n| `type` | Fields | What it does | Counted as |\n|---|---|---|---|\n| `acBonus` | `targets`, `amount` | Passive bonus to AC | prevented |\n| `reduceDamage` | `amount`, `min` | Reaction: cut the damage of a hit | prevented |\n| `tempHp` | `targets`, `amount`, `selfAmount`, `rollOnce` | Temporary Hit Points; `selfAmount` is what you get instead | prevented (when absorbed) |\n| `resistNext` | `targets` | Resistance to the next damage taken | prevented |\n| `resistance` | `targets: \"self\"`, `limit: \"firstPerRound\"`, `requires: \"nearAnchor\"` | Passive Resistance to weapon damage | prevented |\n| `frighten` | `targets`, `save` | Save or Frightened (Disadvantage on attacks) until the end of its next turn | prevented |\n| `saveAdvantage` | `targets` | Advantage on the next saving throw | prevented |\n| `bonusDamage` | `targets`, `amount`, `oncePerTurn` | Extra damage on a hit | dealt |\n| `advantageVsMark` | `targets` | First attack against the marked enemy has Advantage | dealt (hits gained) |\n| `addToRoll` | `amount` | Reaction: add to an ally's missed attack roll | dealt (hits gained) |\n| `counterAttack` | — | Used with `modify`: a weapon attack against the attacker | dealt |\n| `advantageTokens` | `count`, `min` | Used with `longRest`: that many creatures get Advantage on one attack | dealt (hits gained) |\n| `grantMastery` | `targets`, `mastery: \"vex\"` | Allies without a mastery gain Vex | dealt (hits gained) |\n| `rollBonus` | `targets`, `rolls: [\"attack\",\"save\"]`, `amount` | Adds to rolls for the feature's `duration` | dealt / prevented |\n| `spendHitDie` | `targets`, `revive` | Each target spends a Hit Die to heal; `revive` gets downed allies to 1 HP first | healed |\n| `regen` | `targets`, `amount` | Heals at the start of each turn for the feature's `duration` | healed |\n| `dropTo1` | `targets` | Next time it would drop to 0 HP, it drops to 1 instead | knockdowns stopped |\n| `gatherAura` | — | Everyone moves into your aura for a round | uses |\n| `taunt` | `targets: \"enemyInAura\"`, `save` | Save or the enemy can only attack you well | uses |\n| `deathSaveAdvantage` | `targets` | Passive Advantage on death saves | death saves turned |\n| `freeChoice` | `feature` | Use a `choose` feature for free | uses |\n| `extraChoice` | `feature`, `count` | Passive: use more options at once; respects the feature's `uses` | — |\n| `saveProficiency` | `save` | Passive save proficiency | — |\n| `initiativeBonus` | `targets`, `amount`, `min` | Passive bonus to initiative | — |\n| `auraSize` | `amount` | Sets aura size for the feature's `duration` | — |\n| `range` | `range` | Used with `modify` on a reaction to change its range | — |\n| `snare` | `targets`, `save`, `attackCheck`, `checkOncePerTurn`, `attacks: \"oneFewer\"`, `saveEnds`, `aiWeight` | Save or Snared until the end of its next turn; `saveEnds` repeats the save each turn for up to 1 minute. With `attackCheck`, each attack needs a Strength or Dexterity check against your DC (`checkOncePerTurn`: one check covers the turn); otherwise `attacks: \"oneFewer\"` removes one attack. `aiWeight` below 1 makes the simulated player use it less eagerly | prevented |\n| `snaredBonusDamage` | `amount` | Passive: your weapon hits on a creature you Snared deal extra damage | dealt |\n| `daze` | `targets`, `count`, `save` | Save or Disadvantage on attack rolls until the end of its next turn | prevented |\n| `hinder` | `targets`, `count`, `save` | Save or Disadvantage on its next attack roll | prevented |\n| `stun` | `targets`, `count`, `save`, `exposed` | Save or it loses its next turn; `exposed` also gives Advantage on attacks against it | prevented |\n| `expose` | `targets`, `count`, `attacks`, `save`, `until` | The next `attacks` attack rolls against it have Advantage, from anyone | dealt (hits gained) |\n| `veil` | `targets`, `count`, `once` | Attacks against the targets have Disadvantage until your next turn (`once`: only the next attack) | prevented |\n| `imposeDisadvantage` | — | Reaction: the triggering attack has Disadvantage | prevented |\n| `negate` | — | Used with `modify` on a reaction: the attack misses instead | prevented |\n| `revive` | `targets: \"downedAlly\"` | The target regains 1 Hit Point | uses |\n| `gainResource` | `resource`, `amount`, `ifEmpty` | Adds to a resource, even above its max (with `longRest` or `initiative`) | — |\n| `saveReroll` | — | Passive with `uses`: an enemy that succeeds on a save against you rerolls | uses |\n| `replaceAttack` | `feature` | Passive: an `action` feature replaces one attack instead of the whole action | — |\n| `snareUpgrade` | `exposed`, `saveEnds`, `targets2`, `disadvantage`, `escapeDisadvantage`, `checkDisadvantage`, `proneOnFail` | Passive: improves your `snare` effects (`proneOnFail`: a failed struggle check also knocks it Prone) | — |\n| `area` | `amount` | Used with `modify` on an option: its area effects reach more enemies | — |\n| `linger` | — | Used with `modify` on an option: its `daze` lasts up to 1 minute, save each turn | — |\n| `knowOption` | `option` | Passive: you always know this option, free of your known limit | — |\n| `damage` | `targets`, `count`, `amount`, `save`, `half`, `prone`, `aiWeight` | Save for half (or none with `\"half\": false`); `prone` knocks failed targets Prone | dealt |\n| `splashDamage` | `amount`, `save`, `count` | Passive with `cost`: once per turn when you hit, other enemies save or take the damage | dealt |\n| `weaponDamage` | `amount` | Passive: extra damage on every weapon hit while the suit (if any) is online | dealt |\n| `weaponOverride` | `weapon` | Passive: replaces `core.weapon` (for example a subclass cannon using Intelligence) | — |\n| `setRole` | `role` | Passive: changes how often monsters target you (`front`, `mid`, `back`) | — |\n| `repairSuit` | `amount` | Restores suit Hit Points and brings an offline suit back | healed |\n| `suitAc` | `amount` | Passive: adds to AC while the suit is online | — |\n| `suitHpBonus` | `amount` | Passive: adds to the suit's Hit Point maximum | — |\n| `suitDamageReduction` | `amount`, `min` | Passive: damage to the suit is reduced | prevented |\n| `suitDropTo1` | — | Passive with `uses`: the suit drops to 1 Hit Point instead of 0 | times |\n| `suitRegen` | `amount` | Passive: the suit heals at the start of your turn | healed |\n| `freeSystems` | — | For the feature's `duration`, `systems` features cost nothing | — |\n| `suitFloor` | — | For the feature's `duration`, the suit can't drop below 1 Hit Point | — |\n| `noCost` | — | Used with `modify` on a feature with `cost`: it costs nothing | — |\n| `resourceMax` | `resource`, `amount` | Passive: raises a resource's maximum | — |\n\nThe ledger also shows \"Suit Hit Points (damage absorbed)\". Damage the suit soaks is listed for reference but isn't added to seat value, the same way a Paladin's bigger Hit Point pool isn't.\n\nIf a rule needs something not on this list, it has to be added to the simulator's engine first. Write the closest effect you can and note what's missing in the class doc's Open questions.\n\n## Comparison classes\n\nEach SRD class plays its SRD subclass with a simple, sensible turn: Barbarian (Berserker: Rage, Reckless Attack, Frenzy, Brutal Strike, Retaliation, Relentless Rage), Bard (Lore: Vicious Mockery, Bardic Inspiration, Cutting Words, Healing Word, Shatter, Hypnotic Pattern, Fireball from Magical Secrets), Cleric (Life: Toll the Dead, Spirit Guardians, Healing Word, Preserve Life), Druid (Land: Produce Flame or Fire Bolt, Moonbeam, Fireball, Healing Word, Natural Recovery), Fighter (Champion-style greatsword, Action Surge, Second Wind), Monk (Open Hand: Flurry of Blows, Stunning Strike, Deflect Attacks, topple), Paladin (Devotion-style: Divine Smite, Lay on Hands, Aura of Protection), Ranger (Hunter: archery, Hunter's Mark, Colossus Slayer, Superior Hunter's Prey and Defense), Rogue (Thief-style: Sneak Attack, Uncanny Dodge, Evasion), Sorcerer (Draconic: Fire Bolt, Chromatic Orb, Scorching Ray, Fireball, Innate Sorcery), Warlock (Fiend: Eldritch Blast, Hex, Fireball, Mystic Arcanum, Hurl Through Hell) and Wizard (Evoker: Fire Bolt, Magic Missile, Scorching Ray, Fireball, Cone of Cold, Shield). Casters spread their slots evenly over the day. Summons, Wild Shape, Metamagic and most utility spells aren't modeled.\n\n## What the simulator does not model\n\nPositions are abstract, monsters don't use spells or legendary actions, and features marked `exploration` have no effect in combat.\n";
 // ===== UI =====
 const $ = id => document.getElementById(id);
 const radio = n => (document.querySelector(`input[name="${n}"]:checked`) || {}).value;
-const ALL_SIDES = {
-  paladin: ['paladin', 'Paladin', 'k-cmp', 'l-cmp', 'd-cmp', '--cmp', 'dashed'],
-  fighter: ['fighter', 'Fighter', 'k-ftr', 'l-ftr', 'd-ftr', '--ftr', 'dotted'],
-  rogue: ['rogue', 'Rogue', 'k-rog', 'l-rog', 'd-rog', '--rog', 'dash-dot'],
-};
+// Comparison classes: [engine id, name, text class, line class, dot class, color variable, line style, dash pattern]
+const SIDE_LIST = [
+  ['barbarian', 'Barbarian', 'long dash', '9 4'], ['bard', 'Bard', 'dash-dot', '7 3 1.5 3'], ['cleric', 'Cleric', 'short dash', '3 3'],
+  ['druid', 'Druid', 'dash-dot-dot', '7 3 1.5 3 1.5 3'], ['fighter', 'Fighter', 'dotted', '1.5 4'], ['monk', 'Monk', 'long dash', '9 4'],
+  ['paladin', 'Paladin', 'dashed', '5 4'], ['ranger', 'Ranger', 'dash-dot', '7 3 1.5 3'], ['rogue', 'Rogue', 'dash-dot', '7 3 1.5 3'],
+  ['sorcerer', 'Sorcerer', 'short dash', '3 3'], ['warlock', 'Warlock', 'dotted', '1.5 4'], ['wizard', 'Wizard', 'dashed', '5 4'],
+];
+const ALL_SIDES = Object.fromEntries(SIDE_LIST.map(([k, n, style]) => [k, [k, n, 'k-' + k, 'l-' + k, 'd-' + k, '--c-' + k, style]]));
+(() => {
+  const css = SIDE_LIST.map(([k, , , dash]) => `.pg .k-${k}{color:var(--c-${k})} .pg .chart .l-${k}{stroke:var(--c-${k});fill:none;stroke-width:2.25;stroke-dasharray:${dash};stroke-linecap:round} .pg .chart .d-${k}{fill:var(--c-${k})}`).join('\n');
+  const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
+  $('cmpset').innerHTML = SIDE_LIST.map(([k, n]) => `<label class="check"><input type="checkbox" id="cmp-${k}"> <i class="sw" style="background:var(--c-${k})"></i>${n}</label>`).join('');
+})();
 let SIDES = [ALL_SIDES.paladin, ALL_SIDES.fighter];
 const listNames = names => names.length < 2 ? names.join('') : names.slice(0, -1).join(', ') + (names.length > 2 ? ',' : '') + ' and ' + names[names.length - 1];
 const orNames = names => names.length < 2 ? names.join('') : names.slice(0, -1).join(', ') + (names.length > 2 ? ',' : '') + ' or ' + names[names.length - 1];
@@ -1091,18 +1559,28 @@ function setClass(def) {
   $('build').innerHTML = Object.entries(def.core.builds).map(([k, b]) => `<option value="${esc(k)}">${esc(b.label || k)}</option>`).join('');
   const subs = def.subclasses || [];
   $('subSeg').innerHTML = subs.length ? subs.map((s, i) => `<label><input type="radio" name="sub" value="${esc(s.id)}" ${i ? '' : 'checked'}>${esc(s.name)}</label>`).join('') : '<label><input type="radio" name="sub" value="" checked disabled>None</label>';
-  $('subSeg').querySelectorAll('input').forEach(el => { el.addEventListener('change', schedule); });
+  $('subSeg').querySelectorAll('input').forEach(el => { el.addEventListener('change', () => { applyCompare(); schedule(); }); });
   const cf = choiceFeatures(def)[0];
   $('optRow').hidden = !cf;
   if (cf) $('optLab').textContent = `${cf.choose.label || cf.name} known`;
   const an = def.aura && def.aura.anchor;
   $('bannerLab').textContent = an ? `Enemy attacks aimed at the ${an.name || 'anchor'}` : 'Enemy attacks aimed at an anchor (none)';
   $('banner').disabled = !an;
-  const cmp = (def.compare && def.compare.length ? def.compare : ['paladin', 'fighter']).filter(k => ALL_SIDES[k]);
+  applyCompare();
+  sweepToken++; sweepData = null; $('sweep').innerHTML = ''; $('sweepStatus').textContent = '';
+}
+// The subclass's own compare list wins over the class's; with neither, Paladin and Fighter.
+function fileCompare() {
+  const sub = (DEF.subclasses || []).find(s => s.id === radio('sub'));
+  if (sub && sub.compare && sub.compare.length) return { list: sub.compare, from: `the ${sub.name} subclass` };
+  if (DEF.compare && DEF.compare.length) return { list: DEF.compare, from: 'the class file' };
+  return { list: ['paladin', 'fighter'], from: null };
+}
+function applyCompare() {
+  const fc = fileCompare(), cmp = fc.list.filter(k => ALL_SIDES[k]);
   for (const k of Object.keys(ALL_SIDES)) $('cmp-' + k).checked = cmp.includes(k);
   setSidesFromBoxes();
-  $('cmpHint').textContent = def.compare ? `From the class file: ${cmp.map(k => ALL_SIDES[k][1]).join(' and ')}.` : 'The class file names no comparison, so Paladin and Fighter are used.';
-  sweepToken++; sweepData = null; $('sweep').innerHTML = ''; $('sweepStatus').textContent = '';
+  $('cmpHint').textContent = fc.from ? `From ${fc.from}: ${cmp.map(k => ALL_SIDES[k][1]).join(' and ')}.` : 'The class file names no comparison, so Paladin and Fighter are used.';
 }
 function loadFromText(text, quiet) {
   let def;
@@ -1146,7 +1624,7 @@ function renderOpts() {
   const known = Math.floor(ev({ L, def: DEF, sc: {} }, cf.choose.known, 'avg'));
   const cur = currentChoices(L)[cf.choose.from];
   $('cryCount').textContent = `${cur.length} of ${known}`;
-  $('cries').innerHTML = (DEF.options[cf.choose.from] || []).map(o => {
+  $('cries').innerHTML = (DEF.options[cf.choose.from] || []).filter(o => !o.subclass).map(o => {
     const elig = (o.level || 1) <= L, on = cur.includes(o.id), dis = !elig || (!on && cur.length >= known);
     return `<label class="${elig ? '' : 'off'}"><input type="checkbox" value="${esc(o.id)}" ${on ? 'checked' : ''} ${dis ? 'disabled' : ''}> ${esc(o.name)}${elig ? '' : ` <small>L${o.level}</small>`}</label>`;
   }).join('');
@@ -1189,7 +1667,7 @@ document.querySelectorAll('aside input, aside select').forEach(el => { if (el.cl
 $('go').addEventListener('click', () => { clearTimeout(timer); runMain(); });
 for (const k of Object.keys(ALL_SIDES)) $('cmp-' + k).addEventListener('change', e => {
   if (!Object.keys(ALL_SIDES).some(x => $('cmp-' + x).checked)) { e.target.checked = true; return; }
-  setSidesFromBoxes(); $('cmpHint').textContent = 'Changed here; the class file still says ' + ((DEF.compare || ['paladin', 'fighter']).map(x => ALL_SIDES[x] ? ALL_SIDES[x][1] : x).join(' and ')) + '.';
+  setSidesFromBoxes(); $('cmpHint').textContent = 'Changed here; the file still says ' + fileCompare().list.map(x => ALL_SIDES[x] ? ALL_SIDES[x][1] : x).join(' and ') + '.';
 });
 $('sweepBtn').addEventListener('click', runSweep);
 $('reroll').addEventListener('click', () => renderLog(readCfg()));
