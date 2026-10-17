@@ -1,0 +1,17 @@
+---
+import Base from '../../layouts/Base.astro';
+import CreatureList from '../../components/CreatureList.svelte';
+import { url } from '../../lib/url';
+---
+<Base title="Creatures — Below the Light" current="below-the-light" theme="dark" description="Every known creature of Below the Light, searchable by name, habitat or description.">
+  <main class="wrap">
+    <header style="padding: 64px 0 24px">
+      <p class="ws-kicker label"><a class="ws-link" href={url('below-the-light/#descent')}>← Below the Light · The Descent</a></p>
+      <h1 class="page-title ws-h">Known Creatures</h1>
+      <p class="body lede">Everything delvers have reported seeing. Search by name, habitat or description.</p>
+    </header>
+    <div style="padding-bottom: 80px">
+      <CreatureList client:load />
+    </div>
+  </main>
+</Base>

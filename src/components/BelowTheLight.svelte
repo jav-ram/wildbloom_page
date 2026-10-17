@@ -1,8 +1,9 @@
 <script lang="ts">
   import { url } from '../lib/url';
-  import { ERAS, CHARTED, KNOWLEDGE_LABEL, RELICS, RARITIES, tabsFor, type Knowledge } from '../data/below-the-light';
+  import { inline } from '../lib/inline';
+  import { PAGE, ERAS, KNOWLEDGE_LABEL, LAYER_1, DESCENT_INTRO, CREATURE_PREVIEW, CREATURES, RELICS, RELIC_COUNT, RARITIES, RUNNING, tabsFor, type Knowledge } from '../data/below-the-light';
 
-  let eraId = $state(2);
+  let eraId = $state(1);
   let mapFrame: HTMLIFrameElement | undefined = $state();
 
   // The Lightrest map is a same-origin page: size the frame to its content so the page has one scrollbar.
@@ -22,52 +23,33 @@
   const tabs = $derived(tabsFor(era));
   const tab = $derived(tabs.find((t) => t.id === tabId) ?? tabs[0]);
 
-  const know = (n: number, e = eraId): Knowledge => {
-    const [c, p, r] = CHARTED[e];
-    return n <= c ? 'charted' : n <= p ? 'partial' : n <= r ? 'rumored' : 'uncharted';
-  };
-  const nameOf = (n: number, k: Knowledge) => (k === 'uncharted' ? 'Uncharted' : k === 'rumored' ? '[RUMORED NAME]' : `[LAYER ${n} NAME]`);
-  const themeOf = (k: Knowledge) =>
-    k === 'charted' ? '[THEME]' : k === 'partial' ? '[THEME] · partly charted' : k === 'rumored' ? 'Only rumors reach the rim' : 'No map has come back';
   const shade = (n: number) => 100 - (n - 1) * 6;
+  // Layers 2 to 13 use the same dimmed look as an uncharted layer until they are written.
+  const kcls = (k: Knowledge) => (k === 'pending' ? 'uncharted' : k);
 
-  const layers = $derived(
-    Array.from({ length: 13 }, (_, i) => {
-      const n = i + 1;
-      const k = know(n);
-      return { n, k, name: nameOf(n, k), theme: themeOf(k) };
-    }),
-  );
-  const knownCount = $derived(layers.filter((l) => l.k === 'charted').length);
-  const k = $derived(know(layer));
-  const sel = $derived({ n: layer, k, name: nameOf(layer, k), theme: themeOf(k) });
-
-  const catalogued = $derived(RELICS.filter((r) => ['charted', 'partial'].includes(know(r.layer))));
-  const relics = $derived(catalogued.filter((r) => rarity === 'All' || r.rarity === rarity));
-  const here = $derived(catalogued.filter((r) => r.layer === layer));
-
-  const creatures = $derived.by(() => {
-    const named = k === 'charted' ? 3 : k === 'partial' ? 1 : 0;
-    const unnamed = k === 'charted' ? 1 : 2;
-    return [
-      ...Array.from({ length: named }, () => ({ unknown: false, art: '[CREATURE ART]', title: '[CREATURE NAME]', type: '[SIZE] [TYPE]', desc: '[PLAYER-SAFE DESCRIPTION: what delvers know and how to recognize it.]' })),
-      ...Array.from({ length: unnamed }, () => ({ unknown: true, art: '?', title: 'Unnamed creature', type: 'Sighted, not yet catalogued', desc: '[WHAT DELVERS REPORT SEEING]' })),
-    ];
+  const layers: { n: number; k: Knowledge; name: string; theme: string }[] = Array.from({ length: 13 }, (_, i) => {
+    const n = i + 1;
+    return n === 1
+      ? { n, k: 'charted', name: LAYER_1.name, theme: '[THEME]' }
+      : { n, k: 'pending', name: `[LAYER ${n} NAME]`, theme: '[THEME]' };
   });
-  const overview = $derived(
-    k === 'charted' ? `[LAYER ${layer} OVERVIEW: what the layer looks like, how it feels to travel, and what delvers come here for.]`
-    : k === 'partial' ? '[PARTIAL OVERVIEW: what the few delvers who returned describe. Large parts are unmapped.]'
-    : '[RUMOR: what is whispered on the rim about this layer. Nothing is confirmed.]',
-  );
+  const knownCount = layers.filter((l) => l.k === 'charted').length;
+  const sel = $derived(layers[layer - 1]);
+
+  const relics = $derived(RELICS.filter((r) => rarity === 'All' || r.rarity === rarity));
+  const here = $derived(RELICS.filter((r) => r.layer === layer));
+
   const descentLabel = $derived(layer === 13 ? 'The bottom' : `Descending to layer ${layer + 1}`);
-  const descent = $derived(
-    layer === 13 ? '[WHAT IS KNOWN ON THE RIM ABOUT THE BOTTOM, PLAYER-SAFE ONLY.]'
-    : k === 'charted' ? '[HOW DELVERS DESCEND: the usual route, gear, time and hazards on the way to the next layer.]'
-    : k === 'partial' ? '[WHAT DELVERS BELIEVE ABOUT THE WAY DOWN: routes tried, few confirmed.]'
-    : 'No reliable route down is known in this era. [RUMORED ROUTE, IF ANY.]',
+  const stubDescent = $derived(
+    layer === 13
+      ? '[WHAT IS KNOWN ON THE RIM ABOUT THE BOTTOM, PLAYER-SAFE ONLY.]'
+      : '[HOW DELVERS DESCEND: the usual route, gear, time and hazards on the way to the next layer.]',
   );
 
   const RIMS = [[40,180,27,2,1],[65,167,25,1.5,.94],[90,154,23,1.5,.88],[115,141,21,1.5,.82],[140,128,19,1.5,.76],[165,115,17,1.5,.7],[190,102,15,1.5,.64],[215,89,13,1.5,.58],[240,76,11,1.5,.52],[265,63,9,1.5,.46],[290,50,8,1.5,.4],[315,37,6,1.5,.34],[340,24,4,1.5,.28]];
+
+  // DM tips come from the staged table guidance.
+  const tips = [RUNNING.goal, ...RUNNING.creatures];
 </script>
 
 <main>
@@ -75,10 +57,10 @@
   <div class="wrap">
     <section class="hero" aria-labelledby="below-the-light-title" style="padding-bottom: 48px">
       <div>
-        <p class="ws-kicker label">Setting hub · D&amp;D 5e · Building now</p>
+        <p class="ws-kicker label">Setting hub · D&amp;D 5e · {PAGE.badge}</p>
         <h1 id="below-the-light-title" class="page-title">Below the Light</h1>
-        <p class="lore-text lede" style="color: var(--ink-muted)">{era.num} · {era.name}. {era.summary}</p>
-        <p class="body lede">{era.intro}</p>
+        <p class="lore-text lede" style="color: var(--ink-muted)">{PAGE.tagline}</p>
+        <p class="body lede">{PAGE.intro}</p>
         <ul class="jump control" aria-label="On this page">
           <li><a class="ws-link" href="#setting">The setting</a></li>
           {#if eraId === 1}<li><a class="ws-link" href="#lightrest">Lightrest</a></li>{/if}
@@ -127,6 +109,24 @@
     </div>
   </div>
 
+  <!-- ERA TEXT: each era shows only its own text -->
+  <section id="era" class="section" aria-labelledby="era-title" style="padding-bottom: 0">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><p class="ws-kicker label">The era</p><h2 id="era-title" class="chapter-heading ws-h">{era.num} · {era.name}</h2></div>
+      </div>
+      <div class="ws-prose" aria-live="polite">
+        {#each era.blocks as b}
+          {#if b.type === 'ul'}
+            <ul class="ws-bullets rules-text">{#each b.items as item}<li>{@html inline(item)}</li>{/each}</ul>
+          {:else}
+            <p class="body">{@html inline(b.text)}</p>
+          {/if}
+        {/each}
+      </div>
+    </div>
+  </section>
+
   <!-- SETTING -->
   <section id="setting" class="section" aria-labelledby="setting-title">
     <div class="wrap">
@@ -142,7 +142,7 @@
         <p class="era-note caption"><span class={era.lit ? 'light-dot' : 'light-dot light-dot--out'} aria-hidden="true"></span>Seen from {era.num} · {era.name}</p>
         <div class="topic-grid">
           {#each tab.topics as tp}
-            <article class="topic"><h3 class="sub-heading">{tp.title}</h3><p class="body">{tp.text}</p></article>
+            <article class="topic"><h3 class="sub-heading">{tp.title}</h3>{#each tp.paras as para}<p class="body">{@html inline(para)}</p>{/each}</article>
           {/each}
         </div>
         {#if tab.id === 'religion'}
@@ -177,7 +177,7 @@
     <div class="wrap">
       <div class="sec-head">
         <div><p class="ws-kicker label">Where you are</p><h2 id="descent-title" class="chapter-heading ws-h">The Descent</h2></div>
-        <p class="rules-text muted" style="max-width: 46ch">Thirteen layers. The deeper you go, the less is known. What is charted depends on the era.</p>
+        <p class="rules-text muted" style="max-width: 46ch">{DESCENT_INTRO}</p>
       </div>
       <div class="descent">
         <nav class={era.lit ? 'gauge' : 'gauge gauge--out'} aria-label="Layers of the Well">
@@ -187,16 +187,16 @@
               <li>
                 <button
                   type="button"
-                  class={'layer-btn' + (l.k === 'uncharted' ? ' is-uncharted' : '')}
+                  class={'layer-btn' + (l.k === 'pending' ? ' is-uncharted' : '')}
                   style={`background-color: color-mix(in srgb, var(--surface-raised) ${shade(l.n)}%, #000)`}
                   aria-current={l.n === layer ? 'true' : 'false'}
                   aria-label={`Layer ${l.n}, ${KNOWLEDGE_LABEL[l.k]}`}
                   onclick={() => (layer = l.n)}
                 >
                   <span class="layer-num">{l.n}</span>
-                  <span class="rail" aria-hidden="true"><span class={`node node--${l.k}`}></span></span>
+                  <span class="rail" aria-hidden="true"><span class={`node node--${kcls(l.k)}`}></span></span>
                   <span class="layer-text"><span class="layer-name">{l.name}</span><span class="layer-theme">{l.theme}</span></span>
-                  <span class={`know know--${l.k}`}>{KNOWLEDGE_LABEL[l.k]}</span>
+                  <span class={`know know--${kcls(l.k)}`}>{KNOWLEDGE_LABEL[l.k]}</span>
                 </button>
               </li>
             {/each}
@@ -211,60 +211,87 @@
               <h3 class="chapter-heading">{sel.name}</h3>
               <p class="caption muted">{sel.theme}</p>
             </div>
-            <span class={`know know--${sel.k}`}>{KNOWLEDGE_LABEL[sel.k]} in {era.num}</span>
+            <span class={`know know--${kcls(sel.k)}`}>{KNOWLEDGE_LABEL[sel.k]}</span>
           </div>
 
-          {#if sel.k === 'uncharted'}
-            <div class="uncharted-box">
-              <p class="section-heading" style="color: var(--ink-muted)">Uncharted</p>
-              <p class="body">No delver has returned from this layer with a map in {era.name}. Nothing about it is known on the rim.</p>
-              <p class="caption muted">Try a later era, or climb back to a charted layer.</p>
+          {#if sel.k === 'pending'}
+            <div>
+              <section aria-label="Overview">
+                <h4 class="sub-heading" style="color: var(--accent); margin: 0 0 8px">Overview</h4>
+                <p class="body ws-prose">[LAYER {sel.n} OVERVIEW: what the layer looks like, how it feels to travel, and what delvers come here for.]</p>
+              </section>
+              <section class="sub-sec" aria-label="Known creatures">
+                <h4 class="sub-heading">Known Creatures</h4>
+                <p class="body muted">[LAYER {sel.n} CREATURES: the creatures delvers know on this layer.]</p>
+              </section>
+              <section class="sub-sec" aria-label="Relics found here">
+                <h4 class="sub-heading">Relics Found Here</h4>
+                <p class="body muted">[LAYER {sel.n} RELICS: the relics found on this layer.]</p>
+              </section>
+              <section class="sub-sec" aria-label="Descending further">
+                <aside class="ws-callout ws-callout--rules" style="max-width: none">
+                  <p class="ws-callout__label label">{descentLabel}</p>
+                  <p class="rules-text">{stubDescent}</p>
+                </aside>
+              </section>
             </div>
           {:else}
             <div>
               <section aria-label="Overview">
                 <h4 class="sub-heading" style="color: var(--accent); margin: 0 0 8px">Overview</h4>
-                <p class="body ws-prose">{overview}</p>
+                <p class="body ws-prose">{LAYER_1.overview}</p>
+              </section>
+
+              <section class="sub-sec" aria-label="Habitats">
+                <h4 class="sub-heading">Habitats</h4>
+                <div class="topic-grid">
+                  {#each LAYER_1.habitats as h}
+                    <article class="topic"><h5 class="sub-heading">{h.name}</h5><p class="rules-text">{h.text}</p></article>
+                  {/each}
+                </div>
+              </section>
+
+              <section class="sub-sec" aria-label={LAYER_1.congregation.name}>
+                <aside class="ws-callout ws-callout--lore" style="max-width: none">
+                  <p class="ws-callout__label label">{LAYER_1.congregation.name}</p>
+                  <p class="lore-text">{LAYER_1.congregation.text}</p>
+                </aside>
               </section>
 
               <section class="sub-sec" aria-label="Known creatures">
                 <h4 class="sub-heading">Known Creatures</h4>
                 <div class="creature-grid">
-                  {#each creatures as c}
-                    <article class={c.unknown ? 'creature creature--unknown' : 'creature'}>
-                      <div class="creature__art caption" aria-hidden="true">{c.art}</div>
+                  {#each CREATURES.slice(0, CREATURE_PREVIEW) as c}
+                    <article class="creature creature--link">
+                      <div class="creature__art caption" aria-hidden="true">[CREATURE ART]</div>
                       <div class="creature__body">
-                        <h5 class="sub-heading">{c.title}</h5>
-                        <p class="caption muted">{c.type}</p>
-                        <p class="rules-text">{c.desc}</p>
+                        <h5 class="sub-heading"><a class="creature__link" href={url(`below-the-light/creatures/${c.slug}/`)}>{c.name}</a></h5>
+                        <p class="caption muted">Habitat: {c.habitat}</p>
+                        <p class="rules-text">{c.text}</p>
                       </div>
                     </article>
                   {/each}
                 </div>
+                <p class="creature-more">
+                  <a class="ws-link ws-link--arrow rules-text" href={url(`below-the-light/creatures/?layer=${sel.n}`)} aria-label={`See all ${CREATURES.length} creatures on layer ${sel.n}`}>See more…</a>
+                </p>
               </section>
 
               <section class="sub-sec" aria-label="Relics found here">
                 <h4 class="sub-heading">Relics Found Here</h4>
                 {#if here.length}
                   <div class="relic-grid relic-grid--panel">
-                    {#each here as r}
-                      <article class="ws-relic ws-corners">
-                        <h5 class="ws-relic__name sub-heading">{r.title}</h5>
-                        <p class="ws-relic__type caption">{r.type}</p>
-                        <ul class="ws-relic__meta"><li class="ws-badge ws-badge--plain label">{r.rarity}</li><li class="ws-tag label">{r.attuneText}</li></ul>
-                        <p class="rules-text">{r.desc}</p>
-                      </article>
-                    {/each}
+                    {#each here as r}{@render relicCard(r, true)}{/each}
                   </div>
                 {:else}
-                  <p class="body muted">No relic from this layer has been catalogued in {era.name}.</p>
+                  <p class="body muted">No relic from this layer has been catalogued.</p>
                 {/if}
               </section>
 
               <section class="sub-sec" aria-label="Descending further">
                 <aside class="ws-callout ws-callout--rules" style="max-width: none">
                   <p class="ws-callout__label label">{descentLabel}</p>
-                  <p class="rules-text">{descent}</p>
+                  <p class="rules-text">{LAYER_1.notes}</p>
                 </aside>
               </section>
             </div>
@@ -284,7 +311,7 @@
     <div class="wrap">
       <div class="sec-head">
         <div><p class="ws-kicker label">Catalogue</p><h2 id="relics-title" class="chapter-heading ws-h">Relics</h2></div>
-        <p class="rules-text muted">{catalogued.length} relics catalogued as of {era.num}. Deeper finds appear as layers are charted.</p>
+        <p class="rules-text muted">{RELIC_COUNT} relics catalogued. Deeper finds appear as layers are charted.</p>
       </div>
       <div class="filters">
         <div class="filter-row">
@@ -297,18 +324,10 @@
         </div>
       </div>
       <div class="relic-grid">
-        {#each relics as r}
-          <article class="ws-relic ws-corners">
-            <h3 class="ws-relic__name section-heading">{r.title}</h3>
-            <p class="ws-relic__type caption">{r.type}</p>
-            <ul class="ws-relic__meta"><li class="ws-badge ws-badge--plain label">{r.rarity}</li><li class="ws-tag label">{r.attuneText}</li><li class="ws-tag ws-tag--sage label">Layer {r.layer}</li></ul>
-            <p class="rules-text">{r.desc}</p>
-            <p class="ws-relic__lore lore-text">“{r.lore}”</p>
-          </article>
-        {/each}
+        {#each relics as r}{@render relicCard(r, false)}{/each}
       </div>
       {#if relics.length === 0}
-        <div class="empty"><p class="body" style="margin: 0">No catalogued relic of this rarity in {era.name}.</p></div>
+        <div class="empty"><p class="body" style="margin: 0">No catalogued relic of this rarity.</p></div>
       {/if}
     </div>
   </section>
@@ -323,19 +342,18 @@
       <div class="ascent">
         <div>
           <aside class="ws-callout ws-callout--rules">
-            <p class="ws-callout__label label">Rules · The Ascent</p>
-            <p class="rules-text"><b>[RULE NAME].</b> [HOW CLIMBING BACK UP WORKS: when it applies, what the character rolls, and what happens on a failure.]</p>
+            <p class="ws-callout__label label">Rules · The Ascent (draft)</p>
+            <ul class="ws-bullets rules-text">
+              {#each RUNNING.ascent as item}<li>{@html inline(item)}</li>{/each}
+            </ul>
           </aside>
           <aside class="ws-callout ws-callout--rules">
-            <p class="ws-callout__label label">Rules · Proof of Depth</p>
-            <p class="rules-text"><b>[RULE NAME].</b> [HOW A DELVER PROVES THE DEPTH THEY REACHED, IF THIS HAS A RULE.]</p>
+            <p class="ws-callout__label label">Rules · Magic in the Well</p>
+            <p class="rules-text">{@html inline(RUNNING.magic)}</p>
           </aside>
           <h3 class="sub-heading" style="color: var(--accent); margin: 32px 0 8px">Tips for DMs</h3>
           <ul class="ws-bullets rules-text">
-            <li>[TIP: pacing a descent across sessions]</li>
-            <li>[TIP: choosing the era for your campaign]</li>
-            <li>[TIP: making the ascent a real decision]</li>
-            <li>[TIP: using patrons and guilds as hooks]</li>
+            {#each tips as tip}<li>{@html inline(tip)}</li>{/each}
           </ul>
         </div>
         <div class="ws-tablewrap" role="region" aria-label="Ascent by layer" tabindex="0">
@@ -354,3 +372,27 @@
     </div>
   </section>
 </main>
+
+{#snippet relicCard(r: (typeof RELICS)[number], panel: boolean)}
+  <article class="ws-relic ws-corners">
+    {#if panel}
+      <h5 class="ws-relic__name sub-heading">{r.title}</h5>
+    {:else}
+      <h3 class="ws-relic__name section-heading">{r.title}</h3>
+    {/if}
+    <p class="ws-relic__type caption">{r.type}</p>
+    <ul class="ws-relic__meta">
+      <li class="ws-badge ws-badge--plain label">{r.rarity}</li>
+      {#if r.nonMagical}<li class="ws-tag label">Non-magical</li>{/if}
+      <li class="ws-tag label">{r.attuneText}</li>
+      <li class="ws-tag ws-tag--sage label">Layer {r.layer}</li>
+      {#if r.onlyOneKnown}<li class="ws-tag label">Only one known</li>{/if}
+    </ul>
+    <p class="ws-relic__lore lore-text">{r.flavor}</p>
+    <ul class="ws-bullets rules-text">
+      {#each r.properties as p}<li><b>{p.label}</b> {@html inline(p.text)}</li>{/each}
+    </ul>
+    {#if r.note}<p class="rules-text">{@html inline(r.note)}</p>{/if}
+    {#if r.homage}<p class="caption muted">{@html inline(r.homage)}</p>{/if}
+  </article>
+{/snippet}

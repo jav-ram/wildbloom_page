@@ -1,0 +1,57 @@
+---
+import Base from '../../../layouts/Base.astro';
+import StatBlock from '../../../components/StatBlock.astro';
+import { CREATURES } from '../../../data/below-the-light';
+import { getCollection, render } from 'astro:content';
+import type { StatBlock as StatBlockData, Trap } from '../../../lib/statblock';
+import { url } from '../../../lib/url';
+
+export async function getStaticPaths() {
+  // A creature file whose name matches no creature is almost certainly a typo: fail the build.
+  const known = new Set(CREATURES.map((c) => c.slug));
+  const entries = await getCollection('creatures');
+  for (const e of entries) {
+    if (!known.has(e.id)) throw new Error(`src/data/creatures/${e.id}.md does not match any creature. Known slugs: ${[...known].join(', ')}`);
+  }
+  return CREATURES.map((c, i) => ({
+    params: { slug: c.slug },
+    props: { c, prev: CREATURES[i - 1], next: CREATURES[i + 1], entry: entries.find((e) => e.id === c.slug) },
+  }));
+}
+const { c, prev, next, entry } = Astro.props;
+const Description = entry?.body?.trim() ? (await render(entry)).Content : null;
+const statblock = entry?.data.statblock as StatBlockData | undefined;
+const trap = entry?.data.trap as Trap | undefined;
+---
+<Base title={`${c.name} — Below the Light`} current="below-the-light" theme="dark" description={`${c.name}: ${c.text}`}>
+  <main class="wrap">
+    <header style="padding: 64px 0 24px">
+      <ol class="crumbs caption">
+        <li><a class="ws-link ws-link--quiet" href={url('below-the-light/#descent')}>Below the Light</a></li>
+        <li><a class="ws-link ws-link--quiet" href={url('below-the-light/creatures/')}>Known Creatures</a></li>
+        <li>{c.name}</li>
+      </ol>
+      <h1 class="page-title ws-h">{c.name}</h1>
+      <p class="caption muted">Layer {c.layer} · Habitat: {c.habitat}</p>
+      <p class="lore-text lede">{c.text}</p>
+    </header>
+    <div class="ws-divider ws-divider--vine" role="separator" style="margin: 0 0 40px"><span class="ws-divider__mark"></span></div>
+
+    <div class="creature-detail">
+      <div>
+        <div class="creature-detail__art caption" aria-hidden="true">[CREATURE ART]</div>
+        <h2 class="chapter-heading">Description</h2>
+        {Description
+          ? <div class="creature-md ws-prose"><Description /></div>
+          : <p class="body muted">[CREATURE DESCRIPTION: what it looks like, how it behaves, where delvers meet it, and what they say about it. Player-safe only.]</p>}
+      </div>
+      <StatBlock name={c.name} sb={statblock} trap={trap} />
+    </div>
+
+    <nav class="pager" aria-label="More creatures" style="padding-bottom: 80px">
+      {prev ? <a class="pager__prev" href={url(`below-the-light/creatures/${prev.slug}/`)}><span class="label">← Previous creature</span><span class="sub-heading">{prev.name}</span></a> : <span></span>}
+      <a class="pager__index ws-btn ws-btn--secondary ws-btn--sm control" href={url('below-the-light/creatures/')}>All creatures</a>
+      {next ? <a class="pager__next" href={url(`below-the-light/creatures/${next.slug}/`)}><span class="label">Next creature →</span><span class="sub-heading">{next.name}</span></a> : <span></span>}
+    </nav>
+  </main>
+</Base>

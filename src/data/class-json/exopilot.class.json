@@ -1,0 +1,625 @@
+{
+  "schema": "wildbloom-class/1",
+  "id": "exopilot",
+  "name": "Exopilot",
+  "version": "0.1",
+  "role": "front",
+  "compare": [
+    "paladin",
+    "fighter"
+  ],
+  "core": {
+    "hitDie": 10,
+    "saves": [
+      "str",
+      "int"
+    ],
+    "ac": {
+      "1": 18,
+      "5": 19,
+      "17": 20
+    },
+    "acNote": "Suit AC plus a Shield; 16 while the suit is offline",
+    "suit": {
+      "hp": "6*level",
+      "offlineAc": "16"
+    },
+    "builds": {
+      "quick": {
+        "label": "Quick build \u00b7 STR then INT, CON 14",
+        "scores": {
+          "str": 16,
+          "dex": 10,
+          "con": 14,
+          "int": 16,
+          "wis": 12,
+          "cha": 8
+        },
+        "asi": {
+          "4": {
+            "str": 2
+          },
+          "8": {
+            "int": 2
+          },
+          "12": {
+            "str": 2
+          },
+          "16": {
+            "int": 2
+          },
+          "19": {
+            "con": 2
+          }
+        }
+      },
+      "engineer": {
+        "label": "Engineer build \u00b7 INT first, STR 14",
+        "scores": {
+          "str": 14,
+          "dex": 10,
+          "con": 14,
+          "int": 16,
+          "wis": 12,
+          "cha": 10
+        },
+        "asi": {
+          "4": {
+            "int": 2
+          },
+          "8": {
+            "int": 2
+          },
+          "12": {
+            "str": 2
+          },
+          "16": {
+            "str": 2
+          },
+          "19": {
+            "con": 2
+          }
+        }
+      }
+    },
+    "weapon": {
+      "name": "Slam",
+      "damage": "1d10",
+      "ability": "str",
+      "mastery": "topple"
+    },
+    "attacks": {
+      "1": 1,
+      "5": 2
+    },
+    "saveDC": "8+int+pb",
+    "subclassLevel": 3
+  },
+  "scales": {
+    "powerCells": {
+      "1": 2,
+      "5": 3,
+      "9": 4,
+      "13": 5,
+      "17": 6
+    },
+    "systemsKnown": {
+      "1": 2,
+      "3": 3,
+      "7": 4,
+      "11": 5,
+      "15": 6,
+      "19": 7
+    },
+    "patchDice": {
+      "1": "1d10",
+      "9": "2d10",
+      "15": "3d10"
+    },
+    "overchargeDice": {
+      "1": "2d6",
+      "11": "3d6",
+      "17": "4d6"
+    }
+  },
+  "resources": {
+    "cells": {
+      "label": "Power Cells",
+      "max": "powerCells",
+      "shortRest": "all",
+      "longRest": "all"
+    }
+  },
+  "features": [
+    {
+      "id": "bonusSystems",
+      "name": "Suit Systems (Bonus Action)",
+      "level": 1,
+      "when": "bonusAction",
+      "cost": "cells",
+      "costPer": "option",
+      "requires": "suitOnline",
+      "systems": true,
+      "choose": {
+        "from": "systems",
+        "known": "systemsKnown",
+        "count": 1,
+        "label": "Suit Systems",
+        "filter": {
+          "use": "bonusAction"
+        }
+      }
+    },
+    {
+      "id": "actionSystems",
+      "name": "Suit Systems (Action)",
+      "level": 1,
+      "when": "action",
+      "cost": "cells",
+      "costPer": "option",
+      "requires": "suitOnline",
+      "systems": true,
+      "choose": {
+        "from": "systems",
+        "known": "systemsKnown",
+        "count": 1,
+        "label": "Suit Systems",
+        "filter": {
+          "use": "action"
+        }
+      }
+    },
+    {
+      "id": "patchJob",
+      "name": "Patch Job",
+      "level": 2,
+      "when": "bonusAction",
+      "cost": "cells",
+      "effects": [
+        {
+          "type": "repairSuit",
+          "amount": "patchDice+int"
+        }
+      ]
+    },
+    {
+      "id": "shieldProjector",
+      "name": "Shield Projector",
+      "level": 2,
+      "when": "reaction",
+      "trigger": "allyHit",
+      "range": "near",
+      "cost": "cells",
+      "requires": "suitOnline",
+      "effects": [
+        {
+          "type": "reduceDamage",
+          "amount": {
+            "1": "1d10+int",
+            "15": "2d10+int"
+          },
+          "min": 1
+        }
+      ]
+    },
+    {
+      "id": "shockAbsorbers",
+      "name": "Shock Absorbers",
+      "level": 2,
+      "when": "exploration",
+      "effects": []
+    },
+    {
+      "id": "upgradedFrame",
+      "name": "Upgraded Frame",
+      "level": 5,
+      "when": "passive",
+      "effects": [],
+      "note": "AC part is in core.ac"
+    },
+    {
+      "id": "environmentalSeals",
+      "name": "Environmental Seals",
+      "level": 7,
+      "when": "exploration",
+      "effects": []
+    },
+    {
+      "id": "redundantSystems",
+      "name": "Redundant Systems",
+      "level": 9,
+      "when": "passive",
+      "uses": {
+        "max": 1,
+        "longRest": "all"
+      },
+      "effects": [
+        {
+          "type": "suitDropTo1"
+        }
+      ]
+    },
+    {
+      "id": "reactorUpgrade",
+      "name": "Reactor Upgrade",
+      "level": 11,
+      "when": "passive",
+      "effects": [
+        {
+          "type": "weaponDamage",
+          "amount": "1d8"
+        }
+      ]
+    },
+    {
+      "id": "auxiliaryCells",
+      "name": "Auxiliary Cells",
+      "level": 13,
+      "when": "initiative",
+      "effects": [
+        {
+          "type": "gainResource",
+          "resource": "cells",
+          "amount": 2,
+          "ifEmpty": true
+        }
+      ]
+    },
+    {
+      "id": "hardenedProjector",
+      "name": "Hardened Projector",
+      "level": 15,
+      "when": "passive",
+      "effects": [],
+      "note": "Modeled by Shield Projector's amount table"
+    },
+    {
+      "id": "markIVFrame",
+      "name": "Mark IV Frame",
+      "level": 17,
+      "when": "passive",
+      "effects": [],
+      "note": "AC part is in core.ac"
+    },
+    {
+      "id": "twinSystems",
+      "name": "Twin Systems",
+      "level": 18,
+      "when": "passive",
+      "uses": {
+        "max": 1,
+        "shortRest": "all",
+        "longRest": "all"
+      },
+      "effects": [
+        {
+          "type": "extraChoice",
+          "feature": "bonusSystems",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "masterworkSuit",
+      "name": "Masterwork Suit",
+      "level": 20,
+      "when": "bonusAction",
+      "ai": "firstRound",
+      "duration": 10,
+      "uses": {
+        "max": 1,
+        "longRest": "all"
+      },
+      "effects": [
+        {
+          "type": "freeSystems"
+        },
+        {
+          "type": "suitFloor"
+        }
+      ]
+    }
+  ],
+  "options": {
+    "systems": [
+      {
+        "id": "overcharge",
+        "name": "Overcharge",
+        "level": 1,
+        "use": "bonusAction",
+        "cost": 1,
+        "pick": 1,
+        "effects": [
+          {
+            "type": "bonusDamage",
+            "targets": "self",
+            "amount": "overchargeDice",
+            "oncePerTurn": true
+          }
+        ]
+      },
+      {
+        "id": "smokeVents",
+        "name": "Smoke Vents",
+        "level": 1,
+        "use": "bonusAction",
+        "cost": 1,
+        "pick": 2,
+        "effects": [
+          {
+            "type": "veil",
+            "targets": "self"
+          }
+        ]
+      },
+      {
+        "id": "floodlight",
+        "name": "Floodlight",
+        "level": 1,
+        "use": "bonusAction",
+        "cost": 1,
+        "pick": 4,
+        "effects": [
+          {
+            "type": "hinder",
+            "targets": "enemiesArea",
+            "count": 2,
+            "save": "con"
+          }
+        ]
+      },
+      {
+        "id": "seismicStomp",
+        "name": "Seismic Stomp",
+        "level": 5,
+        "use": "action",
+        "cost": 2,
+        "pick": 3,
+        "effects": [
+          {
+            "type": "damage",
+            "targets": "enemiesArea",
+            "count": 2,
+            "amount": "3d8",
+            "save": "str",
+            "prone": true
+          }
+        ]
+      },
+      {
+        "id": "arcDischarge",
+        "name": "Arc Discharge",
+        "level": 7,
+        "use": "action",
+        "cost": 2,
+        "pick": 5,
+        "effects": [
+          {
+            "type": "damage",
+            "targets": "enemiesArea",
+            "count": 2,
+            "amount": "5d8",
+            "save": "dex"
+          }
+        ]
+      },
+      {
+        "id": "bulwarkField",
+        "name": "Bulwark Field",
+        "level": 9,
+        "use": "action",
+        "cost": 2,
+        "pick": 6,
+        "effects": [
+          {
+            "type": "tempHp",
+            "targets": "allies",
+            "count": 3,
+            "amount": "2d8+int"
+          }
+        ]
+      },
+      {
+        "id": "thrusters",
+        "name": "Thrusters",
+        "level": 1,
+        "use": "bonusAction",
+        "cost": 1,
+        "pick": 8,
+        "effects": [],
+        "note": "Movement; not simulated"
+      },
+      {
+        "id": "grappleArm",
+        "name": "Grapple Arm",
+        "level": 1,
+        "use": "action",
+        "cost": 1,
+        "pick": 9,
+        "effects": [],
+        "note": "Positional; not simulated"
+      },
+      {
+        "id": "bombardment",
+        "name": "Bombardment",
+        "level": 14,
+        "use": "action",
+        "cost": 3,
+        "pick": 99,
+        "effects": [
+          {
+            "type": "damage",
+            "targets": "enemiesArea",
+            "count": 3,
+            "amount": "8d6",
+            "save": "dex"
+          }
+        ],
+        "subclass": "siegeFrame"
+      }
+    ]
+  },
+  "subclasses": [
+    {
+      "id": "bulwarkFrame",
+      "name": "Bulwark Frame",
+      "features": [
+        {
+          "id": "reinforcedPlating",
+          "name": "Reinforced Plating",
+          "level": 3,
+          "when": "passive",
+          "effects": [
+            {
+              "type": "suitAc",
+              "amount": 1
+            },
+            {
+              "type": "suitHpBonus",
+              "amount": "level"
+            }
+          ]
+        },
+        {
+          "id": "challengeKlaxon",
+          "name": "Challenge Klaxon",
+          "level": 3,
+          "when": "afterChoice",
+          "feature": [
+            "bonusSystems",
+            "actionSystems"
+          ],
+          "effects": [
+            {
+              "type": "taunt",
+              "targets": "enemy",
+              "save": "wis"
+            }
+          ]
+        },
+        {
+          "id": "ablativeArmor",
+          "name": "Ablative Armor",
+          "level": 6,
+          "when": "passive",
+          "effects": [
+            {
+              "type": "suitDamageReduction",
+              "amount": "int",
+              "min": 1
+            }
+          ]
+        },
+        {
+          "id": "wideField",
+          "name": "Wide Field",
+          "level": 10,
+          "when": "modify",
+          "feature": "shieldProjector",
+          "effects": [
+            {
+              "type": "range",
+              "range": "allies"
+            }
+          ]
+        },
+        {
+          "id": "fortressFrame",
+          "name": "Fortress Frame",
+          "level": 14,
+          "when": "passive",
+          "effects": [
+            {
+              "type": "resourceMax",
+              "resource": "cells",
+              "amount": 1
+            }
+          ]
+        }
+      ],
+      "compare": [
+        "paladin",
+        "fighter"
+      ]
+    },
+    {
+      "id": "siegeFrame",
+      "name": "Siege Frame",
+      "features": [
+        {
+          "id": "shoulderCannon",
+          "name": "Shoulder Cannon",
+          "level": 3,
+          "when": "passive",
+          "effects": [
+            {
+              "type": "weaponOverride",
+              "weapon": {
+                "name": "Shoulder Cannon",
+                "damage": "1d10",
+                "ability": "int",
+                "mastery": null,
+                "ranged": true
+              }
+            },
+            {
+              "type": "setRole",
+              "role": "mid"
+            }
+          ]
+        },
+        {
+          "id": "rangefinder",
+          "name": "Rangefinder",
+          "level": 3,
+          "when": "passive",
+          "effects": [],
+          "note": "Cover and range; not simulated"
+        },
+        {
+          "id": "explosiveShells",
+          "name": "Explosive Shells",
+          "level": 6,
+          "when": "passive",
+          "cost": "cells",
+          "effects": [
+            {
+              "type": "splashDamage",
+              "amount": "2d6",
+              "save": "dex",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "calibratedBarrel",
+          "name": "Calibrated Barrel",
+          "level": 10,
+          "when": "passive",
+          "effects": [
+            {
+              "type": "weaponDamage",
+              "amount": "int"
+            }
+          ]
+        },
+        {
+          "id": "bombardmentInstall",
+          "name": "Bombardment",
+          "level": 14,
+          "when": "passive",
+          "effects": [
+            {
+              "type": "knowOption",
+              "option": "bombardment"
+            }
+          ]
+        }
+      ],
+      "compare": [
+        "rogue",
+        "fighter"
+      ]
+    }
+  ]
+}

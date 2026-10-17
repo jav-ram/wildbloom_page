@@ -1,0 +1,459 @@
+{
+ "page": {
+  "title": "Below the Light",
+  "tagline": "A bottomless, unexplored D&D 5e setting you can drop into any campaign: thirteen layers, three eras.",
+  "badge": "Building now",
+  "intro": "A classic sword-and-sorcery world is upended when a small expedition finds a bottomless Well on a remote island, and with it a new world of unknown beasts and impossible relics. Everyone wants to reach the bottom and come back. For most of history, no one has."
+ },
+ "eras": [
+  {
+   "id": 1,
+   "blocks": [
+    {
+     "type": "ul",
+     "items": [
+      "Some people swear they heard a **buzz** first.",
+      "Then a thin rod of light appeared far out at sea.",
+      "Right after came **violent gusts of wind** blowing outward from the light, as if it were pushing the air away.",
+      "The world stopped for a couple of days. The rod has been visible across much of the world ever since."
+     ]
+    },
+    {
+     "type": "ul",
+     "items": [
+      "**Fear and denial:** some kingdoms tried to ignore the light, even though it never leaves the sky.",
+      "**Destroy it:** some hired wizards, alchemists and anyone who promised they could get rid of it.",
+      "**Study it:** some put everything into research, trying to understand what it was.",
+      "**Seek it:** most common folk, adventurer guilds and rich individuals saw an adventure, and the prestige of discovery, plus a few treasures."
+     ]
+    },
+    {
+     "type": "p",
+     "text": "More than five years have passed since the Day of the Light. Many expeditions have set out toward the rod, but none has returned with real evidence."
+    },
+    {
+     "type": "p",
+     "text": "A few people try to make a name for themselves with false claims, passing off props as relics. Only the gullible believe them, and their lies make honest reports even harder to accept. How could the world hold a hole with no bottom? The island is called **Lightrest**. It has no inhabitants, but someone lived there once. Jungle has swallowed the ruins they left behind."
+    },
+    {
+     "type": "p",
+     "text": "No one knows who built them."
+    },
+    {
+     "type": "p",
+     "text": "Later delvers call these unknown builders the Keepers."
+    },
+    {
+     "type": "p",
+     "text": "Rules and tools for running Era 1: [ERA 1 RULES AND TOOLS: what a DM needs to run the discovery era.]"
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "blocks": [
+    {
+     "type": "p",
+     "text": "About a century after discovery. A hundred years of delvers have left guilds, infrastructure and routes, so reaching the Well and starting a descent is much easier. The rim is crowded, political and profitable. The bottom is still unreached."
+    },
+    {
+     "type": "p",
+     "text": "Detail for this era: [ERA 2 DETAIL: the rim a century on. Who controls the way down, what it costs, and why delvers still go.]"
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "blocks": [
+    {
+     "type": "p",
+     "text": "A couple of centuries after the Guild Age, a group of six adventurers reaches the bottom of the first Well and returns. The world believes they destroyed what they found there. When the six return, the first Well's light goes out. Soon after, two more wells are discovered, each with its own rod of light, and a new age of delving begins. The first Well remains, darker and more dangerous than ever."
+    },
+    {
+     "type": "p",
+     "text": "Detail for this era: [ERA 3 DETAIL: the world after the light went out. What changed on the rim, and what the two new wells mean to delvers.]"
+    }
+   ]
+  }
+ ],
+ "setting": {
+  "overview": [
+   "Below the Light is setting-neutral: a DM can drop it into the Forgotten Realms or any world. The surface is familiar high fantasy: knights, wizards, kingdoms and very little technology. Before the Well, life was \"normal-ish.\" Money, prestige and the promise of unlimited possibilities now pull people of every kind from across the world to its island."
+  ],
+  "lightrest": [
+   "The island is called Lightrest. It has no inhabitants, but someone lived there once. Jungle has swallowed the ruins they left behind. Later delvers call the unknown builders the Keepers. The Well sits at its heart.",
+   "Map, places and creatures: [LIGHTREST: the map, the places and the creatures of the island.]"
+  ],
+  "light": [
+   "A rod of light runs down the middle of the Well. It seems to be powered by the sun, so the Well has day and night cycles all the way down. From the island, the light looks like a rod. Inside the Well, it flows. It pours down the middle in slow, bright currents, the way water falls from a lip of stone, and it never reaches a bottom. The air still blows outward from it, warm and constant, against the fall.",
+   "The light appeared out of nowhere, and no one knows why. It can be seen from a huge part of the planet. It is what drove sailors to cross the sea in search of its source, and what led the first expedition to the island."
+  ],
+  "well": [
+   "The Well is a vast hole on an island as far from any land as anyone has found. No one has ever seen its end. Inside lies a new world of mystical beasts and mysterious relics. It has 13 layers, and each layer has its own theme, not just its own biome.",
+   "Going down usually means a jump or a rappel drop. Descending is dangerous but straightforward. Coming back up is the hard part: there is no curse, but anything jumping or flying upward is an easy target for flying predators, and the walls are unknown and unstable. Every drop feels close to one-way."
+  ],
+  "rim": {
+   "collective": [
+    "Settlements line the edge of the Well, run by the Collective: an alliance of the guilds and groups that got there first."
+   ],
+   "fees": [
+    "Entry fee: the Collective charges a fee to go into the Well.",
+    "No exit tax: whatever you bring up belongs to you or your patron."
+   ],
+   "rivalry": [
+    "Internal rivalry: the founding guilds compete inside the Collective for influence, routes and profit."
+   ],
+   "dangers": [
+    "Dangers on the rim: the rim can be as dangerous as the first layer. Thugs wait for returning delvers to rob them of their finds. Sometimes the Collective, or a faction within it, is behind those robberies or quietly encourages them. Some delvers sneak in without paying the fee."
+   ],
+   "settlements": [
+    "Rim settlements and founding guilds: [RIM SETTLEMENTS: the settlements and the founding guilds.]"
+   ]
+  },
+  "culture": {
+   "ranks": [
+    "There is no official ranking system for delvers. Status comes from reputation and bragging about how deep you've been."
+   ],
+   "patrons": [
+    "Patrons fund expeditions and often own a share of what comes back."
+   ],
+   "proof": [
+    "Proof of depth (suggested): since anyone can claim to have reached a deep layer, materials, creature parts or relics found only below a certain depth become the real social currency. This also creates forgers and scams."
+   ]
+  },
+  "religion": {
+   "faiths": [
+    "Most established faiths say nothing special about the Well. In a world full of magic, it is one more wonder."
+   ],
+   "cult": [
+    "One new religion rose from the discovery: the Cult of the Well, which worships the Well itself. The Cult unofficially makes sacrifices to the Well."
+   ]
+  }
+ },
+ "descent": {
+  "intro": "13 layers. Layer 1 is charted. Layers 2 to 13: [LAYERS 2 TO 13: not yet written.]",
+  "layer1": {
+   "name": "The Pilgrimage",
+   "overview": "Named for the Keepers' road of devotion down into the Well. It is the closest layer and the \"least\" dangerous one. Almost everything the surface knows about the Well comes from here. At its end, thousands of Keepers kneel in prayer, turned to stone. A great lift stands at the edge of the Resting Place and leads to layer 2.",
+   "habitats": [
+    {
+     "name": "The Descent Wall",
+     "text": "Black and grey rock streaked with gold where the light catches old mineral veins. Narrow steps zigzag down the face, sometimes only a boot wide, sometimes widening into landings. Below, the wall disappears into haze. The light rod fills half the sky, so close it seems you could touch it."
+    },
+    {
+     "name": "The Shrine Road",
+     "text": "Shrines cut back into the rock: carved niches, small sunken courts open to the light, and stone basins once used for fire. Offerings still sit where they were left, bowls, figurines, bundles of dried flowers, under centuries of dust. Many shrines have a pool of milky, perfectly still water at their center."
+    },
+    {
+     "name": "The Hanging Terraces",
+     "text": "Terrace after terrace of pale, overgrown green. Every plant leans toward the light rod: trunks curve, leaves turn, flowers face it like a crowd. Roots spill over the terrace edges and hang down for hundreds of feet. Some of the Keepers' terraces were clearly farmed once; low stone walls still divide them into fields."
+    },
+    {
+     "name": "The Dim Galleries",
+     "text": "Long galleries of dark stone, some wide enough for a ship, some barely wide enough to crawl. Lantern Grubs dot the ceilings like green stars. In places, the Keepers carved straight halls and stairs that cut through the natural caves, and their gold-seamed walls catch any light the party brings."
+    },
+    {
+     "name": "The Open Air",
+     "text": "An immense drop of golden haze, with the light rod rising through the middle like a pillar holding up the sky. Shapes circle it constantly: herds of Light Rays turning slowly, Flying Eels coiling in loops, and sometimes a Drifting Bladder hanging motionless like a small cloud. On the far side, the opposite wall is a faint shadow, miles away."
+    },
+    {
+     "name": "The Resting Place",
+     "text": "A sea of tall, pale-gold grass stretching for miles, rippling in the outflow of the light rod, which towers overhead brighter than anywhere above. Shrines dot the plains in every direction: small ones no bigger than a doorway, and great sunken courts with gold-seamed walls. Roads of fitted dark stone cross the grass, and all of them run toward the same place: a platform at the far edge, jutting out over the void."
+    }
+   ],
+   "congregation": {
+    "name": "The Congregation",
+    "text": "The platform is the largest thing the Keepers ever built: rings of dark, gold-seamed stone stepping down toward its tip, where a towering frame of stone and gold alloy rises over the void. Great chains run from a winding wheel down into the darkness, taut, as if something heavy still hangs at their end. The lift's car is not there; it seems to be somewhere below. Every ring of the platform is filled with kneeling figures, men, women and children, heads bowed, hands pressed together, all facing the lift. Their stone is the same dark rock as the rim, and dust lies on their shoulders like snow. They look like they are waiting for it to come back up."
+   },
+   "creatures": [
+    {
+     "name": "Hangman Vine",
+     "habitat": "Dim Galleries",
+     "text": "A bark-skinned worm up to 20 m long, hanging from ceilings like a dead vine"
+    },
+    {
+     "name": "Lantern Grub",
+     "habitat": "Dim Galleries",
+     "text": "A soft, finger-long grub that glows pale green from inside"
+    },
+    {
+     "name": "Scorched Beetle",
+     "habitat": "Shrine Road",
+     "text": "A beetle with limbs of stone and a body of glass glowing red-hot, trailing embers when it flies"
+    },
+    {
+     "name": "Cliff Gleaner",
+     "habitat": "Descent Wall",
+     "text": "A flyer so thin it is almost flat; at rest it hangs from the cliff edge like old cloth drying in the wind"
+    },
+    {
+     "name": "Sleeper's Shroud",
+     "habitat": "Hanging Terraces",
+     "text": "A thick carpet of green-gold moss, soft and warm to the touch"
+    },
+    {
+     "name": "Offering Moths",
+     "habitat": "Shrine Road",
+     "text": "A cloud of moths with ash-grey wings that shed choking dust"
+    },
+    {
+     "name": "Echo Hound",
+     "habitat": "Dim Galleries",
+     "text": "An eyeless, lean hunter with huge cupped ears and grey, hairless skin"
+    },
+    {
+     "name": "Arrow Pebbles",
+     "habitat": "Descent Wall",
+     "text": "A swarm of obsidian insects shaped like arrowheads, 2 to 7 cm long"
+    },
+    {
+     "name": "Drill Centipede",
+     "habitat": "Hanging Terraces",
+     "text": "A centipede 2 to 3 meters long whose head is a spiraling drill"
+    },
+    {
+     "name": "Bubble Ooze",
+     "habitat": "Dim Galleries",
+     "text": "A cluster of giant soap bubbles that hold their shape too well"
+    },
+    {
+     "name": "Hanging Stalker",
+     "habitat": "Descent Wall",
+     "text": "A gaunt, long-armed creature that follows climbers along the underside of ledges for hours before it strikes"
+    },
+    {
+     "name": "Hushwing",
+     "habitat": "Dim Galleries",
+     "text": "A bat-winged flyer with a flat, mask-like face and no mouth"
+    },
+    {
+     "name": "Mortar Spider",
+     "habitat": "Dim Galleries",
+     "text": "A pale spider the size of a pony, with a swollen, chalky abdomen"
+    },
+    {
+     "name": "Light Ray",
+     "habitat": "Open air",
+     "text": "A huge, manta-shaped glider with thin, nearly translucent skin; herds circle the light rod for days without landing"
+    },
+    {
+     "name": "Lacquerfin",
+     "habitat": "Resting Place",
+     "text": "A fish about 1 m long from mouth to tail that hovers up to 1 m above the ground, skimming over the grass. Sharp teeth; huge bright-red scales plated like lacquered samurai armor. Delvers call it the land barracuda"
+    },
+    {
+     "name": "Bell-Throat",
+     "habitat": "Shrine Road",
+     "text": "A lanky, eyeless biped with a throat sac that rings like a bell"
+    },
+    {
+     "name": "Swarm of Scorched Beetles",
+     "habitat": "Shrine Road",
+     "text": "Dozens of Scorched Beetles heaped together, like a roaring bonfire"
+    },
+    {
+     "name": "Devote Ox",
+     "habitat": "Resting Place",
+     "text": "A stone ox lying in a shrine like a carved statue, its joints sealed with gold alloy."
+    },
+    {
+     "name": "Flying Eel",
+     "habitat": "Open air",
+     "text": "A pale, milky eel as long as a rowboat, swimming through the air in circles around the light rod"
+    },
+    {
+     "name": "Drifting Bladder",
+     "habitat": "Open air",
+     "text": "A floating creature the size of a house, held up by gas sacs and trailing long tendrils that sift the air"
+    },
+    {
+     "name": "Spire Crane",
+     "habitat": "Open air, Hanging Terraces",
+     "text": "A tall, long-legged crane with a long neck and a beak like a spike of glass; it stalks the ledges and impales prey on the Keepers' broken spires"
+    },
+    {
+     "name": "Grassmane",
+     "habitat": "Resting Place",
+     "text": "A gorilla-like brute on four legs, its front limbs far larger and heavier, with the face of a lion and long hair the same golden color as the grass"
+    },
+    {
+     "name": "Hollow Kite",
+     "habitat": "Open air",
+     "text": "A huge flyer built like a kite, skin stretched over hollow bone with almost no body, hanging motionless high above the light shafts"
+    },
+    {
+     "name": "Gallery Wyrm",
+     "habitat": "Dim Galleries",
+     "text": "A pale, eyeless serpent as long as a ship, its skin crusted with stone"
+    }
+   ],
+   "notes": "Descent routes and ascent notes for layer 1: [LAYER 1 DESCENT: the usual route down, gear, time and hazards, and how delvers climb back.]"
+  }
+ },
+ "relics": {
+  "count": 6,
+  "intro": [
+   "Relics are the mysterious items found in the Well. They fall into two broad kinds: relics of strange magic, which hold magic never seen on the surface, and relics of descent, which seem to exist only to help someone go deeper. A relic does not have to be magical."
+  ],
+  "items": [
+   {
+    "name": "Sinker's Needle",
+    "rarity": "Common",
+    "nonMagical": true,
+    "attunement": "None",
+    "layer": 1,
+    "onlyOneKnown": false,
+    "type": "Wondrous item (non-magical), no attunement",
+    "homage": "*Inspired by the Star Compass from* Made in Abyss *by Akihito Tsukushi (homage).*",
+    "flavor": "A palm-sized compass in a plain casing of dull grey metal. Its needle is bare and bright. It has no north. Wherever you hold it, however you turn it, the needle points down: toward the floor, toward the bottom of a pit, toward whatever lies lowest. Hold it upside down and the needle swings to follow. Drop it from a cliff and the needle still points down while it falls. Nothing marks it, scratches it or bends it.",
+    "properties": [
+     {
+      "label": "Indestructible.",
+      "text": "The compass is immune to all damage and to every condition, and no spell or effect (including *Disintegrate*) can harm or alter it."
+     },
+     {
+      "label": "Not magical.",
+      "text": "It radiates no magic and is unaffected by *Dispel Magic* or an *Antimagic Field*."
+     },
+     {
+      "label": "Always down.",
+      "text": "While you hold it, you always know which way is down, even if you are Blinded, in magical darkness, spinning, or in free fall."
+     },
+     {
+      "label": "Way down.",
+      "text": "You have Advantage on Wisdom (Survival) checks to find a route downward through unfamiliar terrain, such as picking the right branch in a cave system or the right ledge on a wall."
+     }
+    ],
+    "note": null
+   },
+   {
+    "name": "Mendgold",
+    "rarity": "Common",
+    "nonMagical": false,
+    "attunement": "None",
+    "layer": 1,
+    "onlyOneKnown": false,
+    "type": "Potion (relic), common, single use",
+    "homage": "**Properties**",
+    "flavor": "A ball of dull gold the size of a plum. It is flexible, like thick clay, and always cold to the touch, even in a fire's glow. Pressed to a wound, it softens and spreads. Where it touches, torn flesh is replaced by gold, which closes the wound and stays. The new gold is flexible like skin and cold. It leaves a gold scar.",
+    "properties": [
+     {
+      "label": "Use.",
+      "text": "As a Bonus Action you can press Mendgold to your own wounds. Or take the Utilize action to press it to a creature within 5 feet of you."
+     },
+     {
+      "label": "Heal.",
+      "text": "The creature regains 2d4 + 2 Hit Points. The ball is used up."
+     },
+     {
+      "label": "Scar.",
+      "text": "The healed wound leaves a patch of cold, flexible gold on the skin. It is harmless, and can't be removed except by *Greater Restoration* or similar."
+     }
+    ],
+    "note": "Mechanically identical to a Potion of Healing. *Detect Magic* shows a faint aura."
+   },
+   {
+    "name": "The Quiet Guard",
+    "rarity": "Rare",
+    "nonMagical": false,
+    "attunement": "Requires attunement",
+    "layer": 1,
+    "onlyOneKnown": true,
+    "type": "Wondrous item, rare, requires attunement",
+    "homage": "**Properties**",
+    "flavor": "A heavy bracelet of gold alloy, plain except for a faint seam running around it. Only one has been found on the first layer. It was never meant to be worn for show: when its wearer wills it, the bracelet unfolds into a round shield of gold.",
+    "properties": [
+     {
+      "label": "Summon.",
+      "text": "While attuned, you can use a Bonus Action to unfold the bracelet into a gold Shield, or to fold it back into a bracelet."
+     },
+     {
+      "label": "Shield.",
+      "text": "It is a normal Shield (+2 AC). Using it follows your class's shield proficiency, as with any shield."
+     },
+     {
+      "label": "Both hands free.",
+      "text": "The shield is strapped to your forearm by the bracelet, so it doesn't take up a hand. You can hold a light weapon in each hand and still benefit from the shield, which allows Two-Weapon Fighting with a shield up. Two-Weapon Fighting still requires light weapons."
+     }
+    ],
+    "note": null
+   },
+   {
+    "name": "Updraft Cloak",
+    "rarity": "Rare",
+    "nonMagical": false,
+    "attunement": "Requires attunement",
+    "layer": 1,
+    "onlyOneKnown": false,
+    "type": "Wondrous item, rare, requires attunement",
+    "homage": "**Properties**",
+    "flavor": "A long cloak woven from pale gold-grey thread, so light it seems to move without wind. In the outflow of air that blows outward from the light rod, it billows like a sail.",
+    "properties": [
+     {
+      "label": "Slow fall.",
+      "text": "As a Reaction when you fall, you can cast *Feather Fall* (no components). Once used, you can't use it again until the next dawn."
+     },
+     {
+      "label": "Limit.",
+      "text": "The cloak only works for falls of 300 feet or less. If the fall is longer than 300 feet, *Feather Fall* automatically fails."
+     }
+    ],
+    "note": null
+   },
+   {
+    "name": "Keeper's Ring Calendar",
+    "rarity": "Rare",
+    "nonMagical": false,
+    "attunement": "Requires attunement",
+    "layer": 1,
+    "onlyOneKnown": false,
+    "type": "Wondrous item, rare, requires attunement",
+    "homage": "**Properties**",
+    "flavor": "A thick ring of dark gold alloy with twelve small notches cut around its outer edge. Some notches are worn smooth, others are still sharp. Each notch is the size of a grain of rice. When the light is up, they catch it. It is warm when you put it on. The notches look like decoration, and no one has found a way to read them.",
+    "properties": [
+     {
+      "label": "Count.",
+      "text": "While attuned, you always know how many days have passed since you entered the Well, even underground, in magical darkness, or after losing track of time. This is the ring's own magic. It does not come from the notches."
+     }
+    ],
+    "note": null
+   },
+   {
+    "name": "Praying Bead",
+    "rarity": "Uncommon",
+    "nonMagical": false,
+    "attunement": "None",
+    "layer": 1,
+    "onlyOneKnown": false,
+    "type": "Wondrous item, uncommon, no attunement",
+    "homage": "**Properties**",
+    "flavor": "A small bead of gold alloy, cool and smooth, found pressed into the stone palms of the kneeling Keepers on the first layer. Holding it, you feel quiet, as though someone has asked you to stop and pray.",
+    "properties": [
+     {
+      "label": "Calm.",
+      "text": "As an action, you can hold the bead and end the Charmed or Frightened condition on yourself."
+     },
+     {
+      "label": "Quiet.",
+      "text": "Creatures that would sense your fear by smell or sound have Disadvantage on noticing you while you hold the bead."
+     }
+    ],
+    "note": null
+   }
+  ]
+ },
+ "running": {
+  "goal": "The goal at the table is the unexplored feeling: players may know the top, but nobody knows the deep.",
+  "creatures": [
+   "Upper layers use familiar or lightly reskinned creatures. Locals know them, and so may players.",
+   "Deeper layers use original creatures, or reskins with a new name, a new description and at least one strange trait, so the Monster Manual never spoils the mystery.",
+   "Describe, don't name. In-world, a creature has no name until someone survives to give it one. Players can name what they discover."
+  ],
+  "ascent": [
+   "Climbing requires checks to advance even short distances on unknown terrain.",
+   "Jumping or flying upward over long distances draws flying predators. A suggested rule: roll for an aerial encounter at set intervals of ascent, more often when flying.",
+   "Descending with magic such as Feather Fall is fine and fits the theme."
+  ],
+  "magic": "No form of teleportation works in the Well: not Teleport, Word of Recall, Dimension Door, Misty Step, Teleportation Circle, nor any similar spell, item or effect. Sending still works, but its range is one mile and it cannot reach between layers."
+ }
+}

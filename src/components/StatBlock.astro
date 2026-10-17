@@ -1,0 +1,49 @@
+---
+import { ABILITIES, abilityMod, fmtMod, type StatBlock, type Trap } from '../lib/statblock';
+import { inline } from '../lib/inline';
+interface Props { name: string; sb?: StatBlock; trap?: Trap }
+const { name, sb, trap } = Astro.props;
+const groups = sb ? ([['Traits', sb.traits], ['Actions', sb.actions], ['Bonus Actions', sb.bonusActions], ['Reactions', sb.reactions]] as const) : [];
+const line = (label: string, v?: string) => (v ? { label, v } : null);
+const lines = sb
+  ? [line('Saving Throws', sb.saves), line('Skills', sb.skills), line('Vulnerabilities', sb.vulnerabilities), line('Resistances', sb.resistances), line('Immunities', sb.immunities), line('Condition Immunities', sb.conditionImmunities), line('Senses', sb.senses), line('Languages', sb.languages)].filter((x): x is { label: string; v: string } => x !== null)
+  : [];
+---
+{sb ? (
+  <section class="statblock" aria-labelledby="statblock-title">
+    <h2 id="statblock-title" class="sub-heading">{name}</h2>
+    <p class="statblock__sub">{sb.size} {sb.type}{sb.alignment ? `, ${sb.alignment}` : ''}</p>
+    <hr />
+    <p class="statblock__lines"><b>AC</b> {sb.ac}{sb.acNote ? ` (${sb.acNote})` : ''}{sb.initiative ? <> &nbsp; <b>Initiative</b> {sb.initiative}</> : null}</p>
+    <p class="statblock__lines"><b>HP</b> {sb.hp}{sb.hpFormula ? ` (${sb.hpFormula})` : ''}</p>
+    <p class="statblock__lines"><b>Speed</b> {sb.speed}</p>
+    <hr />
+    <table class="statblock__abilities">
+      <caption class="skip">Ability scores</caption>
+      <thead><tr>{ABILITIES.map((a) => <th scope="col">{a.toUpperCase()}</th>)}</tr></thead>
+      <tbody><tr>{ABILITIES.map((a) => <td>{sb.abilities[a]} ({fmtMod(abilityMod(sb.abilities[a]))})</td>)}</tr></tbody>
+    </table>
+    <hr />
+    {lines.map((l) => <p class="statblock__lines"><b>{l.label}</b> {l.v}</p>)}
+    <p class="statblock__lines"><b>CR</b> {sb.cr}{sb.xp != null ? ` (XP ${sb.xp.toLocaleString('en-US')}${sb.pb != null ? `; PB +${sb.pb}` : ''})` : ''}</p>
+    {groups.map(([title, feats]) => feats && feats.length ? (
+      <>
+        <h3>{title}</h3>
+        {feats.map((f) => <p class="statblock__feat"><b><i>{f.name}.</i></b> <Fragment set:html={inline(f.text)} /></p>)}
+      </>
+    ) : null)}
+    {sb.notes?.map((n) => <p class="statblock__feat"><Fragment set:html={inline(n)} /></p>)}
+  </section>
+) : trap ? (
+  <section class="statblock" aria-labelledby="statblock-title">
+    <h2 id="statblock-title" class="sub-heading">{name}</h2>
+    <p class="statblock__sub">{trap.rating}</p>
+    <hr />
+    {trap.parts.map((p) => <p class="statblock__feat"><b>{p.name}.</b> <Fragment set:html={inline(p.text)} /></p>)}
+  </section>
+) : (
+  <section class="statblock statblock--placeholder" aria-labelledby="statblock-title">
+    <h2 id="statblock-title" class="sub-heading">{name}</h2>
+    <p>[STATBLOCK: size and type, AC, HP, speed, ability scores, senses, CR, traits and actions.]</p>
+  </section>
+)}

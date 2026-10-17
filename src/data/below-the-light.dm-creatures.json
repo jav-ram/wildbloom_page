@@ -1,0 +1,14 @@
+[
+ {
+  "name": "Penitent",
+  "habitat": "Congregation",
+  "text": "A kneeling Keeper of stone, head bowed, identical to the real ones",
+  "after": "Arrow Pebbles"
+ },
+ {
+  "name": "The Bowed",
+  "habitat": "Congregation",
+  "text": "A tall, stooped Keeper of stone, robed and bent almost double",
+  "after": "Spire Crane"
+ }
+]
