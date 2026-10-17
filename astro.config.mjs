@@ -1,13 +1,11 @@
 import { defineConfig } from 'astro/config';
 import svelte from '@astrojs/svelte';
 
-// Project site on GitHub Pages: https://jav-ram.github.io/wildbloom_page/
-// If a custom domain is added later, set `site` to it and drop `base`.
+// Deployed on Cloudflare at https://wildbloom-studio.dev (root domain, so no base path).
 export default defineConfig({
-  site: 'https://jav-ram.github.io',
-  base: '/wildbloom_page',
+  site: 'https://wildbloom-studio.dev',
   trailingSlash: 'always',
-  // The setting page used to live at /crater/. GitHub Pages cannot send a 301, so Astro writes a redirect page.
-  redirects: { '/crater': '/wildbloom_page/below-the-light/' },
+  // The setting page used to live at /crater/. Astro writes a redirect page; public/_redirects adds a real 301 on Cloudflare.
+  redirects: { '/crater': '/below-the-light/' },
   integrations: [svelte()],
 });

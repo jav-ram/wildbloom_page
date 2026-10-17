@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+import { url } from '../lib/url';
+---
+<Base title="Page not found — Wildbloom Studio" description="This page does not exist.">
+  <main class="wrap" style="padding-block: 96px">
+    <p class="ws-kicker label">404</p>
+    <h1 class="page-title ws-h">Lost in the Dark</h1>
+    <p class="body lede">There is no page at this address. It may have moved, or the link may be wrong.</p>
+    <div class="ws-btn-row">
+      <a class="ws-btn control" href={url()}>Back to the studio</a>
+      <a class="ws-btn ws-btn--secondary control" href={url('below-the-light/')}>Below the Light</a>
+    </div>
+  </main>
+</Base>

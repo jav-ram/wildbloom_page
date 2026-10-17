@@ -1,0 +1,3 @@
+# Cloudflare redirects (real 301s). /crater/ was the old name of /below-the-light/.
+/crater /below-the-light/ 301
+/crater/ /below-the-light/ 301

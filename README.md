@@ -1,18 +1,18 @@
 # Wildbloom Studio site
 
-Astro + Svelte islands, deployed to GitHub Pages at https://jav-ram.github.io/wildbloom_page/
+Astro + Svelte islands, deployed on Cloudflare at https://wildbloom-studio.dev
 
 ```bash
-npm install
-npm run dev      # http://localhost:4321/wildbloom_page/
-npm run build    # static output in dist/
+pnpm install
+pnpm dev      # http://localhost:4321/
+pnpm build    # static output in dist/
 ```
 
 - Design tokens/components: `src/styles/` (from the Wildbloom design system).
 - Pages: `src/pages/`. Interactive parts (class filter, Below the Light era/layer explorer) are Svelte islands in `src/components/`.
 - Content: `src/data/` (`classes.ts`, `below-the-light.ts`, `warcaller.json`). `[BRACKETED]` text is copy still to be written.
-- Deploys on push to `main` via `.github/workflows/deploy.yml` (set Settings → Pages → Source to "GitHub Actions").
-- Base path is `/wildbloom_page` (see `astro.config.mjs`); remove it if a custom domain is added.
+- Deploys on Cloudflare (Workers & Pages, connected to this repo): every push to `main` builds with `pnpm build` and publishes `dist/`. There is no GitHub Actions workflow.
+- The site is served from the root of `wildbloom-studio.dev`, so there is no base path. Old `/crater/` URLs redirect to `/below-the-light/` (`public/_redirects`).
 
 ## Adding creature descriptions and statblocks
 - One Markdown file per creature in `src/data/creatures/<slug>.md` (slug = name in lowercase with hyphens, e.g. `flying-eel.md`).
