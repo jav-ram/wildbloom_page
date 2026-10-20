@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import { url, PATREON } from '../lib/url';
+import { url, PATREON, INSTAGRAM } from '../lib/url';
 ---
 <Base title="About — Wildbloom Studio" current="about">
 <main>
@@ -74,7 +74,7 @@ import { url, PATREON } from '../lib/url';
 <h2 id="contact-title" class="section-heading ws-h">Say Hello</h2>
 <p class="body ws-prose">[HOW TO REACH THE STUDIO: email or preferred channel.] You can also find us here:</p>
 <div class="ws-btn-row">
-<a class="ws-btn ws-btn--secondary control" href="https://www.instagram.com/" target="_blank" rel="noopener">Instagram</a>
+<a class="ws-btn ws-btn--secondary control" href={INSTAGRAM} target="_blank" rel="noopener">Instagram</a>
 <a class="ws-btn ws-btn--secondary control" href="https://www.reddit.com/" target="_blank" rel="noopener">Reddit</a>
 <a class="ws-btn control" href={PATREON} target="_blank" rel="noopener">Become a patron</a>
 </div>

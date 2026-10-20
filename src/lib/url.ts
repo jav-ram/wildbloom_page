@@ -5,3 +5,4 @@ export function url(path = ''): string {
 }
 
 export const PATREON = 'https://www.patreon.com/';
+export const INSTAGRAM = 'https://www.instagram.com/studio_wildbloom/';
