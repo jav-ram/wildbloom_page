@@ -279,3 +279,6 @@ p{margin:0 0 var(--space-2)}
 .creature-md ul,.creature-md ol{margin:0 0 var(--space-2);padding-left:var(--space-3);font-family:var(--font-body);font-size:18px;line-height:28px}
 .creature-md h2,.creature-md h3{font-family:var(--font-display);color:var(--accent);margin:var(--space-3) 0 var(--space-1)}
 .creature-md blockquote{margin:0 0 var(--space-2);padding-left:var(--space-2);border-left:3px solid var(--gold-soft);font-style:italic}
+
+/* Inline icon beside a link or button label */
+.ws-icon { vertical-align: -0.2em; margin-inline-end: 0.35em; flex: none; }

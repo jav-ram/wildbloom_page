@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
-import { url, PATREON, INSTAGRAM } from '../lib/url';
+import { url, PATREON, KOFI, INSTAGRAM } from '../lib/url';
+import KofiIcon from '../components/KofiIcon.astro';
 ---
 <Base title="About — Wildbloom Studio" current="about">
 <main>
@@ -77,6 +78,7 @@ import { url, PATREON, INSTAGRAM } from '../lib/url';
 <a class="ws-btn ws-btn--secondary control" href={INSTAGRAM} target="_blank" rel="noopener">Instagram</a>
 <a class="ws-btn ws-btn--secondary control" href="https://www.reddit.com/" target="_blank" rel="noopener">Reddit</a>
 <a class="ws-btn control" href={PATREON} target="_blank" rel="noopener">Become a patron</a>
+<a class="ws-btn ws-btn--secondary control" href={KOFI} target="_blank" rel="noopener"><KofiIcon /> Support on Ko-fi</a>
 </div>
 </div>
 </section>
