@@ -4,6 +4,6 @@ export function url(path = ''): string {
   return `${base}/${path.replace(/^\//, '')}`;
 }
 
-export const PATREON = 'https://www.patreon.com/';
+export const PATREON = 'https://www.patreon.com/cw/wildbloomstudio';
 export const INSTAGRAM = 'https://www.instagram.com/studio_wildbloom/';
 export const KOFI = 'https://ko-fi.com/wildbloomstudio';
